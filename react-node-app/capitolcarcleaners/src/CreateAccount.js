@@ -21,11 +21,11 @@ function CreateAccountForm() {
         
         // database check skeleton code, for the sake of example a@a will be an email that already has an account
 
-        if (contents.Email === "a@a") {// database check will be used the if statement boolean 
-            setEmailRegex("^(?!"+contents.Email+"$).*$") // set regex reject the email if it's already being used
+        if (contents.Email === "a@a") {// database check will be used as the if statement boolean 
+            setEmailRegex("^(?!"+contents.Email+"$).*$") // set regex to reject the email if it's already being used
             setEmailError("This email is already being used.")
         }
-        else { // otherwise regex should work as normal (note the type = email within the form ensures emails are formatted correctly)
+        else { // otherwise regex should work as normal (note the type=email within the form ensures emails are formatted correctly)
             setEmailRegex("\\S*"); 
             setEmailError("Please enter a valid email.")
         }
