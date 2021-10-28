@@ -5,11 +5,12 @@ import { Form, Button, Row, Col} from "react-bootstrap";
 
 function CreateAccountForm() {
     const [validated, setValidated] = useState(false);
-    const [contents, setContents] = useState({FirstName: "", LastName: "", Email: "", Password: "", PhoneNumber: ""});
+    const [contents, setContents] = useState({FirstName: "", LastName: "", Email: "", Password: "", PhoneNumber: "", Promotions: false});
     const [emailError, setEmailError] = useState("Please enter a valid email.")
     const [emailRegex, setEmailRegex] = useState("\\S*");
 
     const handleSubmit = (event) => {
+
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
         event.preventDefault();
@@ -40,9 +41,14 @@ function CreateAccountForm() {
     };
 
     const handleChange = (event) => {
-        if (event.target.id === "PhoneNumber") // format phone number changes
-            event.target.value = formatPhoneNumber(event.target.value);
-        setContents({...contents, [event.target.id]: event.target.value.trim()});
+        if (event.target.id === "Promotions") {
+            setContents({...contents, [event.target.id]: event.target.checked});
+        }
+        else {
+            if (event.target.id === "PhoneNumber") // format phone number changes
+                event.target.value = formatPhoneNumber(event.target.value);
+            setContents({...contents, [event.target.id]: event.target.value.trim()});
+        }
     };
 
     return (
@@ -116,10 +122,12 @@ function CreateAccountForm() {
                             <Form.Control.Feedback type="invalid">Please enter a valid phone number.</Form.Control.Feedback>
                         </Col>                    
                     </Form.Group>                  
-
+                    <div>
+                        <input id = "Promotions" type="checkbox" onChange = {handleChange} /> - I would like to receive promotions
+                    </div>
                     <Button className="m-4" type="submit" size="lg" style={{display: 'inline-block'}}>Submit</Button>          
                 </Form>
-
+                
                 <div >
                     <a href="/" id="cancel" name="cancel" className="btn btn-danger btn-lg" style={{display: 'inline-block'}}>Cancel</a>
                 </div>         
