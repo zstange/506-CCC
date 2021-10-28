@@ -89,8 +89,6 @@ function PasswordReset() {
     const [contents, setContents] = useState({Password: ""});
     const [message, setMessage] = useState("");
 
-    const timer = setTimeout(() => console.log('Initial timeout!'), 5000);
-
     const handleSubmit = (event) => {
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
@@ -101,6 +99,7 @@ function PasswordReset() {
         setValidated(true);
         
         if(form.checkValidity()) {
+            setMessage("Password changed, redirecting back to login page")
             // insert password being updated in database here and then redirect back to login
             // maybe add a time delay so the user can see the success message or just throw an alert?
         }
@@ -130,7 +129,7 @@ function PasswordReset() {
                             type = "text"
                             placeholder="Enter new password"
                             />
-                            <Form.Control.Feedback>Password changed, redirecting back to login page</Form.Control.Feedback>
+                            <Form.Control.Feedback>{message}</Form.Control.Feedback>
                         </Col>                    
                         
                     </Form.Group>                                
