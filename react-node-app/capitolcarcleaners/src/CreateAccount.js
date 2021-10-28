@@ -6,10 +6,10 @@ import { Form, Button, Row, Col} from "react-bootstrap";
 function CreateAccountForm() {
     const [validated, setValidated] = useState(false);
     const [contents, setContents] = useState({FirstName: "", LastName: "", Email: "", Password: "", PhoneNumber: ""});
-    const [errorMessages, setMessages] = useState({Email: "Please enter a valid email.", PhoneNumber: "Please enter a valid phone number."})
+    const [emailError, setEmailError] = useState("Please enter a valid email.")
+    const [emailRegex, setEmailRegex] = useState("\\S*");
 
     const handleSubmit = (event) => {
-        console.log(contents);
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
         event.preventDefault();
@@ -17,24 +17,31 @@ function CreateAccountForm() {
         }
         
         setValidated(true);
+        
+        // database check skeleton code, for the sake of example a@a will be an email that already has an account
 
-        // insert database check here, for if email and/or phone number is already being used
-        // and set appropriate errorMessage states before changing regex to reject current email so the form appears invalid too
+        if (contents.Email === "a@a") {// database check will be used the if statement boolean 
+            setEmailRegex("^(?!"+contents.Email+"$).*$") // set regex reject the email if it's already being used
+            setEmailError("This email is already being used.")
+        }
+        else { // otherwise regex should work as normal (note the type = email within the form ensures emails are formatted correctly)
+            setEmailRegex("\\S*"); 
+            setEmailError("Please enter a valid email.")
+        }
         
         // Output Caputured Data
         if (form.checkValidity() === true) {
             console.log("success")
             // TODO
             let data = contents;
-            data.PhoneNumber = data.PhoneNumber.replace(/[^\d]/g, '');
+            data.PhoneNumber = data.PhoneNumber.replace(/[^\d]/g, ''); // clean up phone number
             // insert database population here
-            
         }          
     };
 
     const handleChange = (event) => {
-        if (event.target.id === "PhoneNumber")
-            event.target.value = cleanPhoneNumber(event.target.value);
+        if (event.target.id === "PhoneNumber") // format phone number changes
+            event.target.value = formatPhoneNumber(event.target.value);
         setContents({...contents, [event.target.id]: event.target.value.trim()});
     };
 
@@ -78,9 +85,10 @@ function CreateAccountForm() {
                             <Form.Control 
                             required 
                             type= "email" 
+                            pattern = {emailRegex}
                             placeholder="Enter email" 
                             />
-                            <Form.Control.Feedback type="invalid">{errorMessages.Email}</Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">{emailError}</Form.Control.Feedback>
                         </Col>            
                     </Form.Group>
 
@@ -105,7 +113,7 @@ function CreateAccountForm() {
                             type="text"
                             placeholder="(XXX)-XXX-XXXX"
                             />
-                            <Form.Control.Feedback type="invalid">{errorMessages.PhoneNumber}</Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">Please enter a valid phone number.</Form.Control.Feedback>
                         </Col>                    
                     </Form.Group>                  
 
@@ -122,7 +130,7 @@ function CreateAccountForm() {
 }
 
 // adds formating to phone number to make it look nicer in the form
-function cleanPhoneNumber(phoneNumber) {
+function formatPhoneNumber(phoneNumber) {
     let phoneNum = phoneNumber.replace(/[^\d]/g, '').trim(); 
     let final = "(";
     if (phoneNum.length === 0) {
