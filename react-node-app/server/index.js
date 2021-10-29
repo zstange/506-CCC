@@ -47,6 +47,8 @@ app.get("/login", (req, res) => {
   });
 })
 
+app.post("/CreateAccount", customerController.createAcc)
+
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
