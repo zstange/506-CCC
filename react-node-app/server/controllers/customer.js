@@ -16,13 +16,36 @@ createAcc(req, res) {
         res.send({err: err});
       }
       else if (result != ""){
-        var redir = { redirect: "/Login" };
+        var redir = { redirect: "/login" };
         return res.json(redir);
       }
       else{
         res.send({message: "Please fill out all information required."})
       }
     });
-}  
+},
+
+addAppointment(req, res){
+    const uid = req.body.uid
+    const service = req.body.service
+    const vehicle = req.body.vehicle
+    const date = req.body.date
+    const time = req.body.time
+    const sqlInsert = 
+    "INSERT INTO appointments (uid, service,vehicle,date,time) VALUES (?,?,?,?,?);"
+    db.query(sqlInsert, [uid, service, vehicle, date, time]
+        , (err, result) => {
+            if(err){
+                res.send({err: err});
+              }
+              else if (result != ""){
+                var redir = { redirect: "/viewAppointment" };
+                return res.json(redir);
+              }
+              else{
+                res.send({message: "Please fill out all information required."})
+              }
+        });
+}
 };
 module.exports = customerController;
