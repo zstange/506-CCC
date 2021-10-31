@@ -1,13 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import Header from './components/Header';
+import CreateAccount from './components/CreateAccount';
+import ForgotPassword from './components/ForgotPassword';
+import Home from './components/Home';
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <Header/>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route path="/CreateAccount" component={CreateAccount} />
+        <Route path="/ForgotPassword" component={ForgotPassword} />
+      </Switch>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );
