@@ -1,6 +1,6 @@
 import React, {useState} from "react"; 
 // import Axios from 'axios';
-import './CreateAccount.css';
+import '../css/ForgotPassword.css';
 import { Form, Button, Row, Col} from "react-bootstrap";
 
 function CheckEmail() {
