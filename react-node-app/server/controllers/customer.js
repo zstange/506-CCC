@@ -46,6 +46,28 @@ addAppointment(req, res){
                 res.send({message: "Please fill out all information required."})
               }
         });
+},
+
+forgotPassword(req, res){
+  const password = req.body.password
+  const email = req.body.email
+
+  const sqlInsert = 
+        "UPDATE testtable SET password = ? WHERE email = ?";
+  db.query(sqlInsert, [password, email]
+      , (err, result) => {
+          if(err){
+              res.send({err: err});
+            }
+            else if (result != ""){
+              var redir = { redirect: "/login" };
+              return res.json(redir);
+            }
+            else{
+              res.send({message: "Please fill out all information required."})
+            }
+      });
 }
+
 };
 module.exports = customerController;
