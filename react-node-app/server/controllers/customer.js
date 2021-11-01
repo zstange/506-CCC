@@ -3,14 +3,14 @@ const customerController ={
 createAcc(req, res) {
     const firstName = req.body.firstName
     const lastName = req.body.lastName
+    const email = req.body.email
     const password = req.body.password
     const phoneNumber = req.body.phoneNumber
-    const email = req.body.email
-    const promotions = "false"
+    const promotions = req.body.promotions
   
     const sqlInsert = 
-    "INSERT INTO testtable (firstName, lastName,password,phoneNumber,email,promotions) VALUES (?,?,?,?,?,?);"
-    db.query(sqlInsert, [firstName, lastName,password,phoneNumber,email,promotions]
+    "INSERT INTO usertable (firstName, lastName,email,password,phoneNumber,recievePromotions) VALUES (?,?,?,?,?,?);"
+    db.query(sqlInsert, [firstName, lastName,email,password,phoneNumber,promotions]
       , (err, result) => {
       if(err){
         res.send({err: err});
@@ -27,13 +27,14 @@ createAcc(req, res) {
 
 addAppointment(req, res){
     const uid = req.body.uid
+    const vid = req.body.vid
+    const dateTime = req.body.dateTime
     const service = req.body.service
-    const vehicle = req.body.vehicle
-    const date = req.body.date
-    const time = req.body.time
+    const additionalInfo = req.body.additionalInfo
+    const status = "Not Ready"
     const sqlInsert = 
-    "INSERT INTO appointments (uid, service,vehicle,date,time) VALUES (?,?,?,?,?);"
-    db.query(sqlInsert, [uid, service, vehicle, date, time]
+    "INSERT INTO appointmenttable (uid, vid,dateTime,service,additionalInfo,status) VALUES (?,?,?,?,?);"
+    db.query(sqlInsert, [uid, vid, dateTime, service, additionalInfo, status]
         , (err, result) => {
             if(err){
                 res.send({err: err});
@@ -53,7 +54,7 @@ forgotPassword(req, res){
   const email = req.body.email
 
   const sqlInsert = 
-        "UPDATE testtable SET password = ? WHERE email = ?";
+        "UPDATE usertable SET password = ? WHERE email = ?";
   db.query(sqlInsert, [password, email]
       , (err, result) => {
           if(err){

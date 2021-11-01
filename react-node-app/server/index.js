@@ -30,7 +30,7 @@ app.get("/login", (req, res) => {
   const password = req.body.password
 
   const sqlInsert = 
-  "SELECT * FROM testtable WHERE email = ? AND password = ?"
+  "SELECT * FROM usertable WHERE email = ? AND password = ?"
   db.query(sqlInsert,  (err, result) => {
     if(err){
       return res.json({err: err});
@@ -47,7 +47,7 @@ app.get("/login", (req, res) => {
   });
 })
 
-app.post("/CreateAccount", customerController.createAcc)
+app.post("/createAccount", customerController.createAcc)
 app.post("/addAppointment", customerController.addAppointment)
 app.post("/forgotPassword", customerController.forgotPassword)
 
