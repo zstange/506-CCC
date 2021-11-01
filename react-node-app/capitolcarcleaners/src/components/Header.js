@@ -39,7 +39,9 @@ function Header() {
                       <NavDropdown.Item >Service 3</NavDropdown.Item>
                     </NavDropdown>
                     <Nav.Item className="ms-auto">
+                    <Link to="/Login">
                       <Nav.Link>Login/Sign Up</Nav.Link>
+                    </Link>
                     </Nav.Item>
                   </Nav>
                 </Navbar.Collapse>
