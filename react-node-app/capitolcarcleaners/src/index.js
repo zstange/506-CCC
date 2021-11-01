@@ -5,6 +5,7 @@ import Header from './components/Header';
 import CreateAccount from './components/CreateAccount';
 import ForgotPassword from './components/ForgotPassword';
 import Home from './components/Home';
+import Login from './components/Login';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -15,6 +16,7 @@ ReactDOM.render(
       <Header/>
       <Switch>
         <Route exact path="/" component={Home} />
+        <Route path="/Login" component={Login} />
         <Route path="/CreateAccount" component={CreateAccount} />
         <Route path="/ForgotPassword" component={ForgotPassword} />
       </Switch>
