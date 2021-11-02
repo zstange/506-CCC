@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import "../css/CustomerHomepage.css"
-import { Form, Card, Button, Row, Col, Modal} from "react-bootstrap";
+import Calendar from "../components/Calendar"
+import { Form, Card, Button, Row, Col, Modal } from "react-bootstrap";
 
 /*
  *  Vehicles() pulls the current user's vehicles that they have added to their acount.
@@ -149,6 +150,7 @@ class CustomerHomepage extends React.Component {
         super(props);
         this.state = {
             showAddVehicle: false,
+            selectedDate: null,
         };
       } 
 
@@ -182,6 +184,11 @@ class CustomerHomepage extends React.Component {
 
     closeAddVehicle() {
         this.setState({ showAddVehicle: false });
+    }
+
+    async setClickedDate(date) {
+        // Might need to convert the Date from a JSON Object to a string?
+        await this.setState({selectedDate: date})
     }
 
     render() {
@@ -228,7 +235,7 @@ class CustomerHomepage extends React.Component {
                             <div className="sectionAcctBody">
                                 {/* Need to call another componet to get all upcoming appointment information. */}
                                 <h3>Day: </h3>
-                                <h3>Month:</h3>
+                                <h3>Month: </h3>
                                 <h3>Year: </h3>
                                 <h3>Vehicle: </h3>                                
                             </div>
@@ -236,7 +243,18 @@ class CustomerHomepage extends React.Component {
                                 <Button style={{margin: '5px'}}>Schedule Appointment</Button>
                                 <Button style={{margin: '5px'}}>Edit Existing Appointment</Button>
                                 <Button style={{margin: '5px'}}>Delete Appointment</Button>
-                            </div>							
+                            </div>
+                            
+                            <div>
+                                <p>Returned Date is: {this.state.selectedDate}</p>
+                            </div>	
+
+                            <div>
+                                <Calendar 
+                                    callBackFromCalendar={this.setClickedDate}
+                                    
+                                />
+                            </div>						
                         </div>                   
                     </div>
 
