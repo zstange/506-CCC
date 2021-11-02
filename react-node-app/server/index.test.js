@@ -26,7 +26,7 @@ test('get \api', async() => {
 
 test('get \login', async() => {
   const res = await request(server).get('/login');
-  const response = { message: "Hello from server!" }    
+  const response = "ER_PARSE_ERROR";    
   expect(res.status).toBe(200);
-  expect(res.body).toEqual(response);
+  expect(res.body.err.code).toEqual(response);
 });

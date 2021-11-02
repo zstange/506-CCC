@@ -28,7 +28,7 @@ app.get("/api", (req, res) => {
 app.get("/login", (req, res) => {
   const email = req.body.email
   const password = req.body.password
-
+  console.log(req.body);
   const sqlInsert = 
   "SELECT * FROM usertable WHERE email = ? AND password = ?"
   db.query(sqlInsert,  (err, result) => {
