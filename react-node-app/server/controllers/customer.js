@@ -1,3 +1,5 @@
+const { db } = require('../db.js')
+const { bcrypt, saltRounds} = require('../hash.js')
 
 const customerController ={
 createAcc(req, res) {
