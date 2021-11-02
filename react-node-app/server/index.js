@@ -50,6 +50,7 @@ app.get("/login", (req, res) => {
 app.post("/createAccount", customerController.createAcc)
 app.post("/addAppointment", customerController.addAppointment)
 app.post("/forgotPassword", customerController.forgotPassword)
+app.post("/checkEmail", customerController.checkEmail)
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);

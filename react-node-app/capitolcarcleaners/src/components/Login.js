@@ -65,8 +65,15 @@ function LoginPage(props) {
                       </Col>                    
                   </Form.Group>
 
-                  <Button className="m-4" type="submit" style={{display: 'inline-block'}}>Submit</Button>          
-              </Form>        
+                  <Button className="m-4" type="submit" style={{display: 'inline-block'}}>Submit</Button>  
+                      
+              </Form>  
+              <div>
+                <Link to="/ForgotPassword">
+                <Button className="m-4 btn-sm" type="button" >Forgot Password</Button>
+                </Link>
+              </div>   
+                 
           </div>
      
           </Row> 

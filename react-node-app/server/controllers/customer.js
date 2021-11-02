@@ -7,10 +7,11 @@ createAcc(req, res) {
     const password = req.body.password
     const phoneNumber = req.body.phoneNumber
     const promotions = req.body.promotions
+    const role = "user"
   
     const sqlInsert = 
-    "INSERT INTO usertable (firstName, lastName,email,password,phoneNumber,recievePromotions) VALUES (?,?,?,?,?,?);"
-    db.query(sqlInsert, [firstName, lastName,email,password,phoneNumber,promotions]
+    "INSERT INTO usertable (firstName, lastName,email,password,phoneNumber,role,recievePromotions) VALUES (?,?,?,?,?,?,?);"
+    db.query(sqlInsert, [firstName, lastName,email,password,phoneNumber,role,promotions]
       , (err, result) => {
       if(err){
         res.send({err: err});
@@ -52,7 +53,6 @@ addAppointment(req, res){
 forgotPassword(req, res){
   const password = req.body.password
   const email = req.body.email
-
   const sqlInsert = 
         "UPDATE usertable SET password = ? WHERE email = ?";
   db.query(sqlInsert, [password, email]
@@ -68,6 +68,25 @@ forgotPassword(req, res){
               res.send({message: "Please fill out all information required."})
             }
       });
+},
+
+checkEmail(req, res){
+  const email = req.body.email 
+
+  const sqlInsert = 
+  "SELECT uid FROM usertable WHERE email = ?"
+  db.query(sqlInsert, [email], (err, result) => {
+    if(err){
+      return res.json({err: err});
+    }
+    else if (result != ""){
+      return res.json({value: true});
+      
+    } else{
+      return res.json({value: false});
+    }
+  });
+
 }
 
 };
