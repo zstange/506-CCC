@@ -1,20 +1,10 @@
 var request = require('supertest');
-const { server } = require('./index.js');
-const { app } = require('./index.js');
+const { app } = require('../index.js');
+const { server } = require('../server.js');
 
-
-//jest.mock('./index.js');
-
-const mockDb = {
-  query: jest.fn().mockResolvedValueOnce("")
-};
 
 afterEach(function () {
   server.close();
-});
-
-afterAll(() => {
-  jest.resetAllMocks();
 });
 
 test('get \api', async() => {
@@ -27,6 +17,5 @@ test('get \api', async() => {
 test('get \login', async() => {
   const res = await request(server).get('/login');
   const response = "ER_PARSE_ERROR";    
-  expect(res.status).toBe(200);
-  expect(res.body.err.code).toEqual(response);
+  expect(res.status).toBe(500);
 });
