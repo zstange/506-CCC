@@ -9,6 +9,8 @@ const customerController= require('./controllers/customer')
 const app = express();
 const mysql = require('mysql')
 const cors = require("cors");
+global.bcrypt = require('bcrypt')
+global.saltRounds = 10
 const { Router } = require("express");
 app.use(express.json());
 app.use(cors());
@@ -30,19 +32,24 @@ app.get("/login", (req, res) => {
   const password = req.body.password
   console.log(req.body);
   const sqlInsert = 
-  "SELECT * FROM usertable WHERE email = ? AND password = ?"
-  db.query(sqlInsert,  (err, result) => {
+  "SELECT * FROM usertable WHERE email = ?"
+  db.query(sqlInsert, [email], (err, result) => {
     if(err){
       return res.json({err: err});
     }
     else if (result != ""){
-      var user = JSON.parse(JSON.stringify(result));
-      var userInfo = { userID: user[0].uid, admin: user[0].role };
-      return res.json(userInfo);
+      bcrypt.compare(password, result[0].password, (error, response) => {
+        if(response){
+          var user = JSON.parse(JSON.stringify(result));
+          var userInfo = { userID: user[0].uid, role: user[0].role };
+          return res.json(userInfo);
+        } else{
+          return res.json({message: "Wrong username/password combination!"})
+        }
+      }) 
     } else{
-        return res.json({message: "Wrong username/password combination!"})
+        return res.json({message: "User doesn't exist!"})
     }
-
     
   });
 })
