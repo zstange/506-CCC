@@ -28,9 +28,9 @@ app.get("/api", (req, res) => {
 
 
 app.get("/login", (req, res) => {
-  const email = "email@gmail.com"
-  const password = "password"
-
+  const email = req.body.email
+  const password = req.body.password
+  console.log(req.body);
   const sqlInsert = 
   "SELECT * FROM usertable WHERE email = ?"
   db.query(sqlInsert, [email], (err, result) => {
@@ -58,8 +58,8 @@ app.post("/createAccount", customerController.createAcc)
 app.post("/addAppointment", customerController.addAppointment)
 app.post("/forgotPassword", customerController.forgotPassword)
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
 
-module.exports = router;
+module.exports = {server, app}
