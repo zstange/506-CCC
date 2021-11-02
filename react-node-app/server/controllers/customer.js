@@ -3,26 +3,34 @@ const customerController ={
 createAcc(req, res) {
     const firstName = req.body.firstName
     const lastName = req.body.lastName
-    const email = req.body.email
-    const password = req.body.password
+    const email = "email@gmail.com"
+    const password = "password"
     const phoneNumber = req.body.phoneNumber
+    const role = "user"
     const promotions = req.body.promotions
   
+   bcrypt.hash(password,saltRounds, (err, hash) =>{
+    if(err){
+      return res.send({err: err});
+    }
     const sqlInsert = 
-    "INSERT INTO usertable (firstName, lastName,email,password,phoneNumber,recievePromotions) VALUES (?,?,?,?,?,?);"
-    db.query(sqlInsert, [firstName, lastName,email,password,phoneNumber,promotions]
+    "INSERT INTO usertable (firstName, lastName,email,password,phoneNumber,role, recievePromotions) VALUES (?,?,?,?,?,?,?);"
+    db.query(sqlInsert, [firstName, lastName,email,hash,phoneNumber,role,promotions]
       , (err, result) => {
       if(err){
-        res.send({err: err});
+        return res.send({err: err});
       }
       else if (result != ""){
         var redir = { redirect: "/login" };
         return res.json(redir);
       }
       else{
-        res.send({message: "Please fill out all information required."})
+        return res.send({message: "Please fill out all information required."})
       }
     });
+   })
+   
+    
 },
 
 addAppointment(req, res){
