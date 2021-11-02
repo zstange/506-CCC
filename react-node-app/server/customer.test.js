@@ -1,24 +1,32 @@
-import { Express } from 'jest-express/lib/express';
-import { server } from './index.js';
+var request = require('supertest');
+const { server } = require('./index.js');
+const { app } = require('./index.js');
 
-let app;
 
-describe('Server', () => {
-  beforeEach(() => {
-    app = new Express();
-  });
+//jest.mock('./index.js');
 
-  afterEach(() => {
-    app.resetMocked();
-  });
+const mockDb = {
+  query: jest.fn().mockResolvedValueOnce("")
+};
 
-  test('should setup server', () => {
-    const options = {
-      port: 3001,
-    };
+afterEach(function () {
+  server.close();
+});
 
-    server(app, options);
+afterAll(() => {
+  jest.resetAllMocks();
+});
 
-    expect(app.set).toBeCalledWith('port', options.port);
-  });
+test('get \api', async() => {
+      const res = await request(server).get('/api');
+      const response = { message: "Hello from server!" }    
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual(response);
+});
+
+test('get \login', async() => {
+  const res = await request(server).get('/login');
+  const response = { message: "Hello from server!" }    
+  expect(res.status).toBe(200);
+  expect(res.body).toEqual(response);
 });

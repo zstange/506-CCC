@@ -51,8 +51,8 @@ app.post("/createAccount", customerController.createAcc)
 app.post("/addAppointment", customerController.addAppointment)
 app.post("/forgotPassword", customerController.forgotPassword)
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
 
-module.exports = router;
+module.exports = {server, app}
