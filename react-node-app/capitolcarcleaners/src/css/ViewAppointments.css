@@ -1,0 +1,46 @@
+@import url("https://use.typekit.net/tce1zir.css");
+.List {
+  min-height: 25vh;
+  width: 75rem;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  margin: "auto"
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.tabArea {
+  position: fixed;
+  left: calc(20vw + 5px);
+  top: 5px;
+}
+
+.createAccountHeaders {
+  text-align: center;
+  vertical-align: middle;
+  margin-bottom: 1px;
+  color: black;
+  font-family: factoria,serif;
+  font-weight: 100;
+  font-style: normal;
+}
+.createAccountLabels {
+  text-align: left;
+  vertical-align: left;
+  color: black;
+  font-family: factoria,serif;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.propertiesHeaderText {
+  color: black;
+  font-family: factoria,serif;
+  font-weight: 100;
+  font-style: normal;
+}
