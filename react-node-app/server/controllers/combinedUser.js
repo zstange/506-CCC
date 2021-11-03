@@ -2,6 +2,7 @@ const { db } = require('../db.js')
 const { bcrypt } = require('../hash.js')
 
 const combinedUserController = {
+    
 home(req, res) {
     res.json({ message: "Hello from server!" });
   },
