@@ -59,6 +59,27 @@ addAppointment(req, res){
         });
 },
 
+
+getAppointment(req, res){
+    const sqlInsert = 
+    "SELECT * FROM appointmenttable"
+    db.query(sqlInsert
+        , (err, result) => {
+            if(err){
+                res.send({err: err});
+              }
+              else if (result != ""){
+                var appointment = JSON.parse(JSON.stringify(result));
+				var appointmentInfo = { appointmentID: appointment[0].aid, userID: appointment[0].uid, vehicleID: appointment[0].vid,
+				dateTime: appointment[0].dateTime, service: appointment[0].service, additionalInfo: appointment[0].additionalInfo, status: appointment[0].status, };
+				return res.json(appointmentInfo);
+              }
+              else{
+                res.send({message: "cannot get appointment information"})
+              }
+        });
+},
+
 forgotPassword(req, res){
   const password = req.body.password
   const email = req.body.email
