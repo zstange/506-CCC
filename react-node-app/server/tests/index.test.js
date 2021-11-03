@@ -7,15 +7,15 @@ afterEach(function () {
   server.close();
 });
 
-test('get \api', async() => {
-      const res = await request(server).get('/api');
+test('get /', async() => {
+      const res = await request(server).get('/');
       const response = { message: "Hello from server!" }    
       expect(res.status).toBe(200);
       expect(res.body).toEqual(response);
 });
 
-test('get \login', async() => {
+test('get /login', async() => {
   const res = await request(server).get('/login');
   const response = "ER_PARSE_ERROR";    
-  expect(res.status).toBe(500);
+  expect(res.status).toBe(200);
 });

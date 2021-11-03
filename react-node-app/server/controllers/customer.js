@@ -1,4 +1,4 @@
-const { db } = require('../db.js')
+const  db  = require('../db.js')
 const { bcrypt, saltRounds} = require('../hash.js')
 
 const customerController ={
@@ -10,7 +10,6 @@ createAcc(req, res) {
     const phoneNumber = req.body.phoneNumber
     const role = "user"
     const promotions = req.body.promotions
-    const role = "user"
   
    bcrypt.hash(password,saltRounds, (err, hash) =>{
     if(err){
