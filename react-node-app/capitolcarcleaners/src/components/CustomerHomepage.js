@@ -252,7 +252,7 @@ class CustomerHomepage extends React.Component {
 
                             <div>
                                 <Calendar 
-                                    callBackFromCalendar={this.setClickedDate}
+                                    callBackFromCalendar={this.setClickedDate} // the state must match the call in child class. Then we call the (parent) function on the passed in data
                                     
                                 />
                             </div>						

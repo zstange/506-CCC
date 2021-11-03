@@ -14,13 +14,13 @@ class Calendar extends React.Component {
         dateObject: moment(),
         allmonths: moment.months(),
         showYearNav: false,
-        selectedDate: null
     };
-    this.clickedDate = React.createRef();
+    this.clickedDate = React.createRef(); // I don't think I need this
   } 
 
-  sendData(date) {
-    this.props.callBackFromCalendar(date);
+  // Rename this function to make more sense and update line 252
+  sendData(date) { 
+    this.props.callBackFromCalendar(date); // the props call must match the state in parent class
   }
 
   weekdayshort = moment.weekdaysShort();
