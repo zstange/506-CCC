@@ -96,6 +96,31 @@ checkEmail(req, res){
     }
   });
 
+},
+editAppointment(req, res){
+  const aid = req.body.aid
+  const vid = req.body.vid
+  const dateTime = req.body.dateTime
+  const service = req.body.service
+  const additionalInfo = req.body.additionalInfo
+  const status = "Not Ready"
+  const sqlInsert = 
+"UPDATE appointmenttable SET vid = ?, dateTime = ?, service = ?, additionalInfo = ?, status = ? WHERE aid = ?;"
+db.query(sqlInsert, [vid, dateTime, service, additionalInfo, status, aid], (err, result) => {
+
+  if(err){
+    res.send({err: err});
+  }
+  else if (result != ""){
+    var redir = { redirect: "/viewAppointment" };
+    return res.json(redir);
+  }
+  else{
+    res.send({message: "Please fill out all information required."})
+  }
+
+});
+
 }
 
 };
