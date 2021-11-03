@@ -17,11 +17,10 @@ class Calendar extends React.Component {
         selectedDate: null
     };
     this.clickedDate = React.createRef();
-    this.sendData = this.sendData.bind(this);
   } 
 
-  async sendData() {
-    await this.props.setClickedDate(this.clickedDate);
+  sendData(date) {
+    this.props.callBackFromCalendar(date);
   }
 
   weekdayshort = moment.weekdaysShort();
@@ -141,7 +140,6 @@ class Calendar extends React.Component {
       dateObject: dateObject,
       showMonthTable: !this.state.showMonthTable,
       showYearNav: !this.state.showYearNav,
-      showMonthTable: !this.state.showMonthTable
     });
   };
   onYearChange = e => {
@@ -150,8 +148,8 @@ class Calendar extends React.Component {
   getDates(startDate, stopDate) {
     var dateArray = [];
     var currentDate = moment(startDate);
-    var stopDate = moment(stopDate);
-    while (currentDate <= stopDate) {
+    var stopDate2 = moment(stopDate);
+    while (currentDate <= stopDate2) {
       dateArray.push(moment(currentDate).format("YYYY"));
       currentDate = moment(currentDate).add(1, "year");
     }
@@ -232,11 +230,11 @@ class Calendar extends React.Component {
     //console.log("DOW: "+dayOfWeek)
 
     // string value = "DOW YEAR-DAY-MONTH"
-    var selectedDate = ("" + dayOfWeekArray[dayOfWeek] + " " + computedDate)
+    var selectedDate = ("" + dayOfWeekArray[dayOfWeek] + " " + computedDate.toString())
     //console.log(clickedDate)
 
     // change condition to clickedDate
-    if((month !== null) && (year !== null) && (d !== null)) {
+    //if((month !== null) && (year !== null) && (d !== null)) {
       // would want these as props
       // this.setState(
       //   {
@@ -251,8 +249,8 @@ class Calendar extends React.Component {
       // );
 
       // Process CallBack?
-      //this.props.call
-    }
+    this.sendData(selectedDate)
+    //}
     
   };
   render() {

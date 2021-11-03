@@ -152,6 +152,7 @@ class CustomerHomepage extends React.Component {
             showAddVehicle: false,
             selectedDate: null,
         };
+        this.setClickedDate = this.setClickedDate.bind(this)
       } 
 
     getFirstName() {
@@ -188,7 +189,7 @@ class CustomerHomepage extends React.Component {
 
     async setClickedDate(date) {
         // Might need to convert the Date from a JSON Object to a string?
-        await this.setState({selectedDate: date})
+        this.setState({selectedDate: date})
     }
 
     render() {
