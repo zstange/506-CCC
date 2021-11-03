@@ -12,5 +12,6 @@ app.post("/forgotPassword", customerController.forgotPassword)
 app.post("/checkEmail", customerController.checkEmail)
 app.get("/getAppointment", customerController.getAppointment)
 app.post("/editAppointment", customerController.editAppointment)
+app.delete("/deleteAppointment", customerController.deleteAppointment)
 
 module.exports = {app}

@@ -142,6 +142,26 @@ db.query(sqlInsert, [vid, dateTime, service, additionalInfo, status, aid], (err,
 
 });
 
+},
+deleteAppointment(req, res){
+  const aid = req.body.aid
+  const sqlInsert = 
+"DELETE FROM appointmenttable WHERE aid = ?;"
+db.query(sqlInsert, [aid], (err, result) => {
+
+  if(err){
+    res.send({err: err});
+  }
+  else if (result != ""){
+    var redir = { redirect: "/viewAppointment" };
+    return res.json(redir);
+  }
+  else{
+    res.send({message: "Appointement is not found!"})
+  }
+
+});
+
 }
 
 };
