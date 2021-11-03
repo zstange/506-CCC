@@ -5,8 +5,8 @@ const customerController ={
 createAcc(req, res) {
     const firstName = req.body.firstName
     const lastName = req.body.lastName
-    const email = "email@gmail.com"
-    const password = "password"
+    const email = req.body.email
+    const password = req.body.password
     const phoneNumber = req.body.phoneNumber
     const role = "user"
     const promotions = req.body.promotions
