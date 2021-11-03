@@ -1,52 +1,96 @@
 import React, {useState} from "react"; 
-// import Axios from 'axios';
+import Axios from 'axios';
 import '../css/CreateAccount.css';
 import { Form, Button, Row, Col} from "react-bootstrap";
+import {LinkContainer as Link} from 'react-router-bootstrap'
+import { Redirect } from 'react-router-dom';
 
 function CreateAccountForm() {
     const [validated, setValidated] = useState(false);
-    const [contents, setContents] = useState({FirstName: "", LastName: "", Email: "", Password: "", PhoneNumber: "", Promotions: false});
+    const [contents, setContents] = useState({firstName: "", lastName: "", email: "", password: "", phoneNumber: "", receivePromotions: false});
     const [emailError, setEmailError] = useState("Please enter a valid email.")
     const [emailRegex, setEmailRegex] = useState("\\S*");
-
-    const handleSubmit = (event) => {
-
+    const [successMsg, setSuccessMsg] = useState("");
+    const [redirect, setRedirect] = useState(false);
+    const [disableSubmit, setDisableSubmit] = useState(false)
+    
+    const handleSubmit = async(event) => {
         const form = event.currentTarget;
+        event.preventDefault()
         if (form.checkValidity() === false) {
-        event.preventDefault();
-        event.stopPropagation();
+            event.preventDefault();
+            event.stopPropagation();
         }
         
         setValidated(true);
-        
-        // database check skeleton code, for the sake of example a@a will be an email that already has an account
 
-        if (contents.Email === "a@a") {// database check will be used as the if statement boolean 
-            setEmailRegex("^(?!"+contents.Email+"$).*$") // set regex to reject the email if it's already being used
-            setEmailError("This email is already being used.")
+        let emailExists = true; // assume email exists until proven otherwise
+
+        if (form.checkValidity()) { // check if form is properly formatted
+
+            // check if email exists
+            emailExists = await Axios.post("http://localhost:3001/checkEmail",{
+                email: contents.email,
+                }).then((response) => {
+                    if(response.data.err) {
+                        console.log(response.data.err)
+                    }
+                    else if (response.data.message) {
+                        console.log(response.data.err)
+                    } else {     
+                        return response.data.value
+                    }
+            });
+                
+            if (emailExists) {
+                setEmailRegex("^(?!"+contents.email+"$).*$") // set regex to reject the email if it's already being used
+                setEmailError("This email is already being used.");
+            }
+            else {
+                let data = contents;
+                data.phoneNumber = data.phoneNumber.replace(/[^\d]/g, ''); // clean up phone number
+                
+                // database population
+                Axios.post("http://localhost:3001/CreateAccount",{
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    password: data.password,
+                    email: data.email,
+                    phoneNumber: data.phoneNumber,
+                    role: "user",
+                    promotions: data.receivePromotions
+                }).then((response) => {
+                    if(response.data.err) { // print error messages
+                        console.log(response.data.err);
+                    }
+                    else if (response.data.message) { // print failure messages
+                        console.log(response.data.message);
+                    } else { // successful account creation
+                        setDisableSubmit(true)
+                        setSuccessMsg("Success, account created!") 
+                        // short time delay to let user see the success message
+                        setTimeout(() => {  setRedirect(true); }, 2000);
+                    }
+                });
+                         
+            }    
         }
-        else { // otherwise regex should work as normal (note the type=email within the form ensures emails are formatted correctly)
+        else { // badly formatted form
             setEmailRegex("\\S*"); 
-            setEmailError("Please enter a valid email.")
+            setEmailError("Please enter a valid email.");
         }
-        
-        // Output Caputured Data
-        if (form.checkValidity() === true) {
-            console.log("success")
-            // TODO
-            let data = contents;
-            data.PhoneNumber = data.PhoneNumber.replace(/[^\d]/g, ''); // clean up phone number
-            // insert database population here
-        }          
+     
     };
 
     const handleChange = (event) => {
-        if (event.target.id === "Promotions") {
+        if (event.target.id === "receivePromotions") {
             setContents({...contents, [event.target.id]: event.target.checked});
         }
         else {
-            if (event.target.id === "PhoneNumber") // format phone number changes
-                event.target.value = formatPhoneNumber(event.target.value);
+            if (event.target.id === "phoneNumber") // format phone number changes
+                event.target.value = formatphoneNumber(event.target.value);
+            else if (event.target.id === "email")
+                setEmailError("")
             setContents({...contents, [event.target.id]: event.target.value.trim()});
         }
     };
@@ -63,7 +107,7 @@ function CreateAccountForm() {
             <div >            
                 <Form noValidate validated={validated} onSubmit={handleSubmit}>
                     <h4 className="createAccountLabels mb-3">Personal Information:</h4>
-                    <Form.Group as={Row} className="mb-3" value = {contents.FirstName} controlId="FirstName" onChange = {handleChange}>
+                    <Form.Group as={Row} className="mb-3" value = {contents.firstName} controlId="firstName" onChange = {handleChange}>
                         <Form.Label column sm="3" className="createAccountLabels">First Name</Form.Label>
                         <Col sm="9" >
                             <Form.Control  
@@ -74,7 +118,7 @@ function CreateAccountForm() {
                         </Col>                    
                     </Form.Group>
 
-                    <Form.Group as={Row} className="mb-3" value = {contents.LastName} controlId="LastName" onChange = {handleChange}>
+                    <Form.Group as={Row} className="mb-3" value = {contents.lastName} controlId="lastName" onChange = {handleChange}>
                         <Form.Label column sm="3" className="createAccountLabels">Last Name</Form.Label>
                         <Col sm="9">
                             <Form.Control
@@ -85,7 +129,7 @@ function CreateAccountForm() {
                         </Col>                    
                     </Form.Group>
 
-                    <Form.Group as={Row} className="mb-3" value = {contents.Email} controlId="Email" onChange = {handleChange}>
+                    <Form.Group as={Row} className="mb-3" value = {contents.email} controlId="email" onChange = {handleChange}>
                         <Form.Label column sm="3" className="createAccountLabels">Email Address</Form.Label>
                         <Col sm="9">
                             <Form.Control 
@@ -98,7 +142,7 @@ function CreateAccountForm() {
                         </Col>            
                     </Form.Group>
 
-                    <Form.Group as={Row} className="mb-3" value = {contents.Password} controlId="Password" onChange = {handleChange}>
+                    <Form.Group as={Row} className="mb-3" value = {contents.password} controlId="password" onChange = {handleChange}>
                         <Form.Label column sm="3" className="createAccountLabels">Create Password</Form.Label>
                         <Col sm="9">
                             <Form.Control 
@@ -110,7 +154,7 @@ function CreateAccountForm() {
                         <Form.Control.Feedback type="invalid">Please enter a password.</Form.Control.Feedback>
                     </Form.Group>
 
-                    <Form.Group as={Row} className="mb-3" value = {contents.PhoneNumber} controlId="PhoneNumber" onChange = {handleChange}>
+                    <Form.Group as={Row} className="mb-3" value = {contents.phoneNumber} controlId="phoneNumber" onChange = {handleChange}>
                         <Form.Label column sm="3" className="createAccountLabels">Phone Number</Form.Label>
                         <Col sm="9">
                             <Form.Control
@@ -123,13 +167,19 @@ function CreateAccountForm() {
                         </Col>                    
                     </Form.Group>                  
                     <div>
-                        <input id = "Promotions" type="checkbox" onChange = {handleChange} /> - I would like to receive promotions
+                        <input id = "receivePromotions" type="checkbox" onChange = {handleChange} /> - I would like to receive promotions
                     </div>
-                    <Button className="m-4" type="submit" size="lg" style={{display: 'inline-block'}}>Submit</Button>          
+                    <div style={{color: "green"}}>
+                        {successMsg}
+                    </div>
+                    { redirect ? (<Redirect to={{ pathname: '/Login', state: {} }}/>) : null }
+                    <Button className="m-4" disabled = {disableSubmit} type="submit" size="lg" style={{display: 'inline-block'}}>Submit</Button> 
                 </Form>
                 
                 <div >
-                    <a href="/" id="cancel" name="cancel" className="btn btn-danger btn-lg" style={{display: 'inline-block'}}>Cancel</a>
+                    <Link to="/">
+                        <Button id="cancel" className="btn btn-danger btn-lg" style={{display: 'inline-block'}}>Cancel</Button>
+                    </Link>
                 </div>         
             </div>     
             </Row> 
@@ -138,7 +188,7 @@ function CreateAccountForm() {
 }
 
 // adds formating to phone number to make it look nicer in the form
-function formatPhoneNumber(phoneNumber) {
+function formatphoneNumber(phoneNumber) {
     let phoneNum = phoneNumber.replace(/[^\d]/g, '').trim(); 
     let final = "(";
     if (phoneNum.length === 0) {
@@ -161,14 +211,15 @@ function formatPhoneNumber(phoneNumber) {
 }
 
 class CreateAccount extends React.Component {
+
   render() {
     return (
-      <>
-        <div>
-          <Row>
+      <> 
+        <div className = "App">
+        <Row>   
             <CreateAccountForm/>
-          </Row>
-        </div>   
+        </Row>
+        </div> 
       </>
     );
   }

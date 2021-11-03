@@ -39,6 +39,7 @@ app.get("/login", (req, res) => {
 app.post("/createAccount", customerController.createAcc)
 app.post("/addAppointment", customerController.addAppointment)
 app.post("/forgotPassword", customerController.forgotPassword)
+app.post("/checkEmail", customerController.checkEmail)
 
 
 module.exports = {app}
