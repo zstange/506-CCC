@@ -162,6 +162,31 @@ db.query(sqlInsert, [aid], (err, result) => {
 
 });
 
+},
+addVehicle(req, res){
+  const uid = req.body.uid
+  const make = req.body.make
+  const model = req.body.model
+  const year = req.body.year
+  const color = req.body.color
+  const licensePlate = req.body.licensePlate
+  const additionalInfo = req.body.additionalInfo
+  const sqlInsert = 
+  "INSERT INTO vehicletable (uid, make, model, year, color, licensePlate, additionalInfo) VALUES (?,?,?,?,?,?,?);"
+  db.query(sqlInsert, [uid, make, model, year, color, licensePlate, additionalInfo]
+    , (err, result) => {
+      if(err){
+        return res.send({err: err});
+      }
+      else if (result != ""){
+        var redir = { redirect: "/viewVehicles" };
+        return res.json(redir);
+      }
+      else{
+        return res.send({message: "Please fill out all information required."})
+      }
+});
+
 }
 
 };
