@@ -59,7 +59,6 @@ addAppointment(req, res){
         });
 },
 
-
 getAppointments(req, res){
   const sqlInsert = 
   "SELECT * FROM appointmenttable"
