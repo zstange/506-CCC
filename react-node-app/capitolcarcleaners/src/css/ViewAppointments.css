@@ -14,6 +14,10 @@
   color: #61dafb;
 }
 
+.appointmentCard {
+  width: calc(20hw + 5px) 
+}
+
 .tabArea {
   position: fixed;
   left: calc(20vw + 5px);
