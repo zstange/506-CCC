@@ -8,10 +8,9 @@ import DatePicker from 'react-date-picker';
 function Appointments(props) {
     // assume user id is 25 for example
     let id = 25;
-    //dummy appointment table
 
     const [validated, setValidated] = useState(false)
-    const [contents, setContents] = useState({service: "", dateTime: "", vid: -1, additionalInfo: "", aid: ""});
+    const [contents, setContents] = useState({service: "", dateTime: "", vid: -1, additionalInfo: "", aid: -1});
     const [appointmentsTable, setAppointmentsTable] = useState([])
     const [userAppointments, setUserAppointments] = useState([])
     const [userVehicles, setUserVehicles] = useState([])
@@ -26,7 +25,7 @@ function Appointments(props) {
             // pull appointments table from the database
             let apps = [] // temporary array so we can set the table state later
 
-            await Axios.get("http://localhost:3001/getAppointmentTable",{
+            await Axios.get("http://localhost:3001/getAppointments",{
             }).then((response) => {
                 if(response.data.err) {
                     console.log(response.data.err)
@@ -36,7 +35,6 @@ function Appointments(props) {
                 } 
                 else {     
                     // populate temporary array with data
-                    // note to self: fix to not use .data.data and just .data
                     apps = Array(response.data.data)[0]
                 }
             });
@@ -82,19 +80,18 @@ function Appointments(props) {
         fetchTables()
     }, [id]);
 
+    // handle card button events
     const handleCardClick = (event) => {
+        let mode = event.target.id.substring(0, 6) // get mode from button id
+        let aid = event.target.id.substring(7, event.target.id.length) // get aid from the last portion of button id
 
-        let mode = event.target.id.substring(0, 6)
-        let aid = event.target.id.substring(7, event.target.id.length)
-
-        if (mode !== "schedu")  {
+        if (mode === "modify")  { // as long as we aren't deleting or scheduling a new appointment, populate contents
             let appIndex = 0;
             for (appIndex; appIndex < userAppointments.length; appIndex++) {
                 if (userAppointments[appIndex].aid === Number(aid)) {
                     let temp = contents
                     temp.service = "s"+userAppointments[appIndex].service.substring(1,userAppointments[appIndex].service.length)
-                    temp.dateTime = userAppointments[appIndex].dateTime.substring(0,4)
-                        +"-"+userAppointments[appIndex].dateTime.substring(5,7)+"-"+userAppointments[appIndex].dateTime.substring(8,10)
+                    temp.dateTime = userAppointments[appIndex].dateTime.substring(0,10)
                     temp.vid = Number(userAppointments[appIndex].vid)
                     temp.additionalInfo = userAppointments[appIndex].additionalInfo
                     temp.aid = userAppointments[appIndex].aid
@@ -102,25 +99,26 @@ function Appointments(props) {
                 }
             }
         }
-        else
-            setContents({service: "", dateTime: "", vid: -1, additionalInfo: "", aid: ""})
+        else // otherwise just make contents "blank"
+            setContents({service: "", dateTime: "", vid: -1, additionalInfo: "", aid: -1})
 
-        if (mode === "modify" || mode === "schedu")
+        if (mode === "modify" || mode === "schedu") // both modify and schedule appointments use the same modal
             showModifyModal(true)  
-        else
+        else // delete has its own special modal
             showDeleteModal(true)
         }
            
-
+    // handle modal button clicks
     const handleModalClick = (event) => {
-        let aid = contents.aid
+        let aid = contents.aid // get aid from contents array
+
         if (modifyModal) {
-            if (event.target.id === "modify_cancel") {
+            if (event.target.id === "modify_cancel") { // if we are canceling, just close the window
                 event.preventDefault();
                 showModifyModal(false)
                 setValidated(false)
             }
-            else { // confirm case, so we have to validate the form
+            else { // if we are confirming, we have to validate the form
                 const form = event.currentTarget;
                 event.preventDefault();
                 if (form.checkValidity() === false) {
@@ -131,43 +129,147 @@ function Appointments(props) {
 
                 // check if form is valid
                 if (form.checkValidity() === true) {
-                    // now check if chosen appointment date is okay (aka, fewer than 4 apps that day)
+                    // check if we have 4 or fewer appointments for the user's chosen day
                     let appNum = 0
                     console.log(contents.dateTime)
                     for (let i = 0; i < appointmentsTable.length; i++) {
                         if (appointmentsTable[i].dateTime.substring(0,10) === contents.dateTime)
                             appNum++
-                        if (appNum === 1) {
-                            console.log("badapp")
-                            setDateRegex("^(?!"+contents.dateTime+"$).*$")
-                            break;
-                        }    
+                        console.log(appNum)
+                        if (appNum === 4)                   
+                            break;    
                     }
-                    if (aid === "" && appNum > 1) {
-                        alert("populate with new app")
-                        setTimeout(() => {setValidated(false); showModifyModal(false); }, 1000);
+
+                    // if we have less than 4 and are scheduling a new appointment, populate a new appointment
+                    if (aid === -1 && appNum < 4) {                 
+                        Axios.post("http://localhost:3001/addAppointment",{
+                            uid: id,
+                            vid: contents.vid,
+                            dateTime: contents.dateTime+" 09:00:00",
+                            service: contents.service,
+                            additionalInfo: contents.additionalInfo
+                        }).then((response) => {
+                            if(response.data.err) {
+                                console.log(response.data.err)
+                            }
+                            else if (response.data.message) {
+                                console.log(response.data.err)
+                            } 
+                            else {     
+                                // note we also have to populate the appropriate tables here too, it's easier than repulling from the database
+                                // populate appointments table
+                                let newAppsTable = appointmentsTable
+                                let newApp = {
+                                    aid: aid,
+                                    vid: contents.vid,
+                                    dateTime: contents.dateTime+" 09:00:00",
+                                    service: contents.service,
+                                    additionalInfo: contents.additionalInfo
+                                }
+                                newAppsTable.push(newApp) // add new appointment to the table
+                                setAppointmentsTable(newAppsTable) // set appointmentsTable
+
+                                let newUserApps = userAppointments
+
+                                // note we still need to populate the vehicle info for the user appointment table
+                                newApp.make = null
+                                newApp.model = null
+                                newApp.year = null
+                                newApp.color = null
+                                newApp.licensePlate = null
+                                
+                                let j = 0; // search for the vehicle that the user chose
+                                for (j; j < userVehicles.length; j++) {
+                                    if (Number(contents.vid) === userVehicles[j].vid) {
+                                        newApp.make = userVehicles[j].make
+                                        newApp.model = userVehicles[j].model
+                                        newApp.year = userVehicles[j].year
+                                        newApp.color = userVehicles[j].color
+                                        newApp.licensePlate = userVehicles[j].licensePlate
+                                        break;
+                                    }
+                                }
+                                newUserApps.push(newApp) // add new appointment to user apps table
+                                setUserAppointments(newUserApps) // set state
+                                setTimeout(() => {setValidated(false); showModifyModal(false); }, 1000); //finished, give short time delay for feedback
+                            }
+                        });  
+
                     }
-                    else if (appNum > 1) {
-                        alert("update old app")
-                        setTimeout(() => {setValidated(false); showModifyModal(false); }, 1000);
+                    else if (aid !== -1 && appNum <= 4) { // modifying appointment case
+                        // edit appointment
+                        Axios.post("http://localhost:3001/editAppointment",{
+                            aid: contents.aid,
+                            vid: contents.vid,
+                            dateTime: contents.dateTime+" 09:00:00",
+                            service: contents.service,
+                            additionalInfo: contents.additionalInfo
+                        }).then((response) => {
+                            if(response.data.err) {
+                                console.log(response.data.err)
+                            }
+                            else if (response.data.message) {
+                                console.log(response.data.err)
+                            } 
+                            else {     
+                                // set user appointments table
+                                let i = 0; // appropriate index in user appointments table
+                                for (i; i < userAppointments.length; i++) {
+                                    if (userAppointments[i].aid === aid)
+                                        break;
+                                } 
+                                let newUserApps = userAppointments // set new appointment info
+                                newUserApps[i].aid = aid
+                                newUserApps[i].vid = contents.vid
+                                newUserApps[i].dateTime = contents.dateTime+" 09:00:00"
+                                newUserApps[i].service = contents.service
+                                newUserApps[i].additionalInfo = contents.additionalInfo
+                                setUserAppointments(newUserApps) // set user apps table
+
+                                // set appointments table
+                                let newAppsTable = appointmentsTable // search for aid in appointments table
+                                for (i = 0; i < appointmentsTable.length; i++) {
+                                    if (appointmentsTable[i].aid === aid)
+                                        break;
+                                }
+                                newAppsTable[i].aid = aid // set info
+                                newAppsTable[i].vid = contents.vid
+                                newAppsTable[i].dateTime = contents.dateTime+" 09:00:00"
+                                newAppsTable[i].service = contents.service
+                                newAppsTable[i].additionalInfo = contents.additionalInfo
+                                setAppointmentsTable(newAppsTable) // set appointments table
+                                // short time delay for feedback
+                                setTimeout(() => {setValidated(false); showModifyModal(false); }, 1000);
+                            }
+                        });  
                     }
-                    else {
-                        console.log("change error")
-                    }
-                    
-                    
+                    else // but if we have more than 4 appointments for the user's chosen day, set regex to reject it
+                        setDateRegex("^(?!"+contents.dateTime+"$).*$")               
                 }  
             }
         }
         else { // delete appointment case
             if (event.target.id === "delete_cancel")
-                showDeleteModal(false)
-            else {
+                showDeleteModal(false) // cancel lets us just close the modal
+            else { // otherwise remove the appointment from our database
+                Axios.post("http://localhost:3001/deleteAppointment",{
+                            aid: contents.aid
+                        }).then((response) => {
+                            if(response.data.err) {
+                                console.log(response.data.err)
+                            }
+                            else if (response.data.message) {
+                                console.log(response.data.err)
+                            } 
+                            else {     
+                                // set user appointments table
+                                showDeleteModal(false)
+                            }
+                });
+                // remove appointment from our tables
                 setAppointmentsTable(appointmentsTable.filter((appointment,index) => appointmentsTable[index].aid !== aid))
                 setUserAppointments(userAppointments.filter((appointment,index) => userAppointments[index].aid !== aid))
                 
-                alert("delete from database")
-                showDeleteModal(false)
             }
         }
     }
@@ -175,10 +277,6 @@ function Appointments(props) {
     const handleChange = (event) => {
         if (event.target.id === "vid")
             setContents({...contents, [event.target.id]: event.target.value})
-        else if (event.target.id === "dateTime") {
-            let tempString = String(event.target.value)
-            setContents({...contents, [event.target.id]: tempString})
-        }
         else
             setContents({...contents, [event.target.id]: event.target.value.trim()});
     }
@@ -191,6 +289,21 @@ function Appointments(props) {
         </Modal.Header>
         <Modal.Body>
             <p></p>
+            <Form >
+                <Form.Group as={Row} className="mb-3" controlId="dateTime" style = {{color: "white",position: "relative", bottom: "-125px", marginTop: "-50px"}}validated={false}>
+                    <Form.Label column sm="3" className="createAccountLabels">Date</Form.Label>
+                    <Col md="7" >
+                        <Form.Control  
+                            style = {{width: "240px", boxShadow: 'none',backgroundColor: 'rgba(0,0,0,0)', border:"0px"}}
+                            type = "date"
+                            min= {new Date().toISOString().slice(0, 10)}
+                            value = {contents.dateTime}
+                            onChange={handleChange}
+                        />
+                    </Col>      
+                   
+                        </Form.Group> 
+                </Form>
             <Form noValidate validated={validated} onSubmit={handleModalClick}>
                 <Form.Group as={Row} className="mb-3" controlId="service">
                     <Form.Label column sm="3" className="createAccountLabels">Service</Form.Label>
@@ -204,27 +317,11 @@ function Appointments(props) {
                         <Form.Control.Feedback type="invalid"></Form.Control.Feedback>
                     </Col>                           
                 </Form.Group>  
-
-
-                <Form.Group as={Row} className="mb-3" controlId="dateTime" >
-                    <Form.Label column sm="3" className="createAccountLabels">Date</Form.Label>
-                    <Col sm="7" >
-                        <Form.Control  
-                            required
-                            pattern = {dateRegex}
-                            value = {contents.dateTime}
-                            type = "date"
-                            placeholder=""
-                            onChange={handleChange}
-                        />
-                    </Col>      
-                    <Form.Label style = {{marginBottom: "-5px", marginTop: "3px", marginLeft: "140px"}} className="createAccountLabels">
-                        Vehicle drop off is at 9 AM</Form.Label>                 
-                </Form.Group> 
                 <Form.Group as={Row} className="mb-3" controlId="dateTime">
-                    <Form.Label column sm="3" className="createAccountLabels">Date REAL</Form.Label>
+                    <Form.Label column sm="3" className="createAccountLabels"></Form.Label>
                     <Col sm="7" >
                         <Form.Control  
+                            style = {{color: 'rgba(0,0,0,0)'}}
                             value = {contents.dateTime}
                             required
                             pattern = {dateRegex}
@@ -232,13 +329,13 @@ function Appointments(props) {
                             placeholder=""
                             onChange={handleChange}
                         />
-                        <Form.Control.Feedback type="invalid"></Form.Control.Feedback>
+                        <Form.Control.Feedback type="invalid">"No appointments avaliable on this day</Form.Control.Feedback>
                     </Col>                    
+                    <Form.Label style = {{marginBottom: "-5px", marginTop: "3px", marginLeft: "140px"}} className="createAccountLabels">
+                        Vehicle drop off is at 9 AM</Form.Label>   
                 </Form.Group>
-
-
-
-                <Form.Group as={Row} className="mb-3" controlId="vid">
+                
+                <Form.Group style = {{marginTop: "25px"}} as={Row} className="mb-3" controlId="vid">
                     <Form.Label column sm="3" className="createAccountLabels">Vehicle</Form.Label>
                     <Col sm="7" >
                         <Form.Select value = {contents.vid} aria-label="Default select example" className="mb-3" name="priority" required onChange={handleChange}>
@@ -248,7 +345,6 @@ function Appointments(props) {
                                     {vehicle.year+" "+vehicle.make+" "+vehicle.model+" "+vehicle.licensePlate+" "+vehicle.color}
                                 </option>;
                             })}
-                            
                         </Form.Select>
                         <Form.Control.Feedback type="invalid"></Form.Control.Feedback>
                     </Col>                           
@@ -295,15 +391,19 @@ function Appointments(props) {
 
     function GenerateAppsList(props) {
         let appointments = props.appointments
+        appointments.sort(function(a,b) { // sort appointments by date
+            return Number(new Date(a.dateTime) - new Date(b.dateTime))
 
+        });
         const GenerateList = appointments.map((appointment, index) =>
             <>
             <br></br>
             <Card id = {"card_"+appointment.aid} style = {{width: window.innerWidth/4 }}>
-            <Card.Header>{appointment.dateTime.substring(0,4)
-                        +"-"+appointment.dateTime.substring(5,7)+"-"+appointment.dateTime.substring(8,10)}</Card.Header>
+            <Card.Header> {appointment.dateTime.substring(5,7)+"/"+appointment.dateTime.substring(8,10)
+                +"/"+appointment.dateTime.substring(0,4)+" - 9 AM Drop Off"}
+            </Card.Header>
             <Card.Body >
-                <Card.Title>{appointment.service}</Card.Title>
+                <Card.Title>{"S"+appointment.service.substring(1,appointment.service.length)}</Card.Title>
                 
                 <ListGroup className="list-group-flush">
                     <ListGroupItem>{"Vehicle: "+appointment.year+" "+appointment.make+"-"+appointment.model}</ListGroupItem>
