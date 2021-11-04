@@ -1,7 +1,35 @@
 import React, {useState} from "react";
 import "../css/CustomerHomepage.css"
 import Calendar from "../components/Calendar"
+import Axios from 'axios';
 import { Form, Card, Button, Row, Col, Modal } from "react-bootstrap";
+
+/*
+ * Do we need a spot to change the option to receive promotions (true/false)?
+ */
+
+
+async function fetchVehicles() {
+    var vehicles = [];
+    
+    await Axios.get("http://localhost:3001/getVehicles",{
+
+    }).then((response) => {
+        if(response.data.err) {
+            console.log(response.data.err)
+        }
+        else if (response.data.message) {
+            console.log(response.data.err)
+        } 
+        else {     
+            // populate vehicle array with data
+            console.log(response.data)
+            vehicles.push(response.data) // probably not correct
+        }
+    });
+
+    return vehicles;
+}
 
 /*
  *  Vehicles() pulls the current user's vehicles that they have added to their acount.
@@ -11,22 +39,24 @@ import { Form, Card, Button, Row, Col, Modal } from "react-bootstrap";
 function Vehicles() {
     const [modal, showModal] = useState(false);
 
-    // Get the number of Vehicles the user has added to their account
-    // Iterate through the vehicles pulling there info
-    // If 0 vehicles added then display no vehicles
-    var numVehicles = 1//"Get number of vehicles"
+    //var vehicleList = fetchVehicles(UID);
 
-    if(numVehicles == 0){
-        return (
-            <>
-                <p>
-                    No vehicles have been added to your account.
-                </p>
-            </>
-        )
-    }
+    // Get the number of Vehicles the user has added to their account
+    // Iterate through the vehicleList pulling there info
+    // If 0 vehicles added then display no vehicles
+
+    // if(vehicleList == 0){
+    //     return (
+    //         <>
+    //             <p>
+    //                 No vehicles have been added to your account.
+    //             </p>
+    //         </>
+    //     )
+    // }
 
     // will need a way to iterate over all vehicles add to the user's account
+    // for(let i = 0, i < numVehicles; i++) { <return statement here> }
     return (
         <>
             <Row>
@@ -52,7 +82,8 @@ function Vehicles() {
                                 <Modal.Body>
                                     <p>Are you sure you want to remove this vehicle?</p>
                                     <div style={{textAlign: 'center'}}>
-                                        <Button variant="primary" size='sm' style={{margin: '5px'}} onClick={() => showModal(false)}>Confirm</Button>
+                                        {/* this needs to then call the backend to update if confirm is selected */}
+                                        <Button variant="primary" size='sm' style={{margin: '5px'}} onClick={() => showModal(false)}>Confirm</Button> 
                                         <Button variant="secondary" size='sm' style={{margin: '5px'}} onClick={() => showModal(false)}>Cancel</Button>
                                     </div>
                                 </Modal.Body>                   
@@ -156,6 +187,7 @@ class CustomerHomepage extends React.Component {
             showEditAppointment: false,
             showDeleteAppointment: false, // Not sure if needed
             selectedDate: null,
+            
         };
         this.setClickedDate = this.setClickedDate.bind(this)
       } 
@@ -220,8 +252,6 @@ class CustomerHomepage extends React.Component {
         // Might need to convert the Date from a JSON Object to a string?
         this.setState({selectedDate: date})
     }
-
-
 
     render() {
         return (
@@ -317,15 +347,12 @@ class CustomerHomepage extends React.Component {
                                     </Modal>
                             </div>
                             
-                            <div>
+                            <div> {/* this is for testing the calendar */}
                                 <p>Returned Date is: {this.state.selectedDate}</p>
-                            </div>	
-
-                            <div>
                                 <Calendar 
                                     callBackFromCalendar={this.setClickedDate} // the state must match the call in child class. Then we call the (parent) function on the passed in data                                    
                                 />
-                            </div>						
+                            </div>					
                         </div>                   
                     </div>
 
@@ -354,6 +381,7 @@ class CustomerHomepage extends React.Component {
                                             <Modal.Body>
                                                 <AddVehicles
                                                     showAddVehicle={this.state.showAddVehicle}
+                                                    
                                                  />
                                             </Modal.Body>                                            
                                         </Modal>
@@ -372,6 +400,7 @@ class CustomerHomepage extends React.Component {
 
                             <Row>
                                 <div>
+                                    {/* need to send UID? */}
                                     <Vehicles />
                                 </div>
                             </Row>
@@ -383,7 +412,7 @@ class CustomerHomepage extends React.Component {
     }
 }
   
-  export default CustomerHomepage;
+export default CustomerHomepage;
 
 
 
