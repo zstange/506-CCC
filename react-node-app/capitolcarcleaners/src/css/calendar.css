@@ -15,9 +15,9 @@
   height: auto;
   margin: 15px;
   padding: 0;
-  display: block;
+   display: block;
   overflow: hidden;
-  position: absolute;
+  position:inherit;  /* Changed : absolute to inherit allowed the calendar to be placed inside components nicely */
   border-collapse: separate;
   font-family: "Open Sans", Calibri, Arial, sans-serif;
   background-color: #ffffff;
@@ -136,7 +136,7 @@
   height: 29px;
   content: "";
   display: block;
-  position: absolute;
+  position: absolute; /* however this is needed  */
   border-width: 1px;
   border-style: solid;
   border-color: transparent;
@@ -152,9 +152,12 @@
 .tail-datetime-calendar .calendar-date table tbody tr > *:hover {
   color: #cd283c;
 }
-.tail-datetime-calendar .calendar-date table tbody tr > *:hover:after {
-  border-color: #cd283c;
-}
+/* Removing entire function from original as this creates a distracting red circle over hovered months
+ *  that does not line up nicely.
+  .tail-datetime-calendar .calendar-date table tbody tr > *:hover:after {
+    border-color: #cd283c;  red circle does not display correctly when selecting a month. It is not needed 
+  } 
+*/
 .tail-datetime-calendar .calendar-date table tbody tr > *.empty,
 .tail-datetime-calendar .calendar-date table tbody tr > *.disable {
   color: #8899aa;

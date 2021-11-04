@@ -1,3 +1,13 @@
+/*
+ |  React-calendar - A pure, vanilla JavaScript DateTime Picker
+ |  @author        krissnawat <https://github.com/krissnawat/react-calendar>
+ |                 Mosh Hamedani <https://programmingwithmosh.com/react/build-a-react-calendar-component-from-scratch/>
+ |
+ |  @license       N/A
+ |  @copyright     2015 - Programming with Mosh
+ |                 
+ */
+
 import React from "react";
 import moment from "moment";
 import "../css/calendar.css";
@@ -34,6 +44,9 @@ class Calendar extends React.Component {
   currentDay = () => {
     return this.state.dateObject.format("D");
   };
+  currentMonth = () => {
+    return this.state.dateObject.format("M")
+  }
   firstDayOfMonth = () => {
     let dateObject = this.state.dateObject;
     let firstDay = moment(dateObject)
@@ -205,7 +218,14 @@ class Calendar extends React.Component {
       </table>
     );
   };
+
+  // ** NEW ADDITION ** \\
+  // This entire method has been modified to return the select Day of the week,
+  // Day, Month, and Year. It previously only capurted the day ie. number that was 
+  // clicked.
+  // TODO: remove console.logs
   onDayClick = (e, d) => {
+    
     const monthArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ]
     const dayOfWeekArray = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     // console.log("E: " + e)
@@ -263,17 +283,25 @@ class Calendar extends React.Component {
     }
     let daysInMonth = [];
     for (let d = 1; d <= this.daysInMonth(); d++) {
+      // this logic doesn't make sense because it makes the day of today 'TODAY' for every month. ie 
+      // if it's actually NOV 4th. DEC 4th will also be highlighted.
+      // need to check if the current month in calendar is accurate and if not then don't assign "today"
       let currentDay = d == this.currentDay() ? "today" : "";
       // let selectedClass = (d == this.state.selectedDay ? " selected-day " : "")
       daysInMonth.push(
-        <td key={d} className={`calendar-day ${currentDay}`}>
-          <span
+        // ** NEW ADDITION ** \\
+        // Adding onClick inside the <td> makes more sense becuase if the user doesn't click the exact number
+        // the selection does not regitser. Placing here will encompass the entire box the number is surrounded by.
+        // ** NEW ADDITION ** \\
+        <td key={d} className={`calendar-day ${currentDay}`} onClick={e => {this.onDayClick(e,d);}}> 
+          {/* <span
             onClick={e => {
               this.onDayClick(e, d);
             }}
           >
             {d}
-          </span>
+          </span> */}
+          {d}
         </td>
       );
     }

@@ -43,7 +43,9 @@ function Vehicles() {
                             <Modal
                                 show={modal}
                                 onHide={() => showModal(false)}
-                                centered>
+                                centered
+                                backdrop="static"
+                            >
                                 <Modal.Header >
                                     <Modal.Title>Delete Vehicle</Modal.Title>
                                 </Modal.Header>
@@ -150,6 +152,9 @@ class CustomerHomepage extends React.Component {
         super(props);
         this.state = {
             showAddVehicle: false,
+            showAddAppointment: false,
+            showEditAppointment: false,
+            showDeleteAppointment: false, // Not sure if needed
             selectedDate: null,
         };
         this.setClickedDate = this.setClickedDate.bind(this)
@@ -187,10 +192,36 @@ class CustomerHomepage extends React.Component {
         this.setState({ showAddVehicle: false });
     }
 
+    openAddAppointment() {
+        this.setState({ showAddAppointment: true });
+    }
+
+    closeAddAppointment() {
+        this.setState({ showAddAppointment: false });
+    }
+
+    openEditAppointment() {
+        this.setState({ showEditAppointment: true });
+    }
+
+    closeEditAppointment() {
+        this.setState({ showEditAppointment: false });
+    }
+
+    openDeleteAppointment() {
+        this.setState({ showDeleteAppointment: true });
+    }
+
+    closeDeleteAppointment() {
+        this.setState({ showDeleteAppointment: false });
+    }
+
     async setClickedDate(date) {
         // Might need to convert the Date from a JSON Object to a string?
         this.setState({selectedDate: date})
     }
+
+
 
     render() {
         return (
@@ -241,9 +272,49 @@ class CustomerHomepage extends React.Component {
                                 <h3>Vehicle: </h3>                                
                             </div>
                             <div style={{textAlign:'center', margin: '10px'}}>
-                                <Button style={{margin: '5px'}}>Schedule Appointment</Button>
-                                <Button style={{margin: '5px'}}>Edit Existing Appointment</Button>
-                                <Button style={{margin: '5px'}}>Delete Appointment</Button>
+                                <Button onClick={() => this.openAddAppointment()} style={{margin: '5px'}}>Schedule Appointment</Button>
+                                    <Modal
+                                        show={this.state.showAddAppointment}
+                                        onHide={() => this.closeAddAppointment()}
+                                        centered
+                                        backdrop="static"
+                                    >
+                                        <Modal.Header closeButton>
+                                            <Modal.Title>Schedule Appointment:</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body>
+                                            {/* CALL TO SCHEDULE APPOINTMENT CLASS HERE */}
+                                            <Calendar callBackFromCalendar={this.setClickedDate} />
+                                        </Modal.Body>                                            
+                                    </Modal>
+                                <Button onClick={() => this.openEditAppointment()} style={{margin: '5px'}}>Edit Existing Appointment</Button>
+                                    <Modal
+                                        show={this.state.showEditAppointment}
+                                        onHide={() => this.closeEditAppointment()}
+                                        centered
+                                        backdrop="static"
+                                    >
+                                        <Modal.Header closeButton>
+                                            <Modal.Title>Edit Existing Appointment:</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body>
+                                            {/* CALL TO EDIT APPOINTMENT CLASS HERE */}
+                                        </Modal.Body>                                            
+                                    </Modal>
+                                <Button onClick={() => this.openDeleteAppointment()} style={{margin: '5px'}}>Delete Appointment</Button>
+                                    <Modal
+                                        show={this.state.showDeleteAppointment}
+                                        onHide={() => this.closeDeleteAppointment()}
+                                        centered
+                                        backdrop="static"
+                                    >
+                                        <Modal.Header closeButton>
+                                            <Modal.Title>Delete Appointment:</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body>
+                                            {/* CALL TO DELETE APPOINTMENT CLASS HERE */}
+                                        </Modal.Body>                                            
+                                    </Modal>
                             </div>
                             
                             <div>
@@ -252,8 +323,7 @@ class CustomerHomepage extends React.Component {
 
                             <div>
                                 <Calendar 
-                                    callBackFromCalendar={this.setClickedDate} // the state must match the call in child class. Then we call the (parent) function on the passed in data
-                                    
+                                    callBackFromCalendar={this.setClickedDate} // the state must match the call in child class. Then we call the (parent) function on the passed in data                                    
                                 />
                             </div>						
                         </div>                   
@@ -275,7 +345,9 @@ class CustomerHomepage extends React.Component {
                                         <Modal
                                             show={this.state.showAddVehicle}
                                             onHide={() => this.closeAddVehicle()}
-                                            centered>
+                                            centered
+                                            backdrop="static"
+                                        >
                                             <Modal.Header closeButton>
                                                 <Modal.Title>Add Personal Vehicle:</Modal.Title>
                                             </Modal.Header>
