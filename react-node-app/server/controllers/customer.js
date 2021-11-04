@@ -80,6 +80,24 @@ getAppointment(req, res){
         });
 },
 
+getUsers(req, res){
+    const sqlInsert = 
+    "SELECT * FROM usertable"
+    db.query(sqlInsert
+        , (err, result) => {
+            if(err){
+                res.send({err: err});
+              }
+              else if (result != ""){
+                var user = JSON.parse(JSON.stringify(result));
+				return res.json(user);
+              }
+              else{
+                res.send({message: "cannot get user information"})
+              }
+        });
+},
+
 forgotPassword(req, res){
   const password = req.body.password
   const email = req.body.email

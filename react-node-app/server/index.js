@@ -11,6 +11,7 @@ app.post("/addAppointment", customerController.addAppointment)
 app.post("/forgotPassword", customerController.forgotPassword)
 app.post("/checkEmail", customerController.checkEmail)
 app.get("/getAppointment", customerController.getAppointment)
+app.get("/getUsers", customerController.getUsers)
 app.post("/editAppointment", customerController.editAppointment)
 app.delete("/deleteAppointment", customerController.deleteAppointment)
 
