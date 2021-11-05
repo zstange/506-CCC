@@ -85,7 +85,7 @@ function Appointments(props) {
         let mode = event.target.id.substring(0, 6) // get mode from button id
         let aid = event.target.id.substring(7, event.target.id.length) // get aid from the last portion of button id
 
-        if (mode === "modify")  { // as long as we aren't deleting or scheduling a new appointment, populate contents
+        if (mode !== "schedu")  { // as long as we aren't scheduling a new appointment, populate contents
             let appIndex = 0;
             for (appIndex; appIndex < userAppointments.length; appIndex++) {
                 if (userAppointments[appIndex].aid === Number(aid)) {
@@ -111,7 +111,6 @@ function Appointments(props) {
     // handle modal button clicks
     const handleModalClick = (event) => {
         let aid = contents.aid // get aid from contents array
-
         if (modifyModal) {
             if (event.target.id === "modify_cancel") { // if we are canceling, just close the window
                 event.preventDefault();
@@ -131,11 +130,9 @@ function Appointments(props) {
                 if (form.checkValidity() === true) {
                     // check if we have 4 or fewer appointments for the user's chosen day
                     let appNum = 0
-                    console.log(contents.dateTime)
                     for (let i = 0; i < appointmentsTable.length; i++) {
                         if (appointmentsTable[i].dateTime.substring(0,10) === contents.dateTime)
                             appNum++
-                        console.log(appNum)
                         if (appNum === 4)                   
                             break;    
                     }
@@ -266,7 +263,7 @@ function Appointments(props) {
                 showDeleteModal(false) // cancel lets us just close the modal
             else { // otherwise remove the appointment from our database
                 Axios.post("http://localhost:3001/deleteAppointment",{
-                            aid: contents.aid
+                            aid: aid
                         }).then((response) => {
                             if(response.data.err) {
                                 console.log(response.data.err)
@@ -275,13 +272,13 @@ function Appointments(props) {
                                 console.log(response.data.err)
                             } 
                             else {     
-                                // set user appointments table
+                                // remove appointment from our table
+                                let tempnew= appointmentsTable.filter((appointment,index) => appointmentsTable[index].aid !== aid)
+                                setAppointmentsTable(tempnew)
+                                setUserAppointments(userAppointments.filter((appointment,index) => userAppointments[index].aid !== aid))
                                 showDeleteModal(false)
                             }
                 });
-                // remove appointment from our tables
-                setAppointmentsTable(appointmentsTable.filter((appointment,index) => appointmentsTable[index].aid !== aid))
-                setUserAppointments(userAppointments.filter((appointment,index) => userAppointments[index].aid !== aid))
                 
             }
         }
@@ -389,7 +386,7 @@ function Appointments(props) {
         <Modal.Body>
             <p>Are you sure you want to delete this appointment?</p>
                 <div style={{textAlign: 'center'}}>
-                    <Button id="delete_confir" variant="primary" size='sm' style={{margin: '5px'}} onClick={handleModalClick}>Confirm</Button>
+                    <Button id={"delete_"+contents.aid} variant="primary" size='sm' style={{margin: '5px'}} onClick={handleModalClick}>Confirm</Button>
                     <Button id="delete_cancel" variant="secondary" size='sm' style={{margin: '5px'}} onClick={handleModalClick}>Cancel</Button>
                 </div>
         </Modal.Body>                   
