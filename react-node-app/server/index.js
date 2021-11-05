@@ -16,4 +16,5 @@ app.post("/editAppointment", customerController.editAppointment)
 app.post("/addVehicle", customerController.addVehicle)
 app.post("/deleteAppointment", customerController.deleteAppointment)
 app.post("/deleteVehicle", customerController.deleteVehicle)
+app.get("/getUser", customerController.getUser)
 module.exports = {app}
