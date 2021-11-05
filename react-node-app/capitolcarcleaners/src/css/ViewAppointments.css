@@ -1,16 +1,21 @@
 @import url("https://use.typekit.net/tce1zir.css");
-.App {
-  text-align: center;
-  min-height: 100vh;
+.List {
+  min-height: 25vh;
+  width: 75rem;
   display:flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: black;
+  margin: "auto"
 }
 
 .App-link {
   color: #61dafb;
+}
+
+.appointmentCard {
+  width: calc(20hw + 5px) 
 }
 
 .tabArea {
@@ -30,7 +35,7 @@
 }
 .createAccountLabels {
   text-align: left;
-  vertical-align: middle;
+  vertical-align: left;
   color: black;
   font-family: factoria,serif;
   font-weight: 100;
