@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import "../css/CustomerHomepage.css"
 import Calendar from "../components/Calendar"
+import ViewAppointments from "./ViewAppointments";
 import Axios from 'axios';
 import { Form, Card, Button, Row, Col, Modal } from "react-bootstrap";
 
@@ -285,7 +286,7 @@ class CustomerHomepage extends React.Component {
                         <br />
 
                         {/* Upcoming Appointments Section */}
-                        <div className="border p-3">
+                        {/*<div className="border p-3">
                             <h3 className="sectionAccTitle">Upcoming Appointments:</h3>
                             <hr 
                                 style= {{
@@ -295,7 +296,7 @@ class CustomerHomepage extends React.Component {
                                 }}
                             />
                             <div className="sectionAcctBody">
-                                {/* Need to call another componet to get all upcoming appointment information. */}
+                                {/* Need to call another componet to get all upcoming appointment information. 
                                 <h3>Day: </h3>
                                 <h3>Month: </h3>
                                 <h3>Year: </h3>
@@ -313,7 +314,7 @@ class CustomerHomepage extends React.Component {
                                             <Modal.Title>Schedule Appointment:</Modal.Title>
                                         </Modal.Header>
                                         <Modal.Body>
-                                            {/* CALL TO SCHEDULE APPOINTMENT CLASS HERE */}
+                                            {/* CALL TO SCHEDULE APPOINTMENT CLASS HERE 
                                             <Calendar callBackFromCalendar={this.setClickedDate} />
                                         </Modal.Body>                                            
                                     </Modal>
@@ -328,7 +329,7 @@ class CustomerHomepage extends React.Component {
                                             <Modal.Title>Edit Existing Appointment:</Modal.Title>
                                         </Modal.Header>
                                         <Modal.Body>
-                                            {/* CALL TO EDIT APPOINTMENT CLASS HERE */}
+                                            {/* CALL TO EDIT APPOINTMENT CLASS HERE
                                         </Modal.Body>                                            
                                     </Modal>
                                 <Button onClick={() => this.openDeleteAppointment()} style={{margin: '5px'}}>Delete Appointment</Button>
@@ -342,18 +343,18 @@ class CustomerHomepage extends React.Component {
                                             <Modal.Title>Delete Appointment:</Modal.Title>
                                         </Modal.Header>
                                         <Modal.Body>
-                                            {/* CALL TO DELETE APPOINTMENT CLASS HERE */}
+                                            {/* CALL TO DELETE APPOINTMENT CLASS HERE 
                                         </Modal.Body>                                            
                                     </Modal>
-                            </div>
+                            </div> */}
                             
-                            <div> {/* this is for testing the calendar */}
+                            {/* <div> {/* this is for testing the calendar 
                                 <p>Returned Date is: {this.state.selectedDate}</p>
                                 <Calendar 
                                     callBackFromCalendar={this.setClickedDate} // the state must match the call in child class. Then we call the (parent) function on the passed in data                                    
                                 />
-                            </div>					
-                        </div>                   
+                            </div>					 */}
+                        {/* </div>                    */}
                     </div>
 
                     <div className='col-lg-7 col-xs-5 mx-4'>
@@ -406,6 +407,10 @@ class CustomerHomepage extends React.Component {
                             </Row>
                         </div>
                     </div>
+                </Row>
+                <Row>
+                <h3 className="sectionAccTitle">Upcoming Appointments:</h3>
+                     <ViewAppointments/>
                 </Row>
             </>
          );
