@@ -27,20 +27,34 @@ function Header() {
                 </Link>
                 <Navbar.Collapse id="basic-navbar-nav">
                   <Nav className="container-fluid">
-                    <Link to="/CreateAccount">
-                        <Nav.Link>Create Account</Nav.Link>
+                    <Link to="/">
+                        <Nav.Link disabled>Complete Auto Detailing</Nav.Link>
                     </Link>
-                    <Link to="/ForgotPassword">
-                        <Nav.Link>Forgot Password</Nav.Link>
+                    <Link to="/">
+                        <Nav.Link disabled>Interior Cleaning</Nav.Link>
                     </Link>
-                    <Link to="/CustomerHomepage">
-                        <Nav.Link>Customer Homepage</Nav.Link>
+                    <Link to="/">
+                        <Nav.Link disabled>Exterior Cleaning</Nav.Link>
+                    </Link>
+                    <Link to="/">
+                        <Nav.Link disabled>Odor Removal</Nav.Link>
                     </Link>
                     <NavDropdown title="Other Services" id="basic-nav-dropdown">
-                      <NavDropdown.Item >Service 1</NavDropdown.Item>
-                      <NavDropdown.Item >Service 2</NavDropdown.Item>
-                      <NavDropdown.Item >Service 3</NavDropdown.Item>
+                      <NavDropdown.Item>Rust Proofing</NavDropdown.Item>
+                      <NavDropdown.Item>Ceramic Coating</NavDropdown.Item>
+                      <NavDropdown.Item>Motorcycle Detailing</NavDropdown.Item>
+                      <NavDropdown.Item>Boat Detailing</NavDropdown.Item>
+                      <NavDropdown.Item>Window Blind Cleaning</NavDropdown.Item>
                     </NavDropdown>
+                    <Link to="/">
+                        <Nav.Link disabled>Cars for Sale!</Nav.Link>
+                    </Link>
+                    <Link to="/">
+                        <Nav.Link disabled>Contact Us</Nav.Link>
+                    </Link>
+                    <Link to="/">
+                        <Nav.Link disabled>Gallery</Nav.Link>
+                    </Link>
                     <Nav.Item className="ms-auto">
                     <Link to="/Login">
                       <Nav.Link>Login/Sign Up</Nav.Link>
