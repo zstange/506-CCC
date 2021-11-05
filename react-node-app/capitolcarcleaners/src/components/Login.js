@@ -20,7 +20,7 @@ function LoginPage(props) {
     
     // Output Caputured Data
     if (form.checkValidity() === true) {
-
+      event.preventDefault();
       Axios.post("http://localhost:3001/login",{
         email: event.target.elements.email.value,
         password: event.target.elements.password.value,
