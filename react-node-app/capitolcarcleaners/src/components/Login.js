@@ -33,7 +33,6 @@ function LoginPage(props) {
             alert(response.data.message);
           } 
           else {
-            alert("HELLO?")
             setRedirect(true);
           }
         });
