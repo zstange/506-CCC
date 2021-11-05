@@ -17,6 +17,7 @@ function Appointments(props) {
     const [modifyModal, showModifyModal] = useState(false)
     const [deleteModal, showDeleteModal] = useState(false)
     const [dateRegex, setDateRegex] = useState("\\S*")
+    const [allowSubmit,disableSubmit] = useState(false)
 
     useEffect(() => {
         // useEffect lets us fetch tables once the page is finished loading
@@ -82,6 +83,7 @@ function Appointments(props) {
 
     // handle card button events
     const handleCardClick = (event) => {
+        disableSubmit(false)
         let mode = event.target.id.substring(0, 6) // get mode from button id
         let aid = event.target.id.substring(7, event.target.id.length) // get aid from the last portion of button id
 
@@ -110,13 +112,14 @@ function Appointments(props) {
            
     // handle modal button clicks
     const handleModalClick = (event) => {
+        disableSubmit(true)
         let aid = contents.aid // get aid from contents array
-
         if (modifyModal) {
             if (event.target.id === "modify_cancel") { // if we are canceling, just close the window
                 event.preventDefault();
                 showModifyModal(false)
                 setValidated(false)
+                
             }
             else { // if we are confirming, we have to validate the form
                 const form = event.currentTarget;
@@ -243,8 +246,10 @@ function Appointments(props) {
                             }
                         });  
                     }
-                    else // but if we have more than 4 appointments for the user's chosen day, set regex to reject it
-                        setDateRegex("^(?!"+contents.dateTime+"$).*$")               
+                    else {
+                        // but if we have more than 4 appointments for the user's chosen day, set regex to reject it
+                        setDateRegex("^(?!"+contents.dateTime+"$).*$")   
+                    } 
                 }  
             }
         }
@@ -268,10 +273,10 @@ function Appointments(props) {
                 });
                 // remove appointment from our tables
                 setAppointmentsTable(appointmentsTable.filter((appointment,index) => appointmentsTable[index].aid !== aid))
-                setUserAppointments(userAppointments.filter((appointment,index) => userAppointments[index].aid !== aid))
-                
+                setUserAppointments(userAppointments.filter((appointment,index) => userAppointments[index].aid !== aid))       
             }
         }
+        
     }
 
     const handleChange = (event) => {
@@ -361,7 +366,7 @@ function Appointments(props) {
                     </Col>                           
                 </Form.Group> 
                 <div style={{textAlign: 'center'}}>
-                    <Button type = "submit" variant="primary" size='sm' style={{margin: '5px'}}>Confirm</Button>
+                    <Button type = "submit" disabled = {allowSubmit} variant="primary" size='sm' style={{margin: '5px'}}>Confirm</Button>
                     
                 </div>             
                 <Button id="modify_cancel" variant="secondary" size='sm' style={{margin: '5px'}} onClick={handleModalClick}>Cancel</Button>                        
@@ -376,7 +381,7 @@ function Appointments(props) {
         <Modal.Body>
             <p>Are you sure you want to delete this appointment?</p>
                 <div style={{textAlign: 'center'}}>
-                    <Button id="delete_confir" variant="primary" size='sm' style={{margin: '5px'}} onClick={handleModalClick}>Confirm</Button>
+                    <Button id="delete_confir" disabled = {allowSubmit} variant="primary" size='sm' style={{margin: '5px'}} onClick={handleModalClick}>Confirm</Button>
                     <Button id="delete_cancel" variant="secondary" size='sm' style={{margin: '5px'}} onClick={handleModalClick}>Cancel</Button>
                 </div>
         </Modal.Body>                   

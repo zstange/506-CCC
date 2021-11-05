@@ -12,9 +12,10 @@ function CreateAccountForm() {
     const [emailRegex, setEmailRegex] = useState("\\S*");
     const [successMsg, setSuccessMsg] = useState("");
     const [redirect, setRedirect] = useState(false);
-    const [disableSubmit, setDisableSubmit] = useState(false)
+    const [allowSubmit,disableSubmit] = useState(false)
     
     const handleSubmit = async(event) => {
+        disableSubmit(true)
         const form = event.currentTarget;
         event.preventDefault()
         if (form.checkValidity() === false) {
@@ -66,20 +67,20 @@ function CreateAccountForm() {
                     else if (response.data.message) { // print failure messages
                         console.log(response.data.message);
                     } else { // successful account creation
-                        setDisableSubmit(true)
+                        
                         setSuccessMsg("Success, account created!") 
                         // short time delay to let user see the success message
                         setTimeout(() => {  setRedirect(true); }, 2000);
+                        disableSubmit(true)
                     }
                 });
-                         
             }    
         }
         else { // badly formatted form
             setEmailRegex("\\S*"); 
-            setEmailError("Please enter a valid email.");
+            setEmailError("Please enter a valid email."); 
         }
-     
+        
     };
 
     const handleChange = (event) => {
@@ -173,7 +174,7 @@ function CreateAccountForm() {
                         {successMsg}
                     </div>
                     { redirect ? (<Redirect to={{ pathname: '/Login', state: {} }}/>) : null }
-                    <Button className="m-4" disabled = {disableSubmit} type="submit" size="lg" style={{display: 'inline-block'}}>Submit</Button> 
+                    <Button className="m-4" disabled = {allowSubmit} type="submit" size="lg" style={{display: 'inline-block'}}>Submit</Button> 
                 </Form>
                 
                 <div >
