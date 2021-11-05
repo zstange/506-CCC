@@ -224,6 +224,19 @@ function Appointments(props) {
                                 newUserApps[i].dateTime = contents.dateTime+" 09:00:00"
                                 newUserApps[i].service = contents.service
                                 newUserApps[i].additionalInfo = contents.additionalInfo
+
+                                let j = 0; // search for the vehicle that the user chose
+                                for (j; j < userVehicles.length; j++) {
+                                    if (Number(contents.vid) === userVehicles[j].vid) {
+                                        newUserApps[i].make = userVehicles[j].make
+                                        newUserApps[i].model = userVehicles[j].model
+                                        newUserApps[i].year = userVehicles[j].year
+                                        newUserApps[i].color = userVehicles[j].color
+                                        newUserApps[i].licensePlate = userVehicles[j].licensePlate
+                                        break;
+                                    }
+                                }
+
                                 setUserAppointments(newUserApps) // set user apps table
 
                                 // set appointments table
