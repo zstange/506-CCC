@@ -16,7 +16,7 @@ test('get /', async() => {
       const response = await request.get('/');
       const expected = { message: "Hello from server!" }  
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(expected);
+      expect(response.body).toStrictEqual(expected);
 });
 
 
@@ -24,7 +24,7 @@ test('get /login with no info', async () => {
   const response = await request.post('/login');
   const expected = {message: "User doesn't exist!"};
   expect(response.status).toBe(200);
-  expect(response.body).toEqual(expected);
+  expect(response.body).toStrictEqual(expected);
 });
 
 
@@ -34,8 +34,7 @@ test('get /login with wrong info for password', async () => {
   email: 'ejpark@wisc.edu', 
   password: 'wrong'
    });
-   console.log(response.body);
-   expect(response.body).toEqual(expected);
+   expect(response.body).toStrictEqual(expected);
    expect(response.status).toBe(200);
 });
 
@@ -45,6 +44,6 @@ test('get /login with correct info', async () => {
   email: 'fake', 
   password: 'pwd'
    });
-   expect(response.body).toEqual(expected);
+   expect(response.body).toStrictEqual(expected);
    expect(response.status).toBe(200);
 });
