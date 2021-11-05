@@ -21,7 +21,7 @@ ReactDOM.render(
         <Route path="/CreateAccount" component={CreateAccount} />
         <Route path="/ForgotPassword" component={ForgotPassword} />
         <Route path="/ViewAppointments" component={ViewAppointments} />
-      </Switch>
+     </Switch>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

@@ -1,0 +1,29 @@
+@import url("https://use.typekit.net/tce1zir.css");
+
+.containerLogo {
+    max-width: 430px;
+}
+
+.navBarLogo {
+    text-align: start;
+    font-family: factoria,serif;
+    font-weight: 100;
+    font-style: normal;
+}
+.navBarLinkTitles {
+    justify-content: end;
+    font-family: factoria,serif;
+    font-weight: 100;
+    font-style: normal;
+    font-size: 20px;
+    text-align: center;
+}
+
+.sectionAccTitle{
+    text-align: left;
+}
+
+.sectionAcctBody {
+    margin-left: 15px;
+    text-align: left;
+}
