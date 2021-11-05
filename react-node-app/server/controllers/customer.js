@@ -95,19 +95,34 @@ forgotPassword(req, res){
   const password = req.body.password
   const email = req.body.email
   const sqlInsert = 
-        "UPDATE usertable SET password = ? WHERE email = ?";
-  db.query(sqlInsert, [password, email]
-      , (err, result) => {
+    "SELECT * FROM usertable WHERE email = ?"
+    db.query(sqlInsert, [email], (err, result) => {
+      if(err){
+        return res.json({err: err});
+      }
+      else if (result != ""){
+        bcrypt.hash(password,saltRounds, (err, hash) =>{
           if(err){
-              res.send({err: err});
+            return res.send({err: "cannot hash password"});
+          }
+          const sqlInsert = 
+          "UPDATE usertable SET password = ? WHERE email = ?";
+          db.query(sqlInsert, [hash,email]
+            , (err, result) => {
+            if(err){
+              return res.send({err: "db query error"});
             }
             else if (result != ""){
               var redir = { redirect: "/login" };
               return res.json(redir);
             }
-            else{
-              res.send({message: "Please fill out all information required."})
-            }
+          });
+         })
+      }
+      else{
+        res.send({message: "Please fill out all information required."})
+      }
+
       });
 },
 
