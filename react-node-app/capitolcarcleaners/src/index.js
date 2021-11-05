@@ -5,6 +5,7 @@ import Header from './components/Header';
 import CreateAccount from './components/CreateAccount';
 import ForgotPassword from './components/ForgotPassword';
 import Home from './components/Home';
+import CustomerHomepage from './components/CustomerHomepage';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -17,6 +18,7 @@ ReactDOM.render(
         <Route exact path="/" component={Home} />
         <Route path="/CreateAccount" component={CreateAccount} />
         <Route path="/ForgotPassword" component={ForgotPassword} />
+        <Route path="/CustomerHomepage" component={CustomerHomepage} />
       </Switch>
     </BrowserRouter>
   </React.StrictMode>,
