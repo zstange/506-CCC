@@ -149,8 +149,6 @@ function Appointments(props) {
                     for (let i = 0; i < appointmentsTable.length; i++) {
                         if (appointmentsTable[i].dateTime.substring(0,10) === contents.dateTime)
                             appNum++
-                        if (appNum === 4)                   
-                            break;    
                     }
 
                     // if we have less than 4 and are scheduling a new appointment, populate a new appointment
@@ -276,7 +274,9 @@ function Appointments(props) {
                         setDateRegex("^(?!"+contents.dateTime+"$).*$")   
                     } 
                 }  
-                disableSubmit(false)
+                else {
+                    disableSubmit(false)
+                } 
             }
         }
         else { // delete appointment case
@@ -392,9 +392,9 @@ function Appointments(props) {
                 </Form.Group> 
                 <div style={{textAlign: 'center'}}>
                     <Button type = "submit" disabled = {allowSubmit} variant="primary" size='sm' style={{margin: '5px'}}>Confirm</Button>
-                    
+                    <Button id="modify_cancel" variant="secondary" size='sm' style={{margin: '5px'}} onClick={handleModalClick}>Cancel</Button>  
                 </div>             
-                <Button id="modify_cancel" variant="secondary" size='sm' style={{margin: '5px'}} onClick={handleModalClick}>Cancel</Button>                        
+                                     
             </Form>    
             
         </Modal.Body>                   
