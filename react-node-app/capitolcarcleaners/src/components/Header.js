@@ -33,6 +33,9 @@ function Header() {
                     <Link to="/ForgotPassword">
                         <Nav.Link>Forgot Password</Nav.Link>
                     </Link>
+                    <Link to="/CustomerHomepage">
+                        <Nav.Link>Customer Homepage</Nav.Link>
+                    </Link>
                     <NavDropdown title="Other Services" id="basic-nav-dropdown">
                       <NavDropdown.Item >Service 1</NavDropdown.Item>
                       <NavDropdown.Item >Service 2</NavDropdown.Item>
