@@ -1,11 +1,13 @@
 import React, {useState} from "react"; 
-// import Axios from 'axios';
+import Axios from 'axios';
 import '../css/Login.css';
 import { Form, Button, Row, Col} from "react-bootstrap";
 import {LinkContainer as Link} from 'react-router-bootstrap'
+import { Redirect } from 'react-router-dom';
 
 function LoginPage(props) {
   const [validated, setValidated] = useState(false);
+  const [redirect, setRedirect] = useState(false);
 
   const handleSubmit = (event) => {
     const form = event.currentTarget;
@@ -18,20 +20,22 @@ function LoginPage(props) {
     
     // Output Caputured Data
     if (form.checkValidity() === true) {
-      // console.log(event.target.elements.password.value)
-      // console.log(event.target.elements.email.value)
-
-      // Axios.post("http://localhost:3001/login",{
-      //   email: event.target.elements.email.value,
-      //   password: event.target.elements.password.value,
-      //   }).then((response) => {
-      //     if(response.data.err){
-      //       alert(response.data.err);
-      //     }
-      //     else if (response.data.message){
-      //       alert(response.data.message);
-      //     }
-      //   });
+      event.preventDefault();
+      Axios.post("http://localhost:3001/login",{
+        email: event.target.elements.email.value,
+        password: event.target.elements.password.value,
+        }).then((response) => {
+          console.log(response)
+          if(response.data.err){
+            alert(response.data.err);
+          } 
+          else if (response.data.message){
+            alert(response.data.message);
+          } 
+          else {
+            setRedirect(true);
+          }
+        });
       
       }
     }   
@@ -65,6 +69,7 @@ function LoginPage(props) {
                       </Col>                    
                   </Form.Group>
 
+                  { redirect ? (<Redirect to={{ pathname: '/CustomerHomepage'}}/>) : null }
                   <Button className="m-4" type="submit" style={{display: 'inline-block'}}>Submit</Button>  
                       
               </Form>  
