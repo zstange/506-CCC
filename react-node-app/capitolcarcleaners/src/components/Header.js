@@ -7,7 +7,7 @@ function Header() {
       <Row className="header">
         <Col lg={2}>
           <Row className="justify-content-center">
-            <Image src="logo192.png" style={{width: '80%'}}/>
+            <Image src="CarLogo.png" style={{width: '80%'}}/>
           </Row>
         </Col>
         <Col>
@@ -32,6 +32,9 @@ function Header() {
                     </Link>
                     <Link to="/ForgotPassword">
                         <Nav.Link>Forgot Password</Nav.Link>
+                    </Link>
+                    <Link to="/CustomerHomepage">
+                        <Nav.Link>Customer Homepage</Nav.Link>
                     </Link>
                     <NavDropdown title="Other Services" id="basic-nav-dropdown">
                       <NavDropdown.Item >Service 1</NavDropdown.Item>

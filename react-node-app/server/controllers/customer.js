@@ -179,7 +179,71 @@ db.query(sqlInsert, [aid], (err, result) => {
 
 });
 
-}
+},
+addVehicle(req, res){
+  const uid = req.body.uid
+  const make = req.body.make
+  const model = req.body.model
+  const year = req.body.year
+  const color = req.body.color
+  const licensePlate = req.body.licensePlate
+  const additionalInfo = req.body.additionalInfo
+  const sqlInsert = 
+  "INSERT INTO vehicletable (uid, make, model, year, color, licensePlate, additionalInfo) VALUES (?,?,?,?,?,?,?);"
+  db.query(sqlInsert, [uid, make, model, year, color, licensePlate, additionalInfo]
+    , (err, result) => {
+      if(err){
+        return res.send({err: err});
+      }
+      else if (result != ""){
+        var redir = { redirect: "/viewVehicles" };
+        return res.json(redir);
+      }
+      else{
+        return res.send({message: "Please fill out all information required."})
+      }
+});
+
+},
+deleteVehicle(req, res){
+  const vid = req.body.vid
+  const sqlInsert = 
+"DELETE FROM vehicletable WHERE vid = ?;"
+db.query(sqlInsert, [aid], (err, result) => {
+
+  if(err){
+    res.send({err: err});
+  }
+  else if (result != ""){
+    var redir = { redirect: "/viewVehicles" };
+    return res.json(redir);
+  }
+  else{
+    res.send({message: "Vehicle is not found!"});
+  }
+
+});
+
+},
+getUser(req, res){
+	const uid = req.body.uid
+    const sqlInsert = 
+    "SELECT * FROM usertable WHERE uid = ?"
+    db.query(sqlInsert, [uid]
+        , (err, result) => {
+            if(err){
+                res.send({err: err});
+              }
+              else if (result != ""){
+                var user = JSON.parse(JSON.stringify(result));
+				return res.json(user);
+              }
+              else{
+                res.send({message: "cannot get user information"})
+              }
+        });
+},
+
 
 };
 module.exports = customerController;
