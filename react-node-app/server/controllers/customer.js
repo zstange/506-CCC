@@ -204,7 +204,28 @@ addVehicle(req, res){
       }
 });
 
+},
+deleteVehicle(req, res){
+  const vid = req.body.vid
+  const sqlInsert = 
+"DELETE FROM vehicletable WHERE vid = ?;"
+db.query(sqlInsert, [aid], (err, result) => {
+
+  if(err){
+    res.send({err: err});
+  }
+  else if (result != ""){
+    var redir = { redirect: "/viewVehicles" };
+    return res.json(redir);
+  }
+  else{
+    res.send({message: "Vehicle is not found!"});
+  }
+
+});
+
 }
+
 
 };
 module.exports = customerController;
