@@ -13,6 +13,6 @@ app.post("/checkEmail", customerController.checkEmail)
 app.get("/getAppointments", customerController.getAppointments)
 app.post("/getVehicles", customerController.getVehicles)
 app.post("/editAppointment", customerController.editAppointment)
+app.post("/addVehicle", customerController.addVehicle)
 app.post("/deleteAppointment", customerController.deleteAppointment)
-
 module.exports = {app}
