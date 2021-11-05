@@ -224,7 +224,25 @@ db.query(sqlInsert, [aid], (err, result) => {
 
 });
 
-}
+},
+getUser(req, res){
+	const uid = req.body.uid
+    const sqlInsert = 
+    "SELECT * FROM usertable WHERE uid = ?"
+    db.query(sqlInsert, [uid]
+        , (err, result) => {
+            if(err){
+                res.send({err: err});
+              }
+              else if (result != ""){
+                var user = JSON.parse(JSON.stringify(result));
+				return res.json(user);
+              }
+              else{
+                res.send({message: "cannot get user information"})
+              }
+        });
+},
 
 
 };
