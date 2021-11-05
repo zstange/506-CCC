@@ -125,7 +125,6 @@ function Appointments(props) {
         else 
             setDateError("No appointments avaliable on this day")
         disableSubmit(true)
-
         let aid = contents.aid // get aid from contents array
         if (modifyModal) {
             if (event.target.id === "modify_cancel") { // if we are canceling, just close the window
@@ -147,11 +146,9 @@ function Appointments(props) {
                 if (form.checkValidity() === true) {
                     // check if we have 4 or fewer appointments for the user's chosen day
                     let appNum = 0
-                    console.log(contents.dateTime)
                     for (let i = 0; i < appointmentsTable.length; i++) {
                         if (appointmentsTable[i].dateTime.substring(0,10) === contents.dateTime)
                             appNum++
-                        console.log(appNum)
                         if (appNum === 4)                   
                             break;    
                     }
@@ -242,6 +239,19 @@ function Appointments(props) {
                                 newUserApps[i].dateTime = contents.dateTime+" 09:00:00"
                                 newUserApps[i].service = contents.service
                                 newUserApps[i].additionalInfo = contents.additionalInfo
+
+                                let j = 0; // search for the vehicle that the user chose
+                                for (j; j < userVehicles.length; j++) {
+                                    if (Number(contents.vid) === userVehicles[j].vid) {
+                                        newUserApps[i].make = userVehicles[j].make
+                                        newUserApps[i].model = userVehicles[j].model
+                                        newUserApps[i].year = userVehicles[j].year
+                                        newUserApps[i].color = userVehicles[j].color
+                                        newUserApps[i].licensePlate = userVehicles[j].licensePlate
+                                        break;
+                                    }
+                                }
+
                                 setUserAppointments(newUserApps) // set user apps table
 
                                 // set appointments table
@@ -274,7 +284,7 @@ function Appointments(props) {
                 showDeleteModal(false) // cancel lets us just close the modal
             else { // otherwise remove the appointment from our database
                 Axios.post("http://localhost:3001/deleteAppointment",{
-                            aid: contents.aid
+                            aid: aid
                         }).then((response) => {
                             if(response.data.err) {
                                 console.log(response.data.err)
@@ -283,13 +293,13 @@ function Appointments(props) {
                                 console.log(response.data.err)
                             } 
                             else {     
-                                // set user appointments table
+                                // remove appointment from our table
+                                let tempnew= appointmentsTable.filter((appointment,index) => appointmentsTable[index].aid !== aid)
+                                setAppointmentsTable(tempnew)
+                                setUserAppointments(userAppointments.filter((appointment,index) => userAppointments[index].aid !== aid))
                                 showDeleteModal(false)
                             }
                 });
-                // remove appointment from our tables
-                setAppointmentsTable(appointmentsTable.filter((appointment,index) => appointmentsTable[index].aid !== aid))
-                setUserAppointments(userAppointments.filter((appointment,index) => userAppointments[index].aid !== aid))       
             }
         }
         
