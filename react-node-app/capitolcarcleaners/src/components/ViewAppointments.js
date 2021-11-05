@@ -392,9 +392,9 @@ function Appointments(props) {
                 </Form.Group> 
                 <div style={{textAlign: 'center'}}>
                     <Button type = "submit" disabled = {allowSubmit} variant="primary" size='sm' style={{margin: '5px'}}>Confirm</Button>
-                    
+                    <Button id="modify_cancel" variant="secondary" size='sm' style={{margin: '5px'}} onClick={handleModalClick}>Cancel</Button>  
                 </div>             
-                <Button id="modify_cancel" variant="secondary" size='sm' style={{margin: '5px'}} onClick={handleModalClick}>Cancel</Button>                        
+                                     
             </Form>    
             
         </Modal.Body>                   
