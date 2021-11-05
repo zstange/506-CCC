@@ -26,9 +26,6 @@ createAcc(req, res) {
         var redir = { redirect: "/login" };
         return res.json(redir);
       }
-      else{
-        return res.send({message: "Please fill out all information required."})
-      }
     });
    })
    
@@ -47,15 +44,12 @@ addAppointment(req, res){
     db.query(sqlInsert, [uid, vid, dateTime, service, additionalInfo, status]
         , (err, result) => {
             if(err){
-                res.send({err: err});
+                res.send({err: "db query error"});
               }
               else if (result != ""){
                 var redir = { redirect: "/viewAppointment" };
                 return res.json(redir);
-              }
-              else{
-                res.send({message: "Please fill out all information required."})
-              }
+              }              
         });
 },
 
