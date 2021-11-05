@@ -7,7 +7,7 @@ function Header() {
       <Row className="header">
         <Col lg={2}>
           <Row className="justify-content-center">
-            <Image src="logo192.png" style={{width: '80%'}}/>
+            <Image src="CarLogo.png" style={{width: '80%'}}/>
           </Row>
         </Col>
         <Col>

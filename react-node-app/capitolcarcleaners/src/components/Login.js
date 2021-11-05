@@ -69,7 +69,7 @@ function LoginPage(props) {
                       </Col>                    
                   </Form.Group>
 
-                  { redirect ? (<Redirect to={{ pathname: '/Home'}}/>) : null }
+                  { redirect ? (<Redirect to={{ pathname: '/CustomerHomepage'}}/>) : null }
                   <Button className="m-4" type="submit" style={{display: 'inline-block'}}>Submit</Button>  
                       
               </Form>  
