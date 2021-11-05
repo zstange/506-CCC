@@ -43,7 +43,7 @@ addAppointment(req, res){
     const additionalInfo = req.body.additionalInfo
     const status = "Not Ready"
     const sqlInsert = 
-    "INSERT INTO appointmenttable (uid, vid,dateTime,service,additionalInfo,status) VALUES (?,?,?,?,?);"
+    "INSERT INTO appointmenttable (uid, vid,dateTime,service,additionalInfo,status) VALUES (?,?,?,?,?,?);"
     db.query(sqlInsert, [uid, vid, dateTime, service, additionalInfo, status]
         , (err, result) => {
             if(err){
@@ -59,25 +59,42 @@ addAppointment(req, res){
         });
 },
 
+getAppointments(req, res){
+  const sqlInsert = 
+  "SELECT * FROM appointmenttable"
+  db.query(sqlInsert
+      , (err, result) => {
+          if(err){
+              res.send({err: err});
+            }
+            else if (result != ""){
+              
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+            }
+            else{
+              res.send({message: "cannot get appointment information"})
+            }
+      });
+},
 
-getAppointment(req, res){
-    const sqlInsert = 
-    "SELECT * FROM appointmenttable"
-    db.query(sqlInsert
-        , (err, result) => {
-            if(err){
-                res.send({err: err});
-              }
-              else if (result != ""){
-                var appointment = JSON.parse(JSON.stringify(result));
-				var appointmentInfo = { appointmentID: appointment[0].aid, userID: appointment[0].uid, vehicleID: appointment[0].vid,
-				dateTime: appointment[0].dateTime, service: appointment[0].service, additionalInfo: appointment[0].additionalInfo, status: appointment[0].status, };
-				return res.json(appointmentInfo);
-              }
-              else{
-                res.send({message: "cannot get appointment information"})
-              }
-        });
+getVehicles(req, res){
+  const uid = req.body.uid
+
+  const sqlInsert = 
+  "SELECT vid, make, model, year, color, licensePlate FROM vehicletable WHERE uid = ?"
+  db.query(sqlInsert, [uid]
+      , (err, result) => {
+          if(err){
+              res.send({err: err});
+            }
+            else if (result != ""){
+              
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+            }
+            else{
+              res.send({message: "cannot get vehicle information"})
+            }
+      });
 },
 
 forgotPassword(req, res){
