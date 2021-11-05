@@ -13,14 +13,14 @@ createAcc(req, res) {
   
    bcrypt.hash(password,saltRounds, (err, hash) =>{
     if(err){
-      return res.send({err: err});
+      return res.send({err: "cannot hash password"});
     }
     const sqlInsert = 
     "INSERT INTO usertable (firstName, lastName,email,password,phoneNumber,role, recievePromotions) VALUES (?,?,?,?,?,?,?);"
     db.query(sqlInsert, [firstName, lastName,email,hash,phoneNumber,role,promotions]
       , (err, result) => {
       if(err){
-        return res.send({err: err});
+        return res.send({err: "db query error"});
       }
       else if (result != ""){
         var redir = { redirect: "/login" };
