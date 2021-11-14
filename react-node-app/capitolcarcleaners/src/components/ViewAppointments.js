@@ -448,7 +448,8 @@ class ViewAppointments extends React.Component {
                 <>
                 <Row style={{padding: '1%'}}>
                     <div className="List">     
-                        <MakeModals uid = {35}/>
+                        <MakeModals uid = {1085}/>
+                        <MakeModals uid = {25}/>
                     </div>     
                 </Row> 
                 </>
