@@ -5,6 +5,7 @@ import ViewAppointments from "./ViewAppointments";
 import Axios from 'axios';
 import { Form, Card, Button, Row, Col, Modal } from "react-bootstrap";
 import { connect } from 'react-redux';
+import CustomerInfo from "./CustomerInfo";
 
 /*
  * Do we need a spot to change the option to receive promotions (true/false)?
@@ -184,14 +185,10 @@ class CustomerHomepage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            showAddVehicle: false,
-            showAddAppointment: false,
-            showEditAppointment: false,
-            showDeleteAppointment: false, // Not sure if needed
-            selectedDate: null,
-            
+            showAddVehicle: false,    
+            userVehicles: {},
+            userData: {}    
         };
-        this.setClickedDate = this.setClickedDate.bind(this)
     } 
 
     getFirstName() {
@@ -226,33 +223,33 @@ class CustomerHomepage extends React.Component {
         this.setState({ showAddVehicle: false });
     }
 
-    openAddAppointment() {
-        this.setState({ showAddAppointment: true });
-    }
+    componentDidMount() {
+        console.log("CDM ran")
 
-    closeAddAppointment() {
-        this.setState({ showAddAppointment: false });
-    }
+        Axios.get("http://localhost:3001/getUser",{
+            uid: this.props.userId.value
+        }).then((response1) => {
+            console.log("Response from getUser " + response1)
+            console.log("Response from getUser " + JSON.stringify(response1))
+            //this.setState({userData = response.data})
+        });
+        
+        Axios.post("http://localhost:3001/getVehicles",{
+            uid: this.props.userId.value
+        }).then((response) => {
+            console.log(response)
+            if(response.data.err) {
+                console.log("ERR: " + response.data.err)
+            }
+            else if (response.data.message) {
+                console.log("MSG: " + response.data.err)
+            } 
+            else {     
+                // populate temporary array
 
-    openEditAppointment() {
-        this.setState({ showEditAppointment: true });
-    }
-
-    closeEditAppointment() {
-        this.setState({ showEditAppointment: false });
-    }
-
-    openDeleteAppointment() {
-        this.setState({ showDeleteAppointment: true });
-    }
-
-    closeDeleteAppointment() {
-        this.setState({ showDeleteAppointment: false });
-    }
-
-    async setClickedDate(date) {
-        // Might need to convert the Date from a JSON Object to a string?
-        this.setState({selectedDate: date})
+                //vehicles = Array(response.data.data)[0]
+            }
+        }); 
     }
 
     render() {
@@ -276,86 +273,16 @@ class CustomerHomepage extends React.Component {
                                     color: "black",                              
                                 }}
                             />
-                            <div className="sectionAcctBody">
+                            {/* <div className="sectionAcctBody">
                                 <h3>First Name: {this.getFirstName()}</h3>
                                 <h3>Last Name: {this.getLastName()}</h3>
                                 <h3>Email: {this.getEmail()}</h3>
                                 <h3>Phone Number: {this.getPhoneNumber()}</h3>                                
-                            </div>							
+                            </div> */}
+                            <CustomerInfo />
                         </div>
 
                         <br />
-
-                        {/* Upcoming Appointments Section */}
-                        {/*<div className="border p-3">
-                            <h3 className="sectionAccTitle">Upcoming Appointments:</h3>
-                            <hr 
-                                style= {{
-                                    height: 5, 
-                                    width: "100%", 
-                                    color: "black",                              
-                                }}
-                            />
-                            <div className="sectionAcctBody">
-                                {/* Need to call another componet to get all upcoming appointment information. 
-                                <h3>Day: </h3>
-                                <h3>Month: </h3>
-                                <h3>Year: </h3>
-                                <h3>Vehicle: </h3>                                
-                            </div>
-                            <div style={{textAlign:'center', margin: '10px'}}>
-                                <Button onClick={() => this.openAddAppointment()} style={{margin: '5px'}}>Schedule Appointment</Button>
-                                    <Modal
-                                        show={this.state.showAddAppointment}
-                                        onHide={() => this.closeAddAppointment()}
-                                        centered
-                                        backdrop="static"
-                                    >
-                                        <Modal.Header closeButton>
-                                            <Modal.Title>Schedule Appointment:</Modal.Title>
-                                        </Modal.Header>
-                                        <Modal.Body>
-                                            {/* CALL TO SCHEDULE APPOINTMENT CLASS HERE 
-                                            <Calendar callBackFromCalendar={this.setClickedDate} />
-                                        </Modal.Body>                                            
-                                    </Modal>
-                                <Button onClick={() => this.openEditAppointment()} style={{margin: '5px'}}>Edit Existing Appointment</Button>
-                                    <Modal
-                                        show={this.state.showEditAppointment}
-                                        onHide={() => this.closeEditAppointment()}
-                                        centered
-                                        backdrop="static"
-                                    >
-                                        <Modal.Header closeButton>
-                                            <Modal.Title>Edit Existing Appointment:</Modal.Title>
-                                        </Modal.Header>
-                                        <Modal.Body>
-                                            {/* CALL TO EDIT APPOINTMENT CLASS HERE
-                                        </Modal.Body>                                            
-                                    </Modal>
-                                <Button onClick={() => this.openDeleteAppointment()} style={{margin: '5px'}}>Delete Appointment</Button>
-                                    <Modal
-                                        show={this.state.showDeleteAppointment}
-                                        onHide={() => this.closeDeleteAppointment()}
-                                        centered
-                                        backdrop="static"
-                                    >
-                                        <Modal.Header closeButton>
-                                            <Modal.Title>Delete Appointment:</Modal.Title>
-                                        </Modal.Header>
-                                        <Modal.Body>
-                                            {/* CALL TO DELETE APPOINTMENT CLASS HERE 
-                                        </Modal.Body>                                            
-                                    </Modal>
-                            </div> */}
-                            
-                            {/* <div> {/* this is for testing the calendar 
-                                <p>Returned Date is: {this.state.selectedDate}</p>
-                                <Calendar 
-                                    callBackFromCalendar={this.setClickedDate} // the state must match the call in child class. Then we call the (parent) function on the passed in data                                    
-                                />
-                            </div>					 */}
-                        {/* </div>                    */}
                     </div>
 
                     <div className='col-lg-7 col-xs-5 mx-4'>
@@ -425,44 +352,3 @@ function mapStateToProps(state) {
 }
   
 export default connect(mapStateToProps)(CustomerHomepage);
-
-
-
-// OLD CODE BELOW
-//   <Navbar fixed="top" bg="light" expand="lg">
-//   <Container className="containerLogo">                  
-//       <Navbar.Brand href="#home" className="navBarLogo">
-//           <img
-//           alt=""
-//           src="/CarLogo.png"
-//           width="20%"
-//           height="20%"
-//           />{' '}
-//           Capitol Car Cleaners
-//       </Navbar.Brand>
-//   </Container>
-
-//   <Container>
-//       <Navbar.Toggle aria-controls="basic-navbar-nav" />
-//       <Navbar.Collapse id="basic-navbar-nav" className="navBarLinkTitles">
-//           <Nav >
-//               <Nav.Link href="#home">Home</Nav.Link> 
-//               <Nav.Link href="#link">My Vehicles</Nav.Link>
-//               <Nav.Link href="#link">Appointments</Nav.Link>
-//               <Nav.Link href="#link">Purchase History</Nav.Link>
-//               <NavDropdown title="Account Settings" id="basic-nav-dropdown">
-//                   <NavDropdown.Item href="#action/3.1">Reset password</NavDropdown.Item>
-//                   <NavDropdown.Divider />
-//                   <NavDropdown.Item href="#action/3.2">Reset email</NavDropdown.Item>         
-//               </NavDropdown>
-//               <Button size='sm'>Logout</Button>
-//           </Nav>
-//       </Navbar.Collapse>
-//   </Container>
-// </Navbar> 
-
-
-// Build a React Calendar Component from scratch  \\
-//
-// https://programmingwithmosh.com/react/build-a-react-calendar-component-from-scratch/
-// https://flaviocopes.com/momentjs/
