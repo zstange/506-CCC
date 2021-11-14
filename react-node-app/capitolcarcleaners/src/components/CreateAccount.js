@@ -46,6 +46,7 @@ function CreateAccountForm() {
             if (emailExists) {
                 setEmailRegex("^(?!"+contents.email+"$).*$") // set regex to reject the email if it's already being used
                 setEmailError("This email is already being used.");
+                disableSubmit(false)
             }
             else {
                 let data = contents;
@@ -67,18 +68,22 @@ function CreateAccountForm() {
                     else if (response.data.message) { // print failure messages
                         console.log(response.data.message);
                     } else { // successful account creation
-                        
+                        disableSubmit(true)
                         setSuccessMsg("Success, account created!") 
                         // short time delay to let user see the success message
                         setTimeout(() => {  setRedirect(true); }, 2000);
-                        disableSubmit(true)
                     }
                 });
             }    
         }
         else { // badly formatted form
-            setEmailRegex("\\S*"); 
-            setEmailError("Please enter a valid email."); 
+            if (contents.email.match(emailRegex) === null)
+                setEmailError("This email is already being used.")
+            else {
+                setEmailRegex("\\S*"); 
+                setEmailError("Please enter a valid email.");
+            }
+            disableSubmit(false)
         }
         
     };
