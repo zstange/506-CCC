@@ -71,6 +71,44 @@ getAppointments(req, res){
       });
 },
 
+getUserAppointments(req, res){
+  const uid = req.body.uid
+  const sqlInsert = 
+  "SELECT * FROM appointmenttable WHERE uid = ?"
+  db.query(sqlInsert, [uid]
+      , (err, result) => {
+          if(err){
+              res.send({err: err});
+            }
+            else if (result != ""){
+              
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+            }
+            else{
+              res.send({message: "cannot get appointment information"})
+            }
+      });
+},
+
+getAppointmentsByDate(req, res){
+  const dateTime = req.body.dateTime
+  const sqlInsert = 
+  "SELECT * FROM appointmenttable WHERE dateTime = ?"
+  db.query(sqlInsert, [dateTime]
+      , (err, result) => {
+          if(err){
+              res.send({err: err});
+            }
+            else if (result != ""){
+              console.log(result.length)
+              return res.json({length: result.length});
+            }
+            else{
+              return res.json({length: 0});
+            }
+      });
+},
+
 getVehicles(req, res){
   const uid = req.body.uid
 

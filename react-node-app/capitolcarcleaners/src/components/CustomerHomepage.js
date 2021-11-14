@@ -411,7 +411,7 @@ class CustomerHomepage extends React.Component {
                 </Row>
                 <Row>
                 <h3 className="sectionAccTitle">Upcoming Appointments:</h3>
-                     <ViewAppointments/>
+                     <ViewAppointments uid = {this.props.userId.value} role = {this.props.role.value}/>
                 </Row>
             </>
          );
