@@ -212,26 +212,10 @@ function MakeModals(props) {
                             console.log(response.data.err)
                         } 
                         else {
-                            // get aid of most recently added appointment
-                            Axios.post("http://localhost:3001/getUserAppointments",{
-                                uid: id
-                            }).then((response) => {
-                                if(response.data.err) {
-                                    console.log(response.data.err)
-                                }
-                                else if (response.data.message) {
-                                    console.log(response.data.err)
-                                } 
-                                else {     
-                                    // populate temporary array
-                                    aid = Array(response.data.data)[response.data.length-1]
-                                }
-                            });
-
                             // populate appointments table
                             let newAppsTable = appointments
                             let newApp = {
-                                aid: aid,
+                                aid: response.data.aid,
                                 vid: contents.vid,
                                 dateTime: contents.dateTime+" 09:00:00",
                                 service: contents.service,
