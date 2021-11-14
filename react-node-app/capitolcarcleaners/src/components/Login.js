@@ -1,4 +1,8 @@
 import React, {useState} from "react"; 
+import { useDispatch, connect } from 'react-redux';
+import { logUserIn } from "../statusSlice";
+import { setUserId } from "../userIdSlice";
+import { setRole } from "../roleSlice";
 import Axios from 'axios';
 import '../css/Login.css';
 import { Form, Button, Row, Col} from "react-bootstrap";
@@ -6,6 +10,8 @@ import {LinkContainer as Link} from 'react-router-bootstrap'
 import { Redirect } from 'react-router-dom';
 
 function LoginPage(props) {
+  const dispatch = useDispatch();
+
   const [validated, setValidated] = useState(false);
   const [redirect, setRedirect] = useState(false);
 
@@ -25,7 +31,6 @@ function LoginPage(props) {
         email: event.target.elements.email.value,
         password: event.target.elements.password.value,
         }).then((response) => {
-          console.log(response)
           if(response.data.err){
             alert(response.data.err);
           } 
@@ -34,6 +39,9 @@ function LoginPage(props) {
           } 
           else {
             setRedirect(true);
+            dispatch(logUserIn());
+            dispatch(setUserId(response.data.userID));
+            dispatch(setRole(response.data.role));
           }
         });
       
@@ -110,4 +118,4 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+export default connect()(Login);
