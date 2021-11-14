@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import store from './store';
 import './index.css';
 import Header from './components/Header';
 import CreateAccount from './components/CreateAccount';
@@ -15,18 +17,20 @@ import 'bootstrap/dist/css/bootstrap.css';
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <Header/>
-      <Switch>
-        <Route exact path="/">
-          <Redirect to="/Home" />
-        </Route>
-        <Route exact path="/Home" component={Home} />
-        <Route path="/Login" component={Login} />
-        <Route path="/CreateAccount" component={CreateAccount} />
-        <Route path="/ForgotPassword" component={ForgotPassword} />
-        <Route path="/ViewAppointments" component={ViewAppointments} />
-        <Route path="/CustomerHomepage" component={CustomerHomepage} />
-     </Switch>
+      <Provider store={store}>
+        <Header/>
+        <Switch>
+          <Route exact path="/">
+            <Redirect to="/Home" />
+          </Route>
+          <Route exact path="/Home" component={Home} />
+          <Route path="/Login" component={Login} />
+          <Route path="/CreateAccount" component={CreateAccount} />
+          <Route path="/ForgotPassword" component={ForgotPassword} />
+          <Route path="/ViewAppointments" component={ViewAppointments} />
+          <Route path="/CustomerHomepage" component={CustomerHomepage} />
+      </Switch>
+      </Provider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

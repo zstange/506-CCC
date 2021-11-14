@@ -4,6 +4,7 @@ import Calendar from "../components/Calendar"
 import ViewAppointments from "./ViewAppointments";
 import Axios from 'axios';
 import { Form, Card, Button, Row, Col, Modal } from "react-bootstrap";
+import { connect } from 'react-redux';
 
 /*
  * Do we need a spot to change the option to receive promotions (true/false)?
@@ -191,17 +192,17 @@ class CustomerHomepage extends React.Component {
             
         };
         this.setClickedDate = this.setClickedDate.bind(this)
-      } 
+    } 
 
     getFirstName() {
         // fetches username from DB
-        var firstName = "TEST First Name";
+        var firstName = "User " + this.props.userId.value;
         return firstName
     }
 
     getLastName() {
         // fetches username from DB
-        var lastName = "TEST Last Name";
+        var lastName = this.props.role.value;
         return lastName
     }
 
@@ -416,8 +417,14 @@ class CustomerHomepage extends React.Component {
          );
     }
 }
+
+function mapStateToProps(state) {
+    const userId = state.userId;
+    const role = state.role;
+    return {userId, role};
+}
   
-export default CustomerHomepage;
+export default connect(mapStateToProps)(CustomerHomepage);
 
 
 
