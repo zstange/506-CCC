@@ -24,7 +24,7 @@ class CustomerInfo extends React.Component {
             <>          
                 <div className="border p-3">
                     <div className="sectionAcctBody">
-                        <h3>First Name: {this.getFirstName()}</h3>
+                        <h3>First Name: {}</h3>
                         <h3>Last Name: {this.props.userData}</h3>
                         <h3>Email: {this.props.userData}</h3>
                         <h3>Phone Number: {this.props.userData}</h3>                                
