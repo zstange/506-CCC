@@ -1,9 +1,35 @@
 import React, { useState } from 'react';
+import "../css/CustomerVehicles.css"
+import Axios from 'axios';
 import { Button, Row, Col, Card, Modal, Form, } from "react-bootstrap";
 
 function UserVehicles(props) {
-    console.log("Vehciles"+ JSON.stringify(props.vehiclesList.make))
+    //console.log("Vehicles"+ JSON.stringify(props.vehiclesList.make))
     const[modal, setModal] = useState(false);
+
+    const deleteVehicle = () => {
+        // setModal(false)
+        // let vehId = props.vehiclesList.vid
+        // console.log("VID: "+ vid)
+
+        Axios.post("http://localhost:3001/deleteVehicle",{
+            vid: props.vehiclesList.vid
+        }).then((response) => {
+            console.log("DEL: " + JSON.stringify(response))
+            if(response.data.err) {
+                console.log(response.data.err)
+            }
+            else if (response.data.message) {
+                console.log(response.data.err)
+            } 
+            else {     
+                // remove vehicle 
+                console.log("DEL ELSE: " + JSON.stringify(response))
+                return;
+            }
+        });
+        setModal(false)
+    };
 
     return (
         <> 
@@ -30,7 +56,7 @@ function UserVehicles(props) {
                             <Modal.Body>
                                 <p>Are you sure you want to remove this vehicle?</p>
                                 <div style={{textAlign: 'center'}}>
-                                    <Button variant="primary" size='sm' style={{margin: '5px'}} onClick={() => setModal(false)}>Confirm</Button> 
+                                    <Button variant="primary" size='sm' style={{margin: '5px'}} onClick={deleteVehicle}>Confirm</Button> 
                                     <Button variant="secondary" size='sm' style={{margin: '5px'}} onClick={() => setModal(false)}>Cancel</Button>
                                 </div>
                             </Modal.Body>                   
@@ -43,6 +69,7 @@ function UserVehicles(props) {
 }
 
 function AddVehicles(props) {
+    console.log(props)
     const [validated, setValidated] = useState(false);
     const handleSubmit = (event) => {
 
@@ -56,9 +83,28 @@ function AddVehicles(props) {
 
         // Output Caputured Data
         if (form.checkValidity() === true) {
-            console.log("success")
-            // Send info to data base
-            // Refresh accout home to display the new vehicle added
+            Axios.post("http://localhost:3001/addVehicle",{
+                uid: props.userId,
+                make: event.target.element.VehMake.value,
+                model: event.target.element.VehModel.value,
+                year: event.target.element.VehYear.value,
+                color: event.target.element.VehColor.value,
+                licensePlate: event.target.element.VehLicensePlate.value,
+                additionalInfo: event.target.element.VehAddtlInfo.value,
+            }).then((response) => {
+                console.log("ADD: " + JSON.stringify(response))
+                if(response.data.err) {
+                    console.log(response.data.err)
+                }
+                else if (response.data.message) {
+                    console.log(response.data.err)
+                } 
+                else {     
+                    // remove vehicle 
+                    console.log("ADD ELSE: " + JSON.stringify(response))
+                    return;
+                }
+            });
         }          
     };
 
@@ -110,6 +156,28 @@ function AddVehicles(props) {
                             />
                         </Col>                    
                     </Form.Group>
+
+                    <Form.Group as={Row} className="mb-3" controlId="VehLicensePlate">
+                        <Form.Label column sm="3">License Plate</Form.Label>
+                        <Col sm="8" >
+                            <Form.Control  
+                            required
+                            type="text"
+                            placeholder="License Plate Number"
+                            />
+                        </Col>                    
+                    </Form.Group>
+
+                    <Form.Group as={Row} className="mb-3" controlId="VehAddtlInfo">
+                        <Form.Label column sm="3">Additional Information</Form.Label>
+                        <Col sm="8" >
+                            <Form.Control  
+                            required
+                            type="text"
+                            placeholder=""
+                            />
+                        </Col>                    
+                    </Form.Group>
                     <div style={{textAlign: 'center'}}>
                         <Button className="m-4" type="submit" style={{display: 'inline-block'}}>Submit</Button>  
                     </div>
@@ -120,13 +188,6 @@ function AddVehicles(props) {
     )
 }
 
-function DeleteVehicles(props) {
-    return (
-        <>
-        </>
-    )
-
-}
 class CustomerInfo extends React.Component {
     constructor(props) {
         super(props);
@@ -153,7 +214,7 @@ class CustomerInfo extends React.Component {
     }
 
     getVehicles() {
-        //console.log("PROPS"+ this.props.userVehicles[1].make)
+        //console.log("PROPS"+ props.userVehicles[1].make)
         let vehicles = [];
         for(let i =0; i < this.props.userVehicles.length; i++) {
             vehicles.push(
@@ -187,7 +248,7 @@ class CustomerInfo extends React.Component {
                                 <Modal.Body>
                                     <AddVehicles
                                         showAddVehicle={this.state.showAddVehicle}
-                                        
+                                        userId={this.props.userId}
                                     />
                                 </Modal.Body>                                            
                             </Modal>

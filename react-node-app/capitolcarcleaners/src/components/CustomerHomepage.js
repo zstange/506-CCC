@@ -115,6 +115,7 @@ class CustomerHomepage extends React.Component {
                         {/* User's Vehicles Section */}
 						<div className="border p-3">
                             <CustomerVehicles
+                                userId = {this.props.userId.value}
                                 userVehicles = {this.state.userVehicles}
                             />
                         </div>
