@@ -9,6 +9,8 @@ function MakeModals(props) {
     let id = props.uid
     const [validated, setValidated] = useState(false)
     const [contents, setContents] = useState({service: "", dateTime: "", vid: -1, additionalInfo: "", aid: -1});
+    const [userInfo, setUserInfo] = useState({firstName: "", lastName: "", email: "", phoneNumber: ""})
+    const [showing, setShowing] = useState(true)
     const [appointments, setAppointments] = useState([])
     const [userVehicles, setUserVehicles] = useState([])
     const [modifyModal, showModifyModal] = useState(false)
@@ -17,28 +19,74 @@ function MakeModals(props) {
     const [allowSubmit,disableSubmit] = useState(false)
     const [modifyTitle, setModifyTitle] = useState("")
     const [dateError, setDateError] = useState("")
-    
+
     useEffect(() => {
         // useEffect lets us fetch tables once the page is finished loading
         // TODO display a "loading appointments" message
         async function fetchTables() {
             // pull appointments table from the database
-            let apps = [] // temporary array so we can set the table state later
+            let apps = [] // temporary array so we can set the table state later    
 
-            await Axios.post("http://localhost:3001/getUserAppointments",{
-                uid: id
-            }).then((response) => {
-                if(response.data.err) {
-                    console.log(response.data.err)
-                }
-                else if (response.data.message) {
-                    console.log(response.data.err)
-                } 
-                else {     
-                    // populate temporary array
-                    apps = Array(response.data.data)[0]
-                }
+            if (props.filterDate !== null) {
+                await Axios.post("http://localhost:3001/getAppointmentByAppId",{
+                    aid: props.aid
+                }).then((response) => {
+                    if(response.data.err) {
+                        console.log(response.data.err)
+                    }
+                    else if (response.data.message) {
+                        console.log(response.data.err)
+                    } 
+                    else {     
+                        // populate temporary array
+                        console.log( Array(response.data.data)[0])
+                        apps = Array(response.data.data)[0]
+                    }
+                 });
+                await Axios.post("http://localhost:3001/getUser",{
+                    uid: id
+                }).then((response) => {
+                    if(response.data.err) {
+                        console.log(response.data.err)
+                    }
+                    else if (response.data.message) {
+                        console.log(response.data.err)
+                    } 
+                    else {     
+                        // populate temporary array
+                        let info = {
+                            firstName: response.data.data[0].firstName,
+                            lastName: response.data.data[0].lastName,
+                            email: response.data.data[0].email,
+                            phoneNumber: response.data.data[0].phoneNumber.substring(0,3)+"-"
+                                            +response.data.data[0].phoneNumber.substring(3,6)+"-"
+                                                +response.data.data[0].phoneNumber.substring(6,10),
+                        }
+                        setUserInfo(info)
+                    }
             });
+                
+                apps = apps.filter(app => new Date(app.dateTime).valueOf() === props.filterDate)
+                setShowing(false)
+            }
+            else {
+                await Axios.post("http://localhost:3001/getUserAppointments",{
+                    uid: id
+                }).then((response) => {
+                    if(response.data.err) {
+                        console.log(response.data.err)
+                    }
+                    else if (response.data.message) {
+                        console.log(response.data.err)
+                    } 
+                    else {     
+                        // populate temporary array
+                        apps = Array(response.data.data)[0]
+                    }
+            });
+            }
+
+            console.log(apps)
 
             // pull the user's vehicles from the database
             let vehicles = [] // temp array so we can set the state later
@@ -77,7 +125,7 @@ function MakeModals(props) {
             setUserVehicles(vehicles)
         }
         fetchTables()
-    }, [id]);
+    }, []);
     
     const handleChange = (event) => {
         if (event.target.id === "vid")
@@ -126,7 +174,6 @@ function MakeModals(props) {
     const handleDeleteModal = (event) => {
         disableSubmit(true)
         let aid = contents.aid // get aid from contents array
-        console.log(aid)
         if (event.target.id === "delete_cancel")
             showDeleteModal(false) // cancel lets us just close the modal
         else { // otherwise remove the appointment from our database
@@ -141,6 +188,19 @@ function MakeModals(props) {
                     // remove appointment from our table
                     setAppointments(appointments.filter((appointment,index) => appointments[index].aid !== aid))
                     showDeleteModal(false)
+                    Axios.get("http://localhost:3001/getAppointments",{
+            }).then((response) => {
+                if(response.data.err) {
+                    console.log(response.data.err)
+                }
+                else if (response.data.message) {
+                    console.log(response.data.err)
+                } 
+                else {     
+                    // populate temporary array
+                    props.setApps(Array(response.data.data)[0])
+                }
+            });
                 }
             });
         }
@@ -240,7 +300,20 @@ function MakeModals(props) {
                             }
                             newAppsTable.push(newApp) // add new appointment to user apps table
                             setAppointments(newAppsTable) // set state
-                            setTimeout(() => {setValidated(false); showModifyModal(false); }, 1000); //finished, give short time delay for feedback
+                            Axios.get("http://localhost:3001/getAppointments",{
+                            }).then((response) => {
+                                if(response.data.err) {
+                                    console.log(response.data.err)
+                                }
+                                else if (response.data.message) {
+                                    console.log(response.data.err)
+                                } 
+                                else {     
+                                    // populate temporary array
+                                    props.setApps(Array(response.data.data)[0])
+                                }
+                            });
+                            setTimeout(() => {setValidated(false); showModifyModal(false);},1000); //finished, give short time delay for feedback
                         }
                     });  
                 }
@@ -263,7 +336,6 @@ function MakeModals(props) {
                             // set user appointments table
                             
                             let newUserApps = appointments // set new appointment info
-                            console.log(newUserApps[index])
                             newUserApps[index].aid = aid
                             newUserApps[index].vid = contents.vid
                             newUserApps[index].dateTime = contents.dateTime+" 09:00:00"
@@ -283,7 +355,20 @@ function MakeModals(props) {
                             }
                             setAppointments(newUserApps) // set apps table
                             // short time delay for feedback
-                            setTimeout(() => {setValidated(false); showModifyModal(false); }, 1000);
+                            Axios.get("http://localhost:3001/getAppointments",{
+                            }).then((response) => {
+                                if(response.data.err) {
+                                    console.log(response.data.err)
+                                }
+                                else if (response.data.message) {
+                                    console.log(response.data.err)
+                                } 
+                                else {     
+                                    // populate temporary array
+                                    props.setApps(Array(response.data.data)[0])
+                                }
+                            });
+                            setTimeout(() => {setValidated(false); showModifyModal(false);}, 1000);
                         }
                     });  
                 }
@@ -300,6 +385,12 @@ function MakeModals(props) {
 
     return (
         <>    
+        <br></br>
+        <ListGroup className="list-group-flush" style={{ display: (showing ? 'none': 'block') }}>
+            <ListGroupItem>{"Name: "+userInfo.firstName+" "+userInfo.lastName}</ListGroupItem>
+            <ListGroupItem>{"Email: "+userInfo.email}</ListGroupItem>
+            <ListGroupItem>{"Phone Number: "+userInfo.phoneNumber}</ListGroupItem>
+        </ListGroup> 
         <Modal show={modifyModal} centered id = "modifyModal">
         <Modal.Header >
         <Modal.Title>{modifyTitle}</Modal.Title>
@@ -401,8 +492,10 @@ function MakeModals(props) {
             <GenerateAppsList appointments = {appointments} />
         </div>
         <br></br>
-        <Button className="btn" id = "schedule" style={{display: 'inline-block'}} onClick={handleCardClick}>Schedule Appointment</Button>
+        <Button className="btn" id = "schedule" style={{ display: (showing ? 'inline-block' : 'none') }} onClick={handleCardClick}>Schedule Appointment</Button>
+        <br></br> 
         </>
+        
     );
 
     function GenerateAppsList(props) {
@@ -440,16 +533,108 @@ function MakeModals(props) {
     }
 }
 
+function MakeAdminPage() {
+
+    const [users,setUsers] = useState([])
+    const [appointments, setApps] = useState([])
+    const [selectedUser, setSelectedUser] = useState(-1);
+
+    useEffect(() => {
+        // useEffect lets us fetch tables once the page is finished loading
+        // TODO display a "loading appointments" message
+        async function fetchTables() {
+            // pull user ids
+            await Axios.get("http://localhost:3001/getUsers",{
+            }).then((response) => {
+                if(response.data.err) {
+                    console.log(response.data.err)
+                }
+                else if (response.data.message) {
+                    console.log(response.data.err)
+                } 
+                else {     
+                    // populate temporary array
+                    setUsers(Array(response.data.data)[0])
+                }
+            });
+
+            await Axios.get("http://localhost:3001/getAppointments",{
+            }).then((response) => {
+                if(response.data.err) {
+                    console.log(response.data.err)
+                }
+                else if (response.data.message) {
+                    console.log(response.data.err)
+                } 
+                else {     
+                    // populate temporary array
+                    setApps(Array(response.data.data)[0])
+                }
+            });
+        }
+        fetchTables()
+    }, []);
+
+    const handleChange = (event) => {
+        setSelectedUser(event.target.value)
+    }
+
+    function GenerateModals() {
+        let filteredUsers = users.filter(use => use.uid === Number(selectedUser))
+        const GenerateList = filteredUsers.map((user, index) =>
+            <MakeModals uid = {user.uid} filterDate = {null} setApps = {setApps} Apps = {appointments}/>
+        );
+        return GenerateList
+    }
+
+    function GenerateModals2() {
+        let date = new Date()
+        date.setDate(date.getDate()+1)
+        date.setHours(9,0,0,0)
+        let filteredApps = appointments.filter(app => new Date(app.dateTime).valueOf() === date.valueOf()) 
+        console.log(filteredApps)
+        const GenerateList = filteredApps.map((app, index) =>
+            <MakeModals uid = {app.uid} aid = {app.aid} filterDate = {date.valueOf()} setApps = {setApps} Apps = {appointments}/>
+        );
+        return GenerateList
+    }
+
+    return (
+        <>
+         <div>
+            <label>today's appointments</label>
+            <GenerateModals2 />
+        </div>
+        <Form>
+             <Form.Group style = {{marginTop: "25px", width: "360px"}} as={Row} onChange = {handleChange} className="mb-3" controlId="dateMenu">
+                    <Form.Label column sm="3" className="createAccountLabels">Customer</Form.Label>
+                    <Col sm="7" >
+                        <Form.Select aria-label="Default select example" className="mb-3" name="priority">
+                            <option value = {-1}>Customer...</option>
+                            {users.map((user) => {
+                                return <option value ={user.uid}>
+                                   {user.firstName+" "+user.lastName}
+                                </option>;
+                            })}
+                        </Form.Select>
+                    </Col>                           
+                </Form.Group> 
+        </Form>
+        <div>
+            <GenerateModals />
+        </div>
+        </>
+    );
+}
 
 class ViewAppointments extends React.Component { 
     render() {
-        if (this.props.role === "admin") {
+        if (this.props.role !== "admin") {
             return (
                 <>
                 <Row style={{padding: '1%'}}>
                     <div className="List">     
-                        <MakeModals uid = {1085}/>
-                        <MakeModals uid = {25}/>
+                       <MakeAdminPage/>
                     </div>     
                 </Row> 
                 </>

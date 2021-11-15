@@ -71,6 +71,23 @@ getAppointments(req, res){
       });
 },
 
+getAppointmentDates(req, res) {
+  const sqlInsert = 
+  "SELECT dateTime FROM appointmenttable"
+  db.query(sqlInsert
+      , (err, result) => {
+          if(err){
+              res.send({err: err});
+            }
+            else if (result != ""){
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+            }
+            else{
+              res.send({message: "cannot get appointment information"})
+            }
+      });
+},
+
 getUserAppointments(req, res){
   const uid = req.body.uid
   const sqlInsert = 
@@ -100,11 +117,29 @@ getAppointmentsByDate(req, res){
               res.send({err: err});
             }
             else if (result != ""){
-              console.log(result.length)
               return res.json({length: result.length});
             }
             else{
               return res.json({length: 0});
+            }
+      });
+},
+
+getAppointmentByAppId(req, res){
+  const aid = req.body.aid
+  const sqlInsert = 
+  "SELECT * FROM appointmenttable WHERE aid = ?"
+  db.query(sqlInsert, [aid]
+      , (err, result) => {
+          if(err){
+              res.send({err: err});
+            }
+            else if (result != ""){
+              
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+            }
+            else{
+              res.send({message: "cannot get appointment information"})
             }
       });
 },
@@ -283,7 +318,7 @@ getUser(req, res){
               }
               else if (result != ""){
                 var user = JSON.parse(JSON.stringify(result));
-				return res.json(user);
+                return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
               }
               else{
                 res.send({message: "cannot get user information"})
@@ -291,6 +326,23 @@ getUser(req, res){
         });
 },
 
+
+getUsers(req, res){
+    const sqlInsert = 
+    "SELECT uid, firstName, lastName, email, phoneNumber FROM usertable"
+    db.query(sqlInsert
+        , (err, result) => {
+            if(err){
+                res.send({err: err});
+              }
+              else if (result != ""){
+                return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+              }
+              else{
+                res.send({message: "cannot get user information"})
+              }
+        });
+},
 
 };
 module.exports = customerController;
