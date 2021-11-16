@@ -223,7 +223,7 @@ editAppointment(req, res){
   const dateTime = req.body.dateTime
   const service = req.body.service
   const additionalInfo = req.body.additionalInfo
-  const status = "Not Ready"
+  const status = req.body.status
   const sqlInsert = 
 "UPDATE appointmenttable SET vid = ?, dateTime = ?, service = ?, additionalInfo = ?, status = ? WHERE aid = ?;"
 db.query(sqlInsert, [vid, dateTime, service, additionalInfo, status, aid], (err, result) => {

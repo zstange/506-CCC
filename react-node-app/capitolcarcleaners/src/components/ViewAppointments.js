@@ -2,13 +2,12 @@ import React, {useEffect,useState} from "react";
 import Axios from 'axios';
 import '../css/ViewAppointments.css';
 import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "react-bootstrap";
-import {LinkContainer as Link} from 'react-router-bootstrap'
-import DatePicker from 'react-date-picker';
 
-function MakeModals(props) {
+function MakeCards(props) {
     let id = props.uid
     const [validated, setValidated] = useState(false)
-    const [contents, setContents] = useState({service: "", dateTime: "", vid: -1, additionalInfo: "", aid: -1});
+    const [validatedStatus, setValidatedStatus] = useState(false)
+    const [contents, setContents] = useState({service: "", dateTime: "", vid: -1, additionalInfo: "", aid: -1, status: ""});
     const [userInfo, setUserInfo] = useState({firstName: "", lastName: "", email: "", phoneNumber: ""})
     const [showing, setShowing] = useState(true)
     const [appointments, setAppointments] = useState([])
@@ -19,15 +18,20 @@ function MakeModals(props) {
     const [allowSubmit,disableSubmit] = useState(false)
     const [modifyTitle, setModifyTitle] = useState("")
     const [dateError, setDateError] = useState("")
+    const [ready, setReady] = useState(false)
+    const [statusModal, showStatusModal] = useState(false)
 
     useEffect(() => {
+        
         // useEffect lets us fetch tables once the page is finished loading
-        // TODO display a "loading appointments" message
         async function fetchTables() {
+            console.log()
             // pull appointments table from the database
             let apps = [] // temporary array so we can set the table state later    
 
-            if (props.filterDate !== null) {
+            // if we were given an aid, that means we should fill the appointments table with only that single appointment
+            if (props.aid !== null) { 
+                console.log("calling")
                 await Axios.post("http://localhost:3001/getAppointmentByAppId",{
                     aid: props.aid
                 }).then((response) => {
@@ -38,38 +42,13 @@ function MakeModals(props) {
                         console.log(response.data.err)
                     } 
                     else {     
-                        // populate temporary array
-                        console.log( Array(response.data.data)[0])
                         apps = Array(response.data.data)[0]
                     }
-                 });
-                await Axios.post("http://localhost:3001/getUser",{
-                    uid: id
-                }).then((response) => {
-                    if(response.data.err) {
-                        console.log(response.data.err)
-                    }
-                    else if (response.data.message) {
-                        console.log(response.data.err)
-                    } 
-                    else {     
-                        // populate temporary array
-                        let info = {
-                            firstName: response.data.data[0].firstName,
-                            lastName: response.data.data[0].lastName,
-                            email: response.data.data[0].email,
-                            phoneNumber: response.data.data[0].phoneNumber.substring(0,3)+"-"
-                                            +response.data.data[0].phoneNumber.substring(3,6)+"-"
-                                                +response.data.data[0].phoneNumber.substring(6,10),
-                        }
-                        setUserInfo(info)
-                    }
-            });
-                
-                apps = apps.filter(app => new Date(app.dateTime).valueOf() === props.filterDate)
+                });
                 setShowing(false)
+                setUserInfo({firstName: props.firstName, lastName: props.lastName, email: props.email, phoneNumber: props.phoneNumber})
             }
-            else {
+            else { // otherwise just fill the appointments table with all the user's appointments
                 await Axios.post("http://localhost:3001/getUserAppointments",{
                     uid: id
                 }).then((response) => {
@@ -82,11 +61,9 @@ function MakeModals(props) {
                     else {     
                         // populate temporary array
                         apps = Array(response.data.data)[0]
-                    }
+                    }    
             });
             }
-
-            console.log(apps)
 
             // pull the user's vehicles from the database
             let vehicles = [] // temp array so we can set the state later
@@ -123,15 +100,18 @@ function MakeModals(props) {
             // set appropriate states
             setAppointments(userApps)
             setUserVehicles(vehicles)
+            
+            setReady(true)
         }
         fetchTables()
-    }, []);
+    }, [id, props.aid,props.firstName, props.lastName, props.email, props.phoneNumber, props.Apps]);
     
     const handleChange = (event) => {
+        console.log(event.target.value)
         if (event.target.id === "vid")
             setContents({...contents, [event.target.id]: event.target.value})
         else
-            setContents({...contents, [event.target.id]: event.target.value.trim()});
+            setContents({...contents, [event.target.id]: event.target.value});
     }
 
     // handle card buttons
@@ -151,12 +131,13 @@ function MakeModals(props) {
                     temp.vid = Number(appointments[appIndex].vid)
                     temp.additionalInfo = appointments[appIndex].additionalInfo
                     temp.aid = appointments[appIndex].aid
+                    contents.status = appointments[appIndex].status
                     setContents(temp)
                 }
             }
         }
         else // otherwise just make contents "blank"
-            setContents({service: "", dateTime: "", vid: -1, additionalInfo: "", aid: -1})
+            setContents({service: "", dateTime: "", vid: -1, additionalInfo: "", aid: -1, status: "Not Ready"})
 
         if (mode === "modify") { // both modify and schedule appointments use the same modal
             showModifyModal(true) 
@@ -166,10 +147,13 @@ function MakeModals(props) {
             showModifyModal(true)
             setModifyTitle("Schedule Appointment")
         }
-        else // delete has its own special modal
+        else if (mode === "delete")// delete has its own special modal
             showDeleteModal(true)
+        else // status modal 
+            showStatusModal(true)
+
     }
-           
+
     // handle delete modal buttons
     const handleDeleteModal = (event) => {
         disableSubmit(true)
@@ -185,25 +169,118 @@ function MakeModals(props) {
                 else if (response.data.message) 
                     console.log(response.data.err)
                 else {     
+                    if (props.role === "admin") {
+                        console.log("deleting as admin")
+                        Axios.get("http://localhost:3001/getAppointments",{
+                        }).then((response) => {
+                            if(response.data.err) {
+                                console.log(response.data.err)
+                            }
+                            else if (response.data.message) {
+                                console.log(response.data.err)
+                            } 
+                            else {     
+                                // populate temporary array
+                                props.setApps(Array(response.data.data)[0])
+                            }
+                        });
+                    }
                     // remove appointment from our table
                     setAppointments(appointments.filter((appointment,index) => appointments[index].aid !== aid))
                     showDeleteModal(false)
-                    Axios.get("http://localhost:3001/getAppointments",{
-            }).then((response) => {
-                if(response.data.err) {
-                    console.log(response.data.err)
-                }
-                else if (response.data.message) {
-                    console.log(response.data.err)
-                } 
-                else {     
-                    // populate temporary array
-                    props.setApps(Array(response.data.data)[0])
-                }
-            });
                 }
             });
         }
+    }
+
+    // handle status modal buttons
+    const handleStatusModal = (event) => {
+        
+        disableSubmit(true)
+        let aid = contents.aid // get aid from contents array
+        if (event.target.id === "status_cancel") {
+            showStatusModal(false) // cancel lets us just close the modal
+            setValidatedStatus(false)
+        }
+        else {
+            event.preventDefault();
+        
+            setValidatedStatus(true)
+            if (event.currentTarget.checkValidity() === true) {
+                if (contents.status === "Picked Up") { // otherwise if the status is picked up, remove the appointment from our database
+                    Axios.post("http://localhost:3001/deleteAppointment",{
+                        aid: aid
+                    }).then((response) => {
+                        if(response.data.err) 
+                            console.log(response.data.err)
+                        else if (response.data.message) 
+                            console.log(response.data.err)
+                        else {     
+                            if (props.role === "admin") {
+                                console.log("deleting as admin")
+                                Axios.get("http://localhost:3001/getAppointments",{
+                                }).then((response) => {
+                                    if(response.data.err) {
+                                        console.log(response.data.err)
+                                    }
+                                    else if (response.data.message) {
+                                        console.log(response.data.err)
+                                    } 
+                                    else {     
+                                        // populate temporary array
+                                        props.setApps(Array(response.data.data)[0])
+                                    }
+                                });
+                            }
+                            // remove appointment from our table
+                            setAppointments(appointments.filter((appointment,index) => appointments[index].aid !== aid))
+                            showStatusModal(false)
+                        }
+                    });
+                }
+                else { // update appointment otherwise
+                    alert(contents.status)
+                    Axios.post("http://localhost:3001/editAppointment",{
+                                aid: contents.aid,
+                                vid: contents.vid,
+                                dateTime: contents.dateTime+" 09:00:00",
+                                service: contents.service,
+                                additionalInfo: contents.additionalInfo,
+                                status: contents.status
+                            }).then((response) => {
+                                if(response.data.err) {
+                                    console.log(response.data.err)
+                                }
+                                else if (response.data.message) {
+                                    console.log(response.data.err)
+                                } 
+                                else {     
+                                    if (props.role === "admin") {
+                                        console.log("editing as admin")
+                                        Axios.get("http://localhost:3001/getAppointments",{
+                                        }).then((response) => {
+                                            if(response.data.err) {
+                                                console.log(response.data.err)
+                                            }
+                                            else if (response.data.message) {
+                                                console.log(response.data.err)
+                                            } 
+                                            else {     
+                                                // populate temporary array
+                                                props.setApps(Array(response.data.data)[0])
+                                            }
+                                        });
+                                    }
+                                    setTimeout(() => {setValidated(false); showStatusModal(false);}, 1000);
+                                }
+                    });  
+                }
+            }
+            else 
+                disableSubmit(false)
+            
+        }
+        
     }
 
     // handle modify modal buttons
@@ -263,7 +340,8 @@ function MakeModals(props) {
                         vid: contents.vid,
                         dateTime: contents.dateTime+" 09:00:00",
                         service: contents.service,
-                        additionalInfo: contents.additionalInfo
+                        additionalInfo: contents.additionalInfo,
+                        status: "Not Ready"
                     }).then((response) => {
                         if(response.data.err) {
                             console.log(response.data.err)
@@ -272,6 +350,22 @@ function MakeModals(props) {
                             console.log(response.data.err)
                         } 
                         else {
+                            if (props.role === "admin") {
+                                console.log("adding as admin")
+                                Axios.get("http://localhost:3001/getAppointments",{
+                                }).then((response) => {
+                                    if(response.data.err) {
+                                        console.log(response.data.err)
+                                    }
+                                    else if (response.data.message) {
+                                        console.log(response.data.err)
+                                    } 
+                                    else {     
+                                        // populate temporary array
+                                        props.setApps(Array(response.data.data)[0])
+                                    }
+                                });
+                            }
                             // populate appointments table
                             let newAppsTable = appointments
                             let newApp = {
@@ -300,19 +394,7 @@ function MakeModals(props) {
                             }
                             newAppsTable.push(newApp) // add new appointment to user apps table
                             setAppointments(newAppsTable) // set state
-                            Axios.get("http://localhost:3001/getAppointments",{
-                            }).then((response) => {
-                                if(response.data.err) {
-                                    console.log(response.data.err)
-                                }
-                                else if (response.data.message) {
-                                    console.log(response.data.err)
-                                } 
-                                else {     
-                                    // populate temporary array
-                                    props.setApps(Array(response.data.data)[0])
-                                }
-                            });
+                            
                             setTimeout(() => {setValidated(false); showModifyModal(false);},1000); //finished, give short time delay for feedback
                         }
                     });  
@@ -324,7 +406,8 @@ function MakeModals(props) {
                         vid: contents.vid,
                         dateTime: contents.dateTime+" 09:00:00",
                         service: contents.service,
-                        additionalInfo: contents.additionalInfo
+                        additionalInfo: contents.additionalInfo,
+                        status: contents.status
                     }).then((response) => {
                         if(response.data.err) {
                             console.log(response.data.err)
@@ -333,8 +416,24 @@ function MakeModals(props) {
                             console.log(response.data.err)
                         } 
                         else {     
+                            if (props.role === "admin") {
+                                console.log("editing as admin")
+                                Axios.get("http://localhost:3001/getAppointments",{
+                                }).then((response) => {
+                                    if(response.data.err) {
+                                        console.log(response.data.err)
+                                    }
+                                    else if (response.data.message) {
+                                        console.log(response.data.err)
+                                    } 
+                                    else {     
+                                        // populate temporary array
+                                        props.setApps(Array(response.data.data)[0])
+                                    }
+                                });
+                            }
+
                             // set user appointments table
-                            
                             let newUserApps = appointments // set new appointment info
                             newUserApps[index].aid = aid
                             newUserApps[index].vid = contents.vid
@@ -353,21 +452,9 @@ function MakeModals(props) {
                                     break;
                                 }
                             }
+
                             setAppointments(newUserApps) // set apps table
                             // short time delay for feedback
-                            Axios.get("http://localhost:3001/getAppointments",{
-                            }).then((response) => {
-                                if(response.data.err) {
-                                    console.log(response.data.err)
-                                }
-                                else if (response.data.message) {
-                                    console.log(response.data.err)
-                                } 
-                                else {     
-                                    // populate temporary array
-                                    props.setApps(Array(response.data.data)[0])
-                                }
-                            });
                             setTimeout(() => {setValidated(false); showModifyModal(false);}, 1000);
                         }
                     });  
@@ -383,9 +470,13 @@ function MakeModals(props) {
         }
     }
 
+    if (!ready) {
+        return (
+            null
+        )
+    }
     return (
         <>    
-        <br></br>
         <ListGroup className="list-group-flush" style={{ display: (showing ? 'none': 'block') }}>
             <ListGroupItem>{"Name: "+userInfo.firstName+" "+userInfo.lastName}</ListGroupItem>
             <ListGroupItem>{"Email: "+userInfo.email}</ListGroupItem>
@@ -488,11 +579,41 @@ function MakeModals(props) {
                 </div>
         </Modal.Body>                   
         </Modal>
+
+        <Modal show={statusModal} centered id = "statusModal">
+        <Modal.Header >
+        <Modal.Title>Update Status</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+            <p>Set Appointment Status</p>
+            <p></p>
+            <Form noValidate validated={validatedStatus} onSubmit={handleStatusModal}>
+                <Form.Group as={Row} className="mb-3" controlId="status">
+                    <Form.Label column sm="3" className="createAccountLabels">Status</Form.Label>
+                    <Col sm="7" >
+                        <Form.Select value = {contents.status} className="mb-3" required onChange={handleChange}>
+                            <option value="">Select Status</option>
+                            <option value="Not Ready">Not Ready</option>
+                            <option value="Ready">Ready</option>
+                            <option value="Picked Up">Picked up</option>
+                        </Form.Select>
+                        <Form.Control.Feedback type="invalid"></Form.Control.Feedback>
+                    </Col>                           
+                </Form.Group>  
+                <div style={{textAlign: 'center'}}>
+                    <Button type = "submit" disabled = {allowSubmit} variant="primary" size='sm' style={{margin: '5px'}}>Confirm</Button>
+                    <Button id="status_cancel" variant="secondary" size='sm' style={{margin: '5px'}} onClick={handleStatusModal}>Cancel</Button>  
+                </div>             
+                                     
+            </Form>   
+        </Modal.Body>                   
+        </Modal>                   
+
         <div >
             <GenerateAppsList appointments = {appointments} />
         </div>
         <br></br>
-        <Button className="btn" id = "schedule" style={{ display: (showing ? 'inline-block' : 'none') }} onClick={handleCardClick}>Schedule Appointment</Button>
+        <Button className="btn" id = "schedule" style={{ display: (showing ? 'block' : 'none') ,textAlign: 'center'}} onClick={handleCardClick}>Schedule Appointment</Button>
         <br></br> 
         </>
         
@@ -511,6 +632,8 @@ function MakeModals(props) {
             <Card.Header> {appointment.dateTime.substring(5,7)+"/"+appointment.dateTime.substring(8,10)
                 +"/"+appointment.dateTime.substring(0,4)+" - 9 AM Drop Off"}
             </Card.Header>
+            <Card.Header> {"Status: "+appointment.status}
+            </Card.Header>
             <Card.Body >
                 <Card.Title>{"S"+appointment.service.substring(1,appointment.service.length)}</Card.Title>
                 
@@ -519,45 +642,34 @@ function MakeModals(props) {
                     <ListGroupItem>{"License Plate: "+appointment.licensePlate}</ListGroupItem>
                     <ListGroupItem>{"Color: "+appointment.color}</ListGroupItem>
                     <ListGroupItem>{"Additional Info: "+appointment.additionalInfo}</ListGroupItem>
+                    
                 </ListGroup> 
             </Card.Body>
-            <div style = {{textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
-            <Button id = {"modify-"+appointment.aid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify</Button>   
-            <Button id = {"delete-"+appointment.aid} style = {{marginLeft: '5px'}} variant="danger" onClick={handleCardClick}>Delete</Button>
+            <div style = {{display: (showing ? 'block': 'none'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
+                <Button id = {"modify-"+appointment.aid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify</Button>   
+                <Button id = {"delete-"+appointment.aid} style = {{marginLeft: '5px'}} variant="danger" onClick={handleCardClick}>Delete</Button>
+            </div>
+            <div style = {{display: (showing ? 'none': 'block'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
+                <Button id = {"status-"+appointment.aid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify Status</Button>   
             </div>
             </Card>
             </>
         );
-
         return GenerateList
     }
 }
 
 function MakeAdminPage() {
 
-    const [users,setUsers] = useState([])
+
     const [appointments, setApps] = useState([])
-    const [selectedUser, setSelectedUser] = useState(-1);
+    const [users,setUsers] = useState([])
+    const [ready,setReady] = useState(false)
 
     useEffect(() => {
+        console.log("loading admin")
         // useEffect lets us fetch tables once the page is finished loading
-        // TODO display a "loading appointments" message
         async function fetchTables() {
-            // pull user ids
-            await Axios.get("http://localhost:3001/getUsers",{
-            }).then((response) => {
-                if(response.data.err) {
-                    console.log(response.data.err)
-                }
-                else if (response.data.message) {
-                    console.log(response.data.err)
-                } 
-                else {     
-                    // populate temporary array
-                    setUsers(Array(response.data.data)[0])
-                }
-            });
-
             await Axios.get("http://localhost:3001/getAppointments",{
             }).then((response) => {
                 if(response.data.err) {
@@ -571,47 +683,117 @@ function MakeAdminPage() {
                     setApps(Array(response.data.data)[0])
                 }
             });
+
+            await Axios.get("http://localhost:3001/getUsers",{
+            }).then((response) => {
+                if(response.data.err) {
+                    console.log(response.data.err)
+                }
+                else if (response.data.message) {
+                    console.log(response.data.err)
+                } 
+                else {     
+                    // populate temporary array
+                    setUsers(Array(response.data.data)[0])
+                }
+            });
         }
         fetchTables()
+        setReady(true)
     }, []);
+
+    function GenerateTodaysModals() {
+        
+        let update = true
+        console.log("loading today")
+        let date = new Date()
+        date.setHours(9,0,0,0)
+        // filter appointments table to only show the ones on today's date at 9 am (9 am is hardcoded as the drop off time)
+        let filteredApps = appointments.filter(app => new Date(app.dateTime).valueOf() === date.valueOf()) 
+
+        // create a card for each filtered appointment and give it the user info
+        const GenerateList = filteredApps.map((app, index) =>
+            <MakeCards uid = {app.uid} firstName = {app.firstName} lastName = {app.lastName} email = {app.email} 
+               phoneNumber = {app.phoneNumber} aid = {app.aid} setApps = {setApps} Apps = {appointments} role = {"admin"}/>
+        );
+
+        if (filteredApps.length === 0) { // if we don't have any appointments today just return a message saying so
+            return (
+                <div>
+                    <br></br>
+                    <label>No Appointments Today...</label>
+                </div>
+            );
+        }
+        else { // otherwise populate each appointment with its user info
+            console.log("loading today")
+            for (let i = 0; i < filteredApps.length; i++) {
+                for (let j = 0; j < users.length; j++) {
+                    if (filteredApps[i].uid === users[j].uid) {
+                        filteredApps[i].firstName = users[j].firstName
+                        filteredApps[i].lastName = users[j].lastName
+                        filteredApps[i].email = users[j].email
+                        filteredApps[i].phoneNumber = users[j].phoneNumber
+                    }
+                }
+            }
+            update = false
+            return GenerateList // then generate the appointment cards
+        }
+    }
+
+    // render the today's appointments list and customer appointments list
+    // note that the customer list requires its own function so that when a customer is selected
+    // it doesn't rerender the today's appointment list
+    // also note that they both use the same appointments table so changing its state will cause both rerender
+    if (ready) {
+        return (
+            <>
+            <br></br>
+            <label>Today's Appointments</label>
+            <br></br>
+            <div>
+                <GenerateTodaysModals/> 
+            </div>
+            <label>All Customer Appointments</label>
+            <div>
+                <MakeCustomerApps setApps = {setApps} appointments = {appointments} users = {users}/>
+            </div>
+            </>
+        );
+    }
+    else {
+        return (
+          <label>loading...</label>  
+        );
+    }
+    
+}
+
+function MakeCustomerApps(props) {
+    console.log("updating customer")
+    const [selectedUser, setSelectedUser] = useState(-1);
 
     const handleChange = (event) => {
         setSelectedUser(event.target.value)
     }
-
-    function GenerateModals() {
-        let filteredUsers = users.filter(use => use.uid === Number(selectedUser))
+    function GenerateCustomerModals() {
+        let filteredUsers = props.users.filter(use => use.uid === Number(selectedUser)) // filter users array by selected user
         const GenerateList = filteredUsers.map((user, index) =>
-            <MakeModals uid = {user.uid} filterDate = {null} setApps = {setApps} Apps = {appointments}/>
+            <MakeCards uid = {user.uid} aid = {null} setApps = {props.setApps} Apps = {props.appointments} role = {"admin"}/>
         );
         return GenerateList
     }
-
-    function GenerateModals2() {
-        let date = new Date()
-        date.setDate(date.getDate()+1)
-        date.setHours(9,0,0,0)
-        let filteredApps = appointments.filter(app => new Date(app.dateTime).valueOf() === date.valueOf()) 
-        console.log(filteredApps)
-        const GenerateList = filteredApps.map((app, index) =>
-            <MakeModals uid = {app.uid} aid = {app.aid} filterDate = {date.valueOf()} setApps = {setApps} Apps = {appointments}/>
-        );
-        return GenerateList
-    }
-
+    
     return (
-        <>
-         <div>
-            <label>today's appointments</label>
-            <GenerateModals2 />
-        </div>
+        <>      
         <Form>
              <Form.Group style = {{marginTop: "25px", width: "360px"}} as={Row} onChange = {handleChange} className="mb-3" controlId="dateMenu">
                     <Form.Label column sm="3" className="createAccountLabels">Customer</Form.Label>
                     <Col sm="7" >
                         <Form.Select aria-label="Default select example" className="mb-3" name="priority">
                             <option value = {-1}>Customer...</option>
-                            {users.map((user) => {
+                            {props.users.map((user) => {
                                 return <option value ={user.uid}>
                                    {user.firstName+" "+user.lastName}
                                 </option>;
@@ -621,15 +803,16 @@ function MakeAdminPage() {
                 </Form.Group> 
         </Form>
         <div>
-            <GenerateModals />
+            <GenerateCustomerModals/>
         </div>
         </>
-    );
+    )
 }
 
 class ViewAppointments extends React.Component { 
+
     render() {
-        if (this.props.role !== "admin") {
+        if (this.props.role === "admin") { // role check
             return (
                 <>
                 <Row style={{padding: '1%'}}>
@@ -645,12 +828,12 @@ class ViewAppointments extends React.Component {
                 <>
                 <Row style={{padding: '1%'}}>
                     <div className="List">     
-                        <MakeModals uid = {25}/>
+                        <MakeCards uid = {this.props.uid} aid = {null} role = {"user"}/>
                     </div>     
                 </Row> 
                 </>
-                );
-            }
+            );
+        }
     }      
 }
 
