@@ -1,0 +1,12 @@
+POST  http://localhost:3001/login
+Content-Type: application/json
+
+{
+    "email": "stange@gmail.com",
+    "password": "password"
+}
+
+###
+
+GET http://localhost:3001/getAppointments
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mzk1LCJpYXQiOjE2MzcwMzQxMDJ9.sCYot7pfosu9b8CpDmU7y20SQEajDBBgOB3XGQdQOaQ
