@@ -19,8 +19,11 @@ app.post("/editAppointment", customerController.editAppointment)
 app.post("/addVehicle", customerController.addVehicle)
 app.post("/deleteAppointment", customerController.deleteAppointment)
 app.post("/deleteVehicle", customerController.deleteVehicle)
-app.get("/getUser", customerController.getUser)
-
-// admin api calls
+app.post("/getUser", customerController.getUser)
+app.get("/getUsers", customerController.getUsers)
+app.get("/getAppointmentDates", customerController.getAppointmentDates)
+app.post("/getUserAppointments", customerController.getUserAppointments)
+app.post("/getAppointmentsByDate", customerController.getAppointmentsByDate)
+app.post("/getAppointmentByAppId", customerController.getAppointmentByAppId)
 app.get("/getAppointmentsAdmin", verifyJWT, adminController.getAppointments)
 module.exports = {app}

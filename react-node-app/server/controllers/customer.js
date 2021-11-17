@@ -32,11 +32,86 @@ createAcc(req, res) {
     
 },
 
-getAppointments(req, res){
+addAppointment(req, res){
+    const uid = req.body.uid
+    const vid = req.body.vid
+    const dateTime = req.body.dateTime
+    const service = req.body.service
+    const additionalInfo = req.body.additionalInfo
+    const status = req.body.status
+    const sqlInsert = 
+    "INSERT INTO appointmenttable (uid, vid,dateTime,service,additionalInfo,status) VALUES (?,?,?,?,?,?);"
+    db.query(sqlInsert, [uid, vid, dateTime, service, additionalInfo, status]
+        , (err, result) => {
+            if(err){
+                res.send({err: "db query error"});
+              }
+              else if (result != ""){
+                var redir = { redirect: "/viewAppointment" };
+                return res.json(redir);
+              }              
+        });
+},
+
+getAppointmentDates(req, res) {
+  const sqlInsert = 
+  "SELECT dateTime FROM appointmenttable"
+  db.query(sqlInsert
+      , (err, result) => {
+          if(err){
+              res.send({err: err});
+            }
+            else if (result != ""){
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+            }
+            else{
+              res.send({message: "cannot get appointment information"})
+            }
+      });
+},
+
+getUserAppointments(req, res){
   const uid = req.body.uid
   const sqlInsert = 
   "SELECT * FROM appointmenttable WHERE uid = ?"
   db.query(sqlInsert, [uid]
+      , (err, result) => {
+          if(err){
+              res.send({err: err});
+            }
+            else if (result != ""){
+              
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+            }
+            else{
+              res.send({message: "cannot get appointment information"})
+            }
+      });
+},
+
+getAppointmentsByDate(req, res){
+  const dateTime = req.body.dateTime
+  const sqlInsert = 
+  "SELECT * FROM appointmenttable WHERE dateTime = ?"
+  db.query(sqlInsert, [dateTime]
+      , (err, result) => {
+          if(err){
+              res.send({err: err});
+            }
+            else if (result != ""){
+              return res.json({length: result.length});
+            }
+            else{
+              return res.json({length: 0});
+            }
+      });
+},
+
+getAppointmentByAppId(req, res){
+  const aid = req.body.aid
+  const sqlInsert = 
+  "SELECT * FROM appointmenttable WHERE aid = ?"
+  db.query(sqlInsert, [aid]
       , (err, result) => {
           if(err){
               res.send({err: err});
@@ -130,7 +205,7 @@ editAppointment(req, res){
   const dateTime = req.body.dateTime
   const service = req.body.service
   const additionalInfo = req.body.additionalInfo
-  const status = "Not Ready"
+  const status = req.body.status
   const sqlInsert = 
 "UPDATE appointmenttable SET vid = ?, dateTime = ?, service = ?, additionalInfo = ?, status = ? WHERE aid = ?;"
 db.query(sqlInsert, [vid, dateTime, service, additionalInfo, status, aid], (err, result) => {
@@ -198,7 +273,7 @@ deleteVehicle(req, res){
   const vid = req.body.vid
   const sqlInsert = 
 "DELETE FROM vehicletable WHERE vid = ?;"
-db.query(sqlInsert, [aid], (err, result) => {
+db.query(sqlInsert, [vid], (err, result) => {
 
   if(err){
     res.send({err: err});
@@ -214,6 +289,7 @@ db.query(sqlInsert, [aid], (err, result) => {
 });
 
 },
+
 getUser(req, res){
 	const uid = req.body.uid
     const sqlInsert = 
@@ -225,7 +301,7 @@ getUser(req, res){
               }
               else if (result != ""){
                 var user = JSON.parse(JSON.stringify(result));
-				return res.json(user);
+                return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
               }
               else{
                 res.send({message: "cannot get user information"})
@@ -233,6 +309,23 @@ getUser(req, res){
         });
 },
 
+
+getUsers(req, res){
+    const sqlInsert = 
+    "SELECT uid, firstName, lastName, email, phoneNumber FROM usertable"
+    db.query(sqlInsert
+        , (err, result) => {
+            if(err){
+                res.send({err: err});
+              }
+              else if (result != ""){
+                return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+              }
+              else{
+                res.send({message: "cannot get user information"})
+              }
+        });
+},
 
 };
 module.exports = customerController;

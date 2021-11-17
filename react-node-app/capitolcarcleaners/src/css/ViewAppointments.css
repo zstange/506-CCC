@@ -32,7 +32,31 @@
   font-family: factoria,serif;
   font-weight: 100;
   font-style: normal;
+  font-size: 20px;
 }
+
+.TodayHeader {
+  text-align: center;
+  vertical-align: middle;
+  margin-bottom: 1px;
+  color: black;
+  font-family: factoria,serif;
+  font-weight: 100;
+  font-style: normal;
+  font-size: 35px;
+}
+
+.AllAppHeader {
+  text-align: center;
+  vertical-align: middle;
+  margin-bottom: 1px;
+  color: black;
+  font-family: factoria,serif;
+  font-weight: 100;
+  font-style: normal;
+  font-size: 27px;
+}
+
 .createAccountLabels {
   text-align: left;
   vertical-align: left;
@@ -47,4 +71,16 @@
   font-family: factoria,serif;
   font-weight: 100;
   font-style: normal;
+}
+
+.grid {
+  min-height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.grid > div {
+  flex-basis: calc(20%-40px)
 }
