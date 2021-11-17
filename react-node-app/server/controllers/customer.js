@@ -38,7 +38,7 @@ addAppointment(req, res){
     const dateTime = req.body.dateTime
     const service = req.body.service
     const additionalInfo = req.body.additionalInfo
-    const status = "Not Ready"
+    const status = req.body.status
     const sqlInsert = 
     "INSERT INTO appointmenttable (uid, vid,dateTime,service,additionalInfo,status) VALUES (?,?,?,?,?,?);"
     db.query(sqlInsert, [uid, vid, dateTime, service, additionalInfo, status]

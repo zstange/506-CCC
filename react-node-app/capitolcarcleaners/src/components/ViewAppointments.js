@@ -1,6 +1,7 @@
 import React, {useEffect,useState} from "react"; 
 import Axios from 'axios';
 import '../css/ViewAppointments.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "react-bootstrap";
 
 function MakeCards(props) {
@@ -9,7 +10,8 @@ function MakeCards(props) {
     const [validatedStatus, setValidatedStatus] = useState(false)
     const [contents, setContents] = useState({service: "", dateTime: "", vid: -1, additionalInfo: "", aid: -1, status: ""});
     const [userInfo, setUserInfo] = useState({firstName: "", lastName: "", email: "", phoneNumber: ""})
-    const [showing, setShowing] = useState(true)
+    const [showAdminInfo, setShowingAdmin] = useState(false)
+    const [showStatus, setShowStatus] = useState(false)
     const [appointments, setAppointments] = useState([])
     const [userVehicles, setUserVehicles] = useState([])
     const [modifyModal, showModifyModal] = useState(false)
@@ -21,17 +23,14 @@ function MakeCards(props) {
     const [ready, setReady] = useState(false)
     const [statusModal, showStatusModal] = useState(false)
 
-    useEffect(() => {
-        
+    useEffect(() => { 
         // useEffect lets us fetch tables once the page is finished loading
         async function fetchTables() {
-            console.log()
             // pull appointments table from the database
             let apps = [] // temporary array so we can set the table state later    
 
             // if we were given an aid, that means we should fill the appointments table with only that single appointment
             if (props.aid !== null) { 
-                console.log("calling")
                 await Axios.post("http://localhost:3001/getAppointmentByAppId",{
                     aid: props.aid
                 }).then((response) => {
@@ -45,8 +44,8 @@ function MakeCards(props) {
                         apps = Array(response.data.data)[0]
                     }
                 });
-                setShowing(false)
-                setUserInfo({firstName: props.firstName, lastName: props.lastName, email: props.email, phoneNumber: props.phoneNumber})
+                
+                setShowStatus(true)
             }
             else { // otherwise just fill the appointments table with all the user's appointments
                 await Axios.post("http://localhost:3001/getUserAppointments",{
@@ -62,8 +61,14 @@ function MakeCards(props) {
                         // populate temporary array
                         apps = Array(response.data.data)[0]
                     }    
-            });
+                });
             }
+            
+            if (props.role === "admin") {
+                setShowingAdmin(true)
+                setUserInfo({firstName: props.firstName, lastName: props.lastName, email: props.email, phoneNumber: props.phoneNumber})
+            }
+                
 
             // pull the user's vehicles from the database
             let vehicles = [] // temp array so we can set the state later
@@ -104,10 +109,9 @@ function MakeCards(props) {
             setReady(true)
         }
         fetchTables()
-    }, [id, props.aid,props.firstName, props.lastName, props.email, props.phoneNumber, props.Apps]);
+    }, [id, props.aid,props.firstName, props.lastName, props.email, props.phoneNumber, props.Apps, props.role]);
     
     const handleChange = (event) => {
-        console.log(event.target.value)
         if (event.target.id === "vid")
             setContents({...contents, [event.target.id]: event.target.value})
         else
@@ -151,7 +155,6 @@ function MakeCards(props) {
             showDeleteModal(true)
         else // status modal 
             showStatusModal(true)
-
     }
 
     // handle delete modal buttons
@@ -170,7 +173,6 @@ function MakeCards(props) {
                     console.log(response.data.err)
                 else {     
                     if (props.role === "admin") {
-                        console.log("deleting as admin")
                         Axios.get("http://localhost:3001/getAppointments",{
                         }).then((response) => {
                             if(response.data.err) {
@@ -195,92 +197,52 @@ function MakeCards(props) {
 
     // handle status modal buttons
     const handleStatusModal = (event) => {
-        
         disableSubmit(true)
-        let aid = contents.aid // get aid from contents array
         if (event.target.id === "status_cancel") {
             showStatusModal(false) // cancel lets us just close the modal
             setValidatedStatus(false)
         }
         else {
             event.preventDefault();
-        
             setValidatedStatus(true)
+
             if (event.currentTarget.checkValidity() === true) {
-                if (contents.status === "Picked Up") { // otherwise if the status is picked up, remove the appointment from our database
-                    Axios.post("http://localhost:3001/deleteAppointment",{
-                        aid: aid
-                    }).then((response) => {
-                        if(response.data.err) 
-                            console.log(response.data.err)
-                        else if (response.data.message) 
-                            console.log(response.data.err)
-                        else {     
-                            if (props.role === "admin") {
-                                console.log("deleting as admin")
-                                Axios.get("http://localhost:3001/getAppointments",{
-                                }).then((response) => {
-                                    if(response.data.err) {
-                                        console.log(response.data.err)
-                                    }
-                                    else if (response.data.message) {
-                                        console.log(response.data.err)
-                                    } 
-                                    else {     
-                                        // populate temporary array
-                                        props.setApps(Array(response.data.data)[0])
-                                    }
-                                });
+                Axios.post("http://localhost:3001/editAppointment",{
+                            aid: contents.aid,
+                            vid: contents.vid,
+                            dateTime: contents.dateTime+" 09:00:00",
+                            service: contents.service,
+                            additionalInfo: contents.additionalInfo,
+                            status: contents.status
+                        }).then((response) => {
+                            if(response.data.err) {
+                                console.log(response.data.err)
                             }
-                            // remove appointment from our table
-                            setAppointments(appointments.filter((appointment,index) => appointments[index].aid !== aid))
-                            showStatusModal(false)
-                        }
-                    });
-                }
-                else { // update appointment otherwise
-                    alert(contents.status)
-                    Axios.post("http://localhost:3001/editAppointment",{
-                                aid: contents.aid,
-                                vid: contents.vid,
-                                dateTime: contents.dateTime+" 09:00:00",
-                                service: contents.service,
-                                additionalInfo: contents.additionalInfo,
-                                status: contents.status
-                            }).then((response) => {
-                                if(response.data.err) {
-                                    console.log(response.data.err)
-                                }
-                                else if (response.data.message) {
-                                    console.log(response.data.err)
-                                } 
-                                else {     
-                                    if (props.role === "admin") {
-                                        console.log("editing as admin")
-                                        Axios.get("http://localhost:3001/getAppointments",{
-                                        }).then((response) => {
-                                            if(response.data.err) {
-                                                console.log(response.data.err)
-                                            }
-                                            else if (response.data.message) {
-                                                console.log(response.data.err)
-                                            } 
-                                            else {     
-                                                // populate temporary array
-                                                props.setApps(Array(response.data.data)[0])
-                                            }
-                                        });
-                                    }
-                                    setTimeout(() => {setValidated(false); showStatusModal(false);}, 1000);
-                                }
-                    });  
-                }
+                            else if (response.data.message) {
+                                console.log(response.data.err)
+                            } 
+                            else {        
+                                setTimeout(() => {setValidated(false); showStatusModal(false); 
+                                    Axios.get("http://localhost:3001/getAppointments",{
+                                    }).then((response) => {
+                                        if(response.data.err) {
+                                            console.log(response.data.err)
+                                        }
+                                        else if (response.data.message) {
+                                            console.log(response.data.err)
+                                        } 
+                                        else {     
+                                            // populate temporary array
+                                            props.setApps(Array(response.data.data)[0])
+                                        }
+                                    });
+                                }, 1000);  
+                            }
+                });
             }
             else 
                 disableSubmit(false)
-            
-        }
-        
+        }     
     }
 
     // handle modify modal buttons
@@ -334,6 +296,12 @@ function MakeCards(props) {
                     
                 // if we have less than 4 appointments on the selected day
                 // and are scheduling a new appointment, populate a new appointment
+                let tempStatus
+                if (props.role === "admin") 
+                    tempStatus = contents.status
+                else
+                    tempStatus = "Not Ready"
+
                 if (aid === -1 && appNum < 4) {                 
                     Axios.post("http://localhost:3001/addAppointment",{
                         uid: id,
@@ -341,7 +309,7 @@ function MakeCards(props) {
                         dateTime: contents.dateTime+" 09:00:00",
                         service: contents.service,
                         additionalInfo: contents.additionalInfo,
-                        status: "Not Ready"
+                        status: tempStatus
                     }).then((response) => {
                         if(response.data.err) {
                             console.log(response.data.err)
@@ -351,20 +319,21 @@ function MakeCards(props) {
                         } 
                         else {
                             if (props.role === "admin") {
-                                console.log("adding as admin")
-                                Axios.get("http://localhost:3001/getAppointments",{
-                                }).then((response) => {
-                                    if(response.data.err) {
-                                        console.log(response.data.err)
-                                    }
-                                    else if (response.data.message) {
-                                        console.log(response.data.err)
-                                    } 
-                                    else {     
-                                        // populate temporary array
-                                        props.setApps(Array(response.data.data)[0])
-                                    }
-                                });
+                                setTimeout(() => {setValidated(false); showModifyModal(false);
+                                    Axios.get("http://localhost:3001/getAppointments",{
+                                    }).then((response) => {
+                                        if(response.data.err) {
+                                            console.log(response.data.err)
+                                        }
+                                        else if (response.data.message) {
+                                            console.log(response.data.err)
+                                        } 
+                                        else {     
+                                            // populate temporary array
+                                            props.setApps(Array(response.data.data)[0])
+                                        }
+                                    });
+                                },1000);                       
                             }
                             // populate appointments table
                             let newAppsTable = appointments
@@ -374,6 +343,7 @@ function MakeCards(props) {
                                 dateTime: contents.dateTime+" 09:00:00",
                                 service: contents.service,
                                 additionalInfo: contents.additionalInfo,
+                                status: contents.status,
                                 make: null,
                                 model: null,
                                 year: null,
@@ -417,20 +387,21 @@ function MakeCards(props) {
                         } 
                         else {     
                             if (props.role === "admin") {
-                                console.log("editing as admin")
-                                Axios.get("http://localhost:3001/getAppointments",{
-                                }).then((response) => {
-                                    if(response.data.err) {
-                                        console.log(response.data.err)
-                                    }
-                                    else if (response.data.message) {
-                                        console.log(response.data.err)
-                                    } 
-                                    else {     
-                                        // populate temporary array
-                                        props.setApps(Array(response.data.data)[0])
-                                    }
-                                });
+                                setTimeout(() => {setValidated(false); showModifyModal(false);
+                                    Axios.get("http://localhost:3001/getAppointments",{
+                                        }).then((response) => {
+                                        if(response.data.err) {
+                                            console.log(response.data.err)
+                                        }
+                                        else if (response.data.message) {
+                                            console.log(response.data.err)
+                                        } 
+                                        else {     
+                                            // populate temporary array
+                                            props.setApps(Array(response.data.data)[0])
+                                        }
+                                    });
+                                }, 1000);   
                             }
 
                             // set user appointments table
@@ -475,13 +446,11 @@ function MakeCards(props) {
             null
         )
     }
+
     return (
+        
         <>    
-        <ListGroup className="list-group-flush" style={{ display: (showing ? 'none': 'block') }}>
-            <ListGroupItem>{"Name: "+userInfo.firstName+" "+userInfo.lastName}</ListGroupItem>
-            <ListGroupItem>{"Email: "+userInfo.email}</ListGroupItem>
-            <ListGroupItem>{"Phone Number: "+userInfo.phoneNumber}</ListGroupItem>
-        </ListGroup> 
+        <div>
         <Modal show={modifyModal} centered id = "modifyModal">
         <Modal.Header >
         <Modal.Title>{modifyTitle}</Modal.Title>
@@ -558,6 +527,20 @@ function MakeCards(props) {
                         />
                     </Col>                           
                 </Form.Group> 
+                <div style={{ display: (showAdminInfo ? 'block': 'none') ,textAlign: 'center'}}> 
+                <Form.Group as={Row} className="mb-3" controlId="status">
+                    <Form.Label column sm="3" className="createAccountLabels">Status</Form.Label>
+                    <Col sm="7" >
+                        <Form.Select value = {contents.status} className="mb-3" required onChange={handleChange}>
+                            <option value="">Select Status</option>
+                            <option value="Not Ready">Not Ready</option>
+                            <option value="Ready">Ready</option>
+                            <option value="Picked Up">Picked up</option>
+                        </Form.Select>
+                        <Form.Control.Feedback type="invalid"></Form.Control.Feedback>
+                    </Col>                           
+                </Form.Group>
+                </div>
                 <div style={{textAlign: 'center'}}>
                     <Button type = "submit" disabled = {allowSubmit} variant="primary" size='sm' style={{margin: '5px'}}>Confirm</Button>
                     <Button id="modify_cancel" variant="secondary" size='sm' style={{margin: '5px'}} onClick={handleModifyModal}>Cancel</Button>  
@@ -608,13 +591,20 @@ function MakeCards(props) {
             </Form>   
         </Modal.Body>                   
         </Modal>                   
-
+        <div className = "List" style ={{display: (showStatus || !showAdminInfo ? 'none':'block'),margin:"auto", marginBottom:"-25px",fontSize:"20px",width: window.innerWidth/4}}>
+        <ListGroup >
+            <ListGroupItem>{"Name: "+userInfo.firstName+" "+userInfo.lastName}</ListGroupItem>
+            <ListGroupItem>{"Email: "+userInfo.email}</ListGroupItem>
+            <ListGroupItem>{"Phone Number: "+userInfo.phoneNumber}</ListGroupItem>
+        </ListGroup> 
+        </div>
         <div >
             <GenerateAppsList appointments = {appointments} />
         </div>
         <br></br>
-        <Button className="btn" id = "schedule" style={{ display: (showing ? 'block' : 'none') ,textAlign: 'center'}} onClick={handleCardClick}>Schedule Appointment</Button>
-        <br></br> 
+        <Button className="btn " id = "schedule" style={{ display: (showStatus ? 'none':'block'), margin:"auto"}} onClick={handleCardClick}>Schedule Appointment</Button>
+        
+        </div>
         </>
         
     );
@@ -625,10 +615,9 @@ function MakeCards(props) {
             return Number(new Date(a.dateTime) - new Date(b.dateTime))
 
         });
-        const GenerateList = appointments.map((appointment, index) =>
+        const GenerateList = ((appointment, index) =>
             <>
-            <br></br>
-            <Card id = {"card_"+appointment.aid} style = {{width: window.innerWidth/4 }}>
+            <Card id = {"card_"+appointment.aid} style = {{width: window.innerWidth/4, margin:"15px"}} className = "box">
             <Card.Header> {appointment.dateTime.substring(5,7)+"/"+appointment.dateTime.substring(8,10)
                 +"/"+appointment.dateTime.substring(0,4)+" - 9 AM Drop Off"}
             </Card.Header>
@@ -636,26 +625,30 @@ function MakeCards(props) {
             </Card.Header>
             <Card.Body >
                 <Card.Title>{"S"+appointment.service.substring(1,appointment.service.length)}</Card.Title>
-                
+                <ListGroup className="list-group-flush" style={{display: (showStatus ? 'block':'none'), margin:"auto", justifyContent:"center"}}>
+                    <ListGroupItem>{"Name: "+userInfo.firstName+" "+userInfo.lastName}</ListGroupItem>
+                    <ListGroupItem>{"Email: "+userInfo.email}</ListGroupItem>
+                    <ListGroupItem>{"Phone Number: "+userInfo.phoneNumber}</ListGroupItem>
+                    <ListGroupItem></ListGroupItem>
+                </ListGroup> 
                 <ListGroup className="list-group-flush">
                     <ListGroupItem>{"Vehicle: "+appointment.year+" "+appointment.make+"-"+appointment.model}</ListGroupItem>
                     <ListGroupItem>{"License Plate: "+appointment.licensePlate}</ListGroupItem>
                     <ListGroupItem>{"Color: "+appointment.color}</ListGroupItem>
                     <ListGroupItem>{"Additional Info: "+appointment.additionalInfo}</ListGroupItem>
-                    
                 </ListGroup> 
             </Card.Body>
-            <div style = {{display: (showing ? 'block': 'none'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
+            <div style = {{display: (showStatus ? 'none': 'block'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
                 <Button id = {"modify-"+appointment.aid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify</Button>   
                 <Button id = {"delete-"+appointment.aid} style = {{marginLeft: '5px'}} variant="danger" onClick={handleCardClick}>Delete</Button>
             </div>
-            <div style = {{display: (showing ? 'none': 'block'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
+            <div style = {{display: (showStatus ? 'block': 'none'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
                 <Button id = {"status-"+appointment.aid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify Status</Button>   
             </div>
             </Card>
             </>
         );
-        return GenerateList
+        return <div className = "grid" >{appointments.map(GenerateList)}</div>
     }
 }
 
@@ -667,7 +660,6 @@ function MakeAdminPage() {
     const [ready,setReady] = useState(false)
 
     useEffect(() => {
-        console.log("loading admin")
         // useEffect lets us fetch tables once the page is finished loading
         async function fetchTables() {
             await Axios.get("http://localhost:3001/getAppointments",{
@@ -703,30 +695,29 @@ function MakeAdminPage() {
     }, []);
 
     function GenerateTodaysModals() {
-        
-        let update = true
-        console.log("loading today")
         let date = new Date()
         date.setHours(9,0,0,0)
         // filter appointments table to only show the ones on today's date at 9 am (9 am is hardcoded as the drop off time)
-        let filteredApps = appointments.filter(app => new Date(app.dateTime).valueOf() === date.valueOf()) 
+        let filteredApps = appointments.filter(app => new Date(app.dateTime).valueOf() === date.valueOf() && app.status !== "Picked Up") 
 
         // create a card for each filtered appointment and give it the user info
-        const GenerateList = filteredApps.map((app, index) =>
+        const GenerateList = ((app, index) =>
             <MakeCards uid = {app.uid} firstName = {app.firstName} lastName = {app.lastName} email = {app.email} 
                phoneNumber = {app.phoneNumber} aid = {app.aid} setApps = {setApps} Apps = {appointments} role = {"admin"}/>
         );
 
         if (filteredApps.length === 0) { // if we don't have any appointments today just return a message saying so
             return (
-                <div>
-                    <br></br>
-                    <label>No Appointments Today...</label>
+                <div style={{marginBottom: "25px"}}>
+                     <ListGroup className="list-group-flush">
+                        <ListGroupItem></ListGroupItem>
+                        <ListGroupItem style = {{fontSize: "20px"}}>No Appointments Today...</ListGroupItem>
+                        <ListGroupItem></ListGroupItem>
+                    </ListGroup> 
                 </div>
             );
         }
         else { // otherwise populate each appointment with its user info
-            console.log("loading today")
             for (let i = 0; i < filteredApps.length; i++) {
                 for (let j = 0; j < users.length; j++) {
                     if (filteredApps[i].uid === users[j].uid) {
@@ -737,8 +728,7 @@ function MakeAdminPage() {
                     }
                 }
             }
-            update = false
-            return GenerateList // then generate the appointment cards
+            return <div className = "grid" >{filteredApps.map(GenerateList)}</div> // then generate the appointment cards
         }
     }
 
@@ -750,12 +740,12 @@ function MakeAdminPage() {
         return (
             <>
             <br></br>
-            <label>Today's Appointments</label>
+            <label className="TodayHeader">Today's Appointments</label>
             <br></br>
             <div>
                 <GenerateTodaysModals/> 
             </div>
-            <label>All Customer Appointments</label>
+            <label className="AllAppHeader">All Customer Appointments</label>
             <div>
                 <MakeCustomerApps setApps = {setApps} appointments = {appointments} users = {users}/>
             </div>
@@ -771,27 +761,27 @@ function MakeAdminPage() {
 }
 
 function MakeCustomerApps(props) {
-    console.log("updating customer")
     const [selectedUser, setSelectedUser] = useState(-1);
-
     const handleChange = (event) => {
         setSelectedUser(event.target.value)
     }
     function GenerateCustomerModals() {
         let filteredUsers = props.users.filter(use => use.uid === Number(selectedUser)) // filter users array by selected user
         const GenerateList = filteredUsers.map((user, index) =>
-            <MakeCards uid = {user.uid} aid = {null} setApps = {props.setApps} Apps = {props.appointments} role = {"admin"}/>
+            <MakeCards uid = {user.uid} aid = {null} setApps = {props.setApps} Apps = {props.appointments} role = {"admin"}
+            firstName = {user.firstName} lastName = {user.lastName} email = {user.email}  phoneNumber = {user.phoneNumber}/>
         );
         return GenerateList
     }
     
     return (
         <>      
+        <br></br>
         <Form>
-             <Form.Group style = {{marginTop: "25px", width: "360px"}} as={Row} onChange = {handleChange} className="mb-3" controlId="dateMenu">
+             <Form.Group style = {{width: "360px", margin:"auto", fontSize:"22px"}} as={Row} onChange = {handleChange} className="mb-3" controlId="dateMenu">
                     <Form.Label column sm="3" className="createAccountLabels">Customer</Form.Label>
-                    <Col sm="7" >
-                        <Form.Select aria-label="Default select example" className="mb-3" name="priority">
+                    <Col sm="8" >
+                        <Form.Select style = {{marginLeft:"20px",fontSize:"18px"}} aria-label="Default select example" className="mb-3" name="priority">
                             <option value = {-1}>Customer...</option>
                             {props.users.map((user) => {
                                 return <option value ={user.uid}>
@@ -816,7 +806,7 @@ class ViewAppointments extends React.Component {
             return (
                 <>
                 <Row style={{padding: '1%'}}>
-                    <div className="List">     
+                    <div className = "List">     
                        <MakeAdminPage/>
                     </div>     
                 </Row> 
@@ -827,7 +817,7 @@ class ViewAppointments extends React.Component {
             return (
                 <>
                 <Row style={{padding: '1%'}}>
-                    <div className="List">     
+                    <div className="Grid">     
                         <MakeCards uid = {this.props.uid} aid = {null} role = {"user"}/>
                     </div>     
                 </Row> 
