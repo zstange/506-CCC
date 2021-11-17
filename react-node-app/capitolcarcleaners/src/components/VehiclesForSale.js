@@ -2,7 +2,7 @@ import React, {useEffect,useState} from "react";
 import Axios from 'axios';
 import '../css/VehiclesForSale.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "react-bootstrap";
+import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal, Image, Carousel} from "react-bootstrap";
 
 function MakeCars(props) {
     const [validated, setValidated] = useState(false)
@@ -223,6 +223,35 @@ function MakeCars(props) {
 
     function GenerateAppsList(props) {
         let vehicles = props.vehicles
+        
+        function GetCarouselImages(props) {
+            const [images, setImages] = useState([])
+
+            useEffect(() => { 
+                async function fetchTables() {
+                    // pull vehicles table from the database
+                    let images = [] // temporary array so we can set the table state later    
+        
+                    // get images here
+                }
+                fetchTables()
+            }, [props.iid]);
+            
+            const MakeImages = ((image) => {
+                return (
+                    <Carousel.Item interval={3000}>
+                    <Image
+                        style={{width: 'inherit'}}
+                        src={props.image}
+                        rounded
+                    />
+                    </Carousel.Item>
+                )
+            });
+            
+            return MakeImages;
+        }
+
         const GenerateList = ((vehicle, index) =>
             <>
             <Card id = {"card_"+vehicle.iid} style = {{width: window.innerWidth/4, margin:"15px"}} className = "box">
@@ -235,6 +264,9 @@ function MakeCars(props) {
                     <ListGroupItem>c</ListGroupItem>
                     <ListGroupItem>d</ListGroupItem>
                 </ListGroup> 
+                <Carousel style={{margin: '100px', width: '50%'}}>
+                    <GetCarouselImages iid = {vehicle.iid}/>
+                </Carousel>
             </Card.Body>
             <div style = {{display: (showAdminInfo ? 'block': 'none'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
                 <Button id = {"modify-"+vehicle.iid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify</Button>   
