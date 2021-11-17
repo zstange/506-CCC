@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import "../css/CustomerHomepage.css"
 import ViewAppointments from "./ViewAppointments";
 import Axios from 'axios';
@@ -8,6 +8,7 @@ import CustomerInfo from "./CustomerInfo";
 import CustomerVehicles from "./CustomerVehicles";
 
 class CustomerHomepage extends React.Component {
+   
     constructor(props) {
         super(props);
         this.state = {
@@ -49,42 +50,40 @@ class CustomerHomepage extends React.Component {
         this.setState({ showAddVehicle: false });
     }
 
-    componentDidMount() {        
-        console.log(this.props.userId.value)
+    componentDidUpdate(prevProps) {  
+        if(prevProps.userId.value != this.props.userId.value) {
+            console.log(this.props.userId.value)
 
-         Axios.get("http://localhost:3001/getUser", {
-            uid: this.props.userId.value
-        }).then((response1) => {
-            console.log("Response from getUser " + JSON.stringify(response1))
-            //console.log("Response from getUser " + JSON.stringify(response1))
-            this.setState({userData: JSON.stringify(response1)})
-        });
-        
-         Axios.post("http://localhost:3001/getVehicles",{
-            uid: this.props.userId.value
-        }).then((response) => {
-            console.log("Response from getUser " + JSON.stringify(response))
-            if(response.data.err) {
-                console.log("ERR: " + JSON.stringify(response.data.err))
-            }
-            else if (response.data.message) {
-                // No vehicles added to account
-                console.log(JSON.stringify(response.data.message))
-
-            } 
-            else {     
-                var vehicles = []
-                vehicles = Array(response.data.data)[0]
-                this.setState({userVehicles: vehicles})
-            }
-        }); 
-        
-        //console.log("CDM ran")      
-        
+            Axios.get("http://localhost:3001/getUser", {
+               uid: this.props.userId.value
+           }).then((response1) => {
+                console.log("Response from getUser " + JSON.stringify(response1))
+                var userInfo = []
+                userInfo = Array(response1.data.data)[0]
+                this.setState({userData: userInfo})
+           });
+           
+            Axios.post("http://localhost:3001/getVehicles",{
+               uid: this.props.userId.value
+           }).then((response) => {
+               console.log("Response from getUser " + JSON.stringify(response))
+               if(response.data.err) {
+                   console.log("ERR: " + JSON.stringify(response.data.err))
+               }
+               else if (response.data.message) {
+                   // No vehicles added to account
+                   console.log(JSON.stringify(response.data.message))   
+               } 
+               else {     
+                   var vehicles = []
+                   vehicles = Array(response.data.data)[0]
+                   this.setState({userVehicles: vehicles})
+               }
+           }); 
+        }    
     }
 
     render() {
-        
         return (
             <>                
                 <div style={{marginBottom: '10px', marginTop: '5px'}}>

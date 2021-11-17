@@ -88,7 +88,7 @@ getVehicles(req, res){
   const uid = req.body.uid
 
   const sqlInsert = 
-  "SELECT vid, make, model, year, color, licensePlate FROM vehicletable WHERE uid = ?"
+  "SELECT vid, make, model, year, color, licensePlate FROM vehicletable WHERE uid = ?;"
   db.query(sqlInsert, [uid]
       , (err, result) => {
           if(err){
@@ -204,7 +204,7 @@ db.query(sqlInsert, [vid], (err, result) => {
 getUser(req, res){
 	const uid = req.body.uid
     const sqlInsert = 
-    "SELECT * FROM usertable WHERE uid = ?"
+    "SELECT * FROM usertable WHERE uid = ?;"
     db.query(sqlInsert, [uid]
         , (err, result) => {
             if(err){
@@ -215,6 +215,7 @@ getUser(req, res){
                 return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
               }
               else{
+                //console.log(JSON.stringify(result))
                 res.send({message: "cannot get user information"})
               }
         });
