@@ -24,24 +24,6 @@ class CustomerHomepage extends React.Component {
         return firstName
     }
 
-    getLastName() {
-        // fetches username from DB
-        var lastName = this.props.role.value;
-        return lastName
-    }
-
-    getEmail() {
-        // fetches email from DB
-        var email = "TEST Email";
-        return email
-    }
-
-    getPhoneNumber() {
-        // fetches phone Number from DB
-        var pNum = "TEST XXX-XXX-XXXX";
-        return pNum
-    }
-
     openAddVehicle() {
         this.setState({ showAddVehicle: true });
     }
@@ -54,14 +36,15 @@ class CustomerHomepage extends React.Component {
         if(prevProps.userId.value != this.props.userId.value) {
             console.log(this.props.userId.value)
 
-            Axios.get("http://localhost:3001/getUser", {
+            Axios.post("http://localhost:3001/getUser", {
                uid: this.props.userId.value
-           }).then((response1) => {
-                console.log("Response from getUser " + JSON.stringify(response1))
-                var userInfo = []
-                userInfo = Array(response1.data.data)[0]
-                this.setState({userData: userInfo})
-           });
+            }).then((response1) => {
+                let user = [Array(response1.data.data)[0][0].email, Array(response1.data.data)[0][0].firstName, 
+                    Array(response1.data.data)[0][0].lastName, Array(response1.data.data)[0][0].password, Array(response1.data.data)[0][0].phoneNumber]
+                console.log(user)
+                this.setState({userData: user})
+
+            });
            
             Axios.post("http://localhost:3001/getVehicles",{
                uid: this.props.userId.value
@@ -86,9 +69,9 @@ class CustomerHomepage extends React.Component {
     render() {
         return (
             <>                
-                <div style={{marginBottom: '10px', marginTop: '5px'}}>
-                    <Row>
-                        <h1>Welcome, {this.getFirstName()}</h1>                                         
+                <div style={{marginBottom: '10px', marginTop: '5px', }} className="welcomeText">
+                    <Row >
+                        <h1 >Welcome, {this.state.userData[1]}</h1>                                         
                     </Row>
                 </div> 
 

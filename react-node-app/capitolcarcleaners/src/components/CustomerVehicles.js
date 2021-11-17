@@ -36,12 +36,12 @@ function UserVehicles(props) {
     return (
         <> 
            <Card style={{ width: '18rem', marginLeft: '10px', marginTop: '10px' }}>
-                <Card.Img className="cardImage" variant="top" src="/CarLogo.png" />
+                <Card.Img variant="top" src="/CarLogo.png" />
                 <Card.Body>
                     <Card.Title>{props.vehiclesList.year}, {props.vehiclesList.make} {props.vehiclesList.model} </Card.Title>
                     <Card.Text>
                         Color: {props.vehiclesList.color} <br />
-                    Date of last detailing: 
+                        Date of last detailing: 
                     <br />
                     </Card.Text>
                     <div style={{textAlign: 'center'}}>
@@ -71,6 +71,7 @@ function UserVehicles(props) {
 }
 
 function AddVehicles(props) {
+    console.log("Add VEH: " + props.userId)
     const [validated, setValidated] = useState(false);
 
     const getVehicles = () => {
@@ -87,7 +88,7 @@ function AddVehicles(props) {
     const handleSubmit = (event) => {
         const form = event.currentTarget;
 
-        console.log("EVENT: "+ event.target.elements.VehModel)
+        console.log("EVENT: "+ event.target.elements.VehModel.value)
         // console.log("MAKE: " + event.target.element.VehMake.value)
         // console.log("MODEL: " + event.target.element.VehModel.value)
         // console.log("YEAR: " + event.target.element.VehYear.value)
@@ -216,6 +217,7 @@ class CustomerVehicles extends React.Component {
             userId: this.props.userId,
             showAddVehicle: false,
             showModal: false,
+            userVehicles: []
         };
     }
 
@@ -235,27 +237,28 @@ class CustomerVehicles extends React.Component {
         this.setState({ showAddVehicle: false });
     }
 
-    getVehicles() {
-        //console.log("PROPS"+ props.userVehicles[1].make)
-        if(this.props.userVehicles.length <= 0) {
-            return (
-                <Card style={{ width: '18rem', marginLeft: '10px', marginTop: '10px' }}>
-                    <Card.Img className="cardImage" variant="top" src="/CarLogo.png" />
-                        <Card.Body>
-                            <Card.Title>You have not yet added any vehicles.</Card.Title>
-                            <Card.Text>To add a vehicle, hit the Add Vehicle button.</Card.Text>
-                        </Card.Body>
-                </Card>
-            )
-        }
-        else {
+    componentDidUpdate(prevProps) {
+        if(prevProps.userVehicles != this.props.userVehicles){
+            //console.log("PROPS"+ props.userVehicles[1].make)           
             let vehicles = [];
             for(let i =0; i < this.props.userVehicles.length; i++) {
                 vehicles.push(
                     <UserVehicles vehiclesList={this.props.userVehicles[i]} />
                 )
             }
-            return vehicles
+            this.setState({userVehicles: vehicles})
+        }
+        
+        if(this.props.userVehicles.length <= 0) {
+            return (
+                <Card style={{ width: '18rem', marginLeft: '10px', marginTop: '10px' }}>
+                    <Card.Img variant="top" src="/CarLogo.png" />
+                        <Card.Body>
+                            <Card.Title>You have not yet added any vehicles.</Card.Title>
+                            <Card.Text>To add a vehicle, hit the Add Vehicle button.</Card.Text>
+                        </Card.Body>
+                </Card>
+            )
         }
     }
 
@@ -303,7 +306,7 @@ class CustomerVehicles extends React.Component {
                 <br />
 
                 <Row xs={2} md={3} className="g-4">
-                    {this.getVehicles()}
+                    {this.state.userVehicles}
                 </Row>
             </>
         )
