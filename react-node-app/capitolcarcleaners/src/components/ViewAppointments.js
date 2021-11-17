@@ -830,7 +830,7 @@ function MakeCustomerApps(props) {
 class ViewAppointments extends React.Component { 
 
     render() {
-        if (this.props.role !== "admin") { // role check
+        if (this.props.role === "admin") { // role check
             return (
                 <>
                 <Row style={{padding: '1%'}}>
