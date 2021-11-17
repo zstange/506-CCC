@@ -60,6 +60,7 @@ function MakeCards(props) {
                     else {     
                         // populate temporary array
                         apps = Array(response.data.data)[0]
+                        apps = apps.filter(app => app.status !== "Picked Up")
                     }    
                 });
             }
@@ -173,7 +174,7 @@ function MakeCards(props) {
                     console.log(response.data.err)
                 else {     
                     if (props.role === "admin") {
-                        Axios.get("http://localhost:3001/getAppointments",{
+                        Axios.get("http://localhost:3001/getAppointmentsAdmin",{
                         }).then((response) => {
                             if(response.data.err) {
                                 console.log(response.data.err)
@@ -226,7 +227,7 @@ function MakeCards(props) {
                                 if (contents.status === "Picked Up") 
                                     alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
                                 setTimeout(() => {setValidated(false); showStatusModal(false); 
-                                    Axios.get("http://localhost:3001/getAppointments",{
+                                    Axios.get("http://localhost:3001/getAppointmentsAdmin",{
                                     }).then((response) => {
                                         if(response.data.err) {
                                             console.log(response.data.err)
@@ -323,7 +324,7 @@ function MakeCards(props) {
                         else {
                             if (props.role === "admin") {
                                 setTimeout(() => {setValidated(false); showModifyModal(false);
-                                    Axios.get("http://localhost:3001/getAppointments",{
+                                    Axios.get("http://localhost:3001/getAppointmentsAdmin",{
                                     }).then((response) => {
                                         if(response.data.err) {
                                             console.log(response.data.err)
@@ -407,7 +408,7 @@ function MakeCards(props) {
                         else {     
                             if (props.role === "admin") {
                                 setTimeout(() => {setValidated(false); showModifyModal(false);
-                                    Axios.get("http://localhost:3001/getAppointments",{
+                                    Axios.get("http://localhost:3001/getAppointmentsAdmin",{
                                         }).then((response) => {
                                         if(response.data.err) {
                                             console.log(response.data.err)
@@ -444,6 +445,10 @@ function MakeCards(props) {
             null
         )
     }
+
+    let date = new Date()
+    date.setHours(0,0,0,0)
+    date = date.toISOString().slice(0, 10)
     return (
         
         <>    
@@ -461,7 +466,7 @@ function MakeCards(props) {
                         <Form.Control  
                             style = {{width: "240px", boxShadow: 'none',backgroundColor: 'rgba(0,0,0,0)', border:"0px"}}
                             type = "date"
-                            min= {new Date().toISOString().slice(0, 10)}
+                            min= {date}
                             value = {contents.dateTime}
                             onChange={handleChange}
                         />
@@ -659,7 +664,7 @@ function MakeAdminPage() {
     useEffect(() => {
         // useEffect lets us fetch tables once the page is finished loading
         async function fetchTables() {
-            await Axios.get("http://localhost:3001/getAppointments",{
+            await Axios.get("http://localhost:3001/getAppointmentsAdmin",{
             }).then((response) => {
                 if(response.data.err) {
                     console.log(response.data.err)
@@ -799,7 +804,7 @@ function MakeCustomerApps(props) {
 class ViewAppointments extends React.Component { 
 
     render() {
-        if (this.props.role !== "admin") { // role check
+        if (this.props.role === "admin") { // role check
             return (
                 <>
                 <Row style={{padding: '1%'}}>

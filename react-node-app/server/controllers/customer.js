@@ -273,7 +273,7 @@ deleteVehicle(req, res){
   const vid = req.body.vid
   const sqlInsert = 
 "DELETE FROM vehicletable WHERE vid = ?;"
-db.query(sqlInsert, [aid], (err, result) => {
+db.query(sqlInsert, [vid], (err, result) => {
 
   if(err){
     res.send({err: err});
@@ -289,6 +289,7 @@ db.query(sqlInsert, [aid], (err, result) => {
 });
 
 },
+
 getUser(req, res){
 	const uid = req.body.uid
     const sqlInsert = 
