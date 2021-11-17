@@ -1,16 +1,11 @@
-import React, {useState} from "react";
+import React from "react";
 import "../css/CustomerHomepage.css"
-import Calendar from "../components/Calendar"
 import ViewAppointments from "./ViewAppointments";
 import Axios from 'axios';
-import { Form, Card, Button, Row, Col, Modal } from "react-bootstrap";
+import { Row, } from "react-bootstrap";
 import { connect } from 'react-redux';
 import CustomerInfo from "./CustomerInfo";
 import CustomerVehicles from "./CustomerVehicles";
-
-/*
- * Do we need a spot to change the option to receive promotions (true/false)?
- */
 
 class CustomerHomepage extends React.Component {
     constructor(props) {
@@ -18,7 +13,7 @@ class CustomerHomepage extends React.Component {
         this.state = {
             showAddVehicle: false,    
             userVehicles: [],
-            userData: {}    
+            userData: []    
         };
     } 
 
@@ -54,26 +49,27 @@ class CustomerHomepage extends React.Component {
         this.setState({ showAddVehicle: false });
     }
 
-    async componentDidMount() {
-        console.log("CDM ran")
+    componentDidMount() {        
+        console.log(this.props.userId.value)
 
-        await Axios.get("http://localhost:3001/getUser",{
+         Axios.get("http://localhost:3001/getUser", {
             uid: this.props.userId.value
         }).then((response1) => {
-            //console.log("Response from getUser " + response1)
+            console.log("Response from getUser " + JSON.stringify(response1))
             //console.log("Response from getUser " + JSON.stringify(response1))
-            //this.setState({userData = response.data})
+            this.setState({userData: JSON.stringify(response1)})
         });
         
-        await Axios.post("http://localhost:3001/getVehicles",{
-            uid: 25
+         Axios.post("http://localhost:3001/getVehicles",{
+            uid: this.props.userId.value
         }).then((response) => {
+            console.log("Response from getUser " + JSON.stringify(response))
             if(response.data.err) {
-                console.log("ERR: " + response.data.err)
+                console.log("ERR: " + JSON.stringify(response.data.err))
             }
             else if (response.data.message) {
                 // No vehicles added to account
-                console.log("MSG: " + response.data.err)
+                console.log(JSON.stringify(response.data.message))
 
             } 
             else {     
@@ -82,12 +78,16 @@ class CustomerHomepage extends React.Component {
                 this.setState({userVehicles: vehicles})
             }
         }); 
+        
+        //console.log("CDM ran")      
+        
     }
 
     render() {
+        
         return (
-            <>
-                <div style={{marginBottom: '10px'}}>
+            <>                
+                <div style={{marginBottom: '10px', marginTop: '5px'}}>
                     <Row>
                         <h1>Welcome, {this.getFirstName()}</h1>                                         
                     </Row>
@@ -105,7 +105,9 @@ class CustomerHomepage extends React.Component {
                                     color: "black",                              
                                 }}
                             />
-                            <CustomerInfo />
+                            <CustomerInfo 
+                                userData={this.state.userData}
+                            />
                         </div>
 
                         <br />
@@ -121,19 +123,27 @@ class CustomerHomepage extends React.Component {
                         </div>
                     </div>
                 </Row>
-                <Row>
-                <h3 className="sectionAccTitle">Upcoming Appointments:</h3>
-                     <ViewAppointments/>
+                <Row style={{justifyContent: 'center', padding: '50px'}}>
+                    <div className="border p-3">
+                        <h3 className="sectionAccTitle">Upcoming Appointments:</h3>
+                        <hr 
+                            style= {{
+                                height: 5, 
+                                width: "100%", 
+                                color: "black",                              
+                            }}
+                        />
+                        
+                        <ViewAppointments/>                        
+                    </div>
                 </Row>
             </>
          );
     }
 }
-
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
     const userId = state.userId;
     const role = state.role;
     return {userId, role};
 }
-  
 export default connect(mapStateToProps)(CustomerHomepage);
