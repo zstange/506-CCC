@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import "../css/CustomerVehicles.css"
 import Axios from 'axios';
-import { Button, Row, Col, Card, Modal, Form, } from "react-bootstrap";
+import { Button, Row, Col, Card, Modal, Form, Alert } from "react-bootstrap";
 
 function UserVehicles(props) {
     //console.log("Vehicles"+ JSON.stringify(props.vehiclesList.make))
     const[modal, setModal] = useState(false);
 
     const deleteVehicle = () => {
-        // setModal(false)
-        // let vehId = props.vehiclesList.vid
-        // console.log("VID: "+ vid)
-
         Axios.post("http://localhost:3001/deleteVehicle",{
             vid: props.vehiclesList.vid
         }).then((response) => {
@@ -20,7 +16,13 @@ function UserVehicles(props) {
                 console.log(response.data.err)
             }
             else if (response.data.message) {
-                console.log(response.data.err)
+                console.log(response.data.message)
+                return (
+                    <Alert 
+                        variant={"primary"} >
+                        "Please delete any appointments attached to this vehicle before attempting to remove it from your account." 
+                    </Alert>
+                )
             } 
             else {     
                 // remove vehicle 
@@ -69,40 +71,59 @@ function UserVehicles(props) {
 }
 
 function AddVehicles(props) {
-    console.log(props)
     const [validated, setValidated] = useState(false);
-    const handleSubmit = (event) => {
 
+    const getVehicles = () => {
+        //console.log("PROPS"+ props.userVehicles[1].make)
+        let vehicles = [];
+        for(let i =0; i < this.props.userVehicles.length; i++) {
+            vehicles.push(
+                <UserVehicles vehiclesList={this.props.userVehicles[i]} />
+            )
+        }
+        return vehicles
+    }
+
+    const handleSubmit = (event) => {
         const form = event.currentTarget;
+
+        console.log("EVENT: "+ event.target.elements.VehModel)
+        // console.log("MAKE: " + event.target.element.VehMake.value)
+        // console.log("MODEL: " + event.target.element.VehModel.value)
+        // console.log("YEAR: " + event.target.element.VehYear.value)
+        // console.log("COLOR: " + event.target.element.VehColor.value)
+        // console.log("LP: " + event.target.element.VehLicensePlate.value)
+        // console.log("ADD INFO: " + event.target.element.VehAddtlInfo.value)
+        
         if (form.checkValidity() === false) {
-        event.preventDefault();
-        event.stopPropagation();
+            event.preventDefault();
+            event.stopPropagation();
         }
         
         setValidated(true);
 
         // Output Caputured Data
-        if (form.checkValidity() === true) {
+        if (form.checkValidity() === true) {          
             Axios.post("http://localhost:3001/addVehicle",{
                 uid: props.userId,
-                make: event.target.element.VehMake.value,
-                model: event.target.element.VehModel.value,
-                year: event.target.element.VehYear.value,
-                color: event.target.element.VehColor.value,
-                licensePlate: event.target.element.VehLicensePlate.value,
-                additionalInfo: event.target.element.VehAddtlInfo.value,
+                make: event.target.elements.VehMake.value,
+                model: event.target.elements.VehModel.value,
+                year: event.target.elements.VehYear.value,
+                color: event.target.elements.VehColor.value,
+                licensePlate: event.target.elements.VehLicensePlate.value,
+                additionalInfo: event.target.elements.VehAddtlInfo.value,
             }).then((response) => {
-                console.log("ADD: " + JSON.stringify(response))
+                console.log("ADD Vehicles: " + JSON.stringify(response))
                 if(response.data.err) {
                     console.log(response.data.err)
                 }
                 else if (response.data.message) {
-                    console.log(response.data.err)
+                    console.log(response.data.message)
                 } 
                 else {     
                     // remove vehicle 
                     console.log("ADD ELSE: " + JSON.stringify(response))
-                    return;
+                    return getVehicles()
                 }
             });
         }          
@@ -188,10 +209,11 @@ function AddVehicles(props) {
     )
 }
 
-class CustomerInfo extends React.Component {
+class CustomerVehicles extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            userId: this.props.userId,
             showAddVehicle: false,
             showModal: false,
         };
@@ -215,13 +237,26 @@ class CustomerInfo extends React.Component {
 
     getVehicles() {
         //console.log("PROPS"+ props.userVehicles[1].make)
-        let vehicles = [];
-        for(let i =0; i < this.props.userVehicles.length; i++) {
-            vehicles.push(
-                <UserVehicles vehiclesList={this.props.userVehicles[i]} />
+        if(this.props.userVehicles.length <= 0) {
+            return (
+                <Card style={{ width: '18rem', marginLeft: '10px', marginTop: '10px' }}>
+                    <Card.Img className="cardImage" variant="top" src="/CarLogo.png" />
+                        <Card.Body>
+                            <Card.Title>You have not yet added any vehicles.</Card.Title>
+                            <Card.Text>To add a vehicle, hit the Add Vehicle button.</Card.Text>
+                        </Card.Body>
+                </Card>
             )
         }
-        return vehicles
+        else {
+            let vehicles = [];
+            for(let i =0; i < this.props.userVehicles.length; i++) {
+                vehicles.push(
+                    <UserVehicles vehiclesList={this.props.userVehicles[i]} />
+                )
+            }
+            return vehicles
+        }
     }
 
     render() {
@@ -246,7 +281,7 @@ class CustomerInfo extends React.Component {
                                     <Modal.Title>Add Personal Vehicle:</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    <AddVehicles
+                                    <AddVehicles                                        
                                         showAddVehicle={this.state.showAddVehicle}
                                         userId={this.props.userId}
                                     />
@@ -275,4 +310,4 @@ class CustomerInfo extends React.Component {
     }
 }
 
-export default CustomerInfo;
+export default CustomerVehicles;
