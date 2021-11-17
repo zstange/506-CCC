@@ -1,0 +1,44 @@
+POST  http://localhost:3001/login
+Content-Type: application/json
+
+{
+    "email": "stange@gmail.com",
+    "password": "password"
+}
+
+###
+
+GET http://localhost:3001/getAppointments
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mzk1LCJpYXQiOjE2MzcwMzQxMDJ9.sCYot7pfosu9b8CpDmU7y20SQEajDBBgOB3XGQdQOaQ
+Content-Type: application/json
+
+{
+    "uid": "25"
+}
+
+
+###
+POST  http://localhost:3001/addAppointment
+Content-Type: application/json
+
+{
+    "uid" : "165",
+    "vid" : "15",
+    "dateTime" : "2021-11-19 09:00:00",
+    "service" : "Service 1",
+    "additionalInfo" : "testing to see if it is populating",
+    "status" : "Not Ready"
+}
+
+###
+
+GET http://localhost:3001/getUser
+Content-Type: application/json
+
+{
+    "uid" : "1045"
+}
+
+###
+GET http://localhost:3001/getAppointmentsAdmin
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mzk1LCJpYXQiOjE2MzcwMzQxMDJ9.sCYot7pfosu9b8CpDmU7y20SQEajDBBgOB3XGQdQOaQ

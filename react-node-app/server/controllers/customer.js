@@ -53,24 +53,6 @@ addAppointment(req, res){
         });
 },
 
-getAppointments(req, res){
-  const sqlInsert = 
-  "SELECT * FROM appointmenttable"
-  db.query(sqlInsert
-      , (err, result) => {
-          if(err){
-              res.send({err: err});
-            }
-            else if (result != ""){
-              
-              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
-            }
-            else{
-              res.send({message: "cannot get appointment information"})
-            }
-      });
-},
-
 getAppointmentDates(req, res) {
   const sqlInsert = 
   "SELECT dateTime FROM appointmenttable"
