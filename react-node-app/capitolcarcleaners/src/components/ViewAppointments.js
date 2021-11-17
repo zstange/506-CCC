@@ -799,7 +799,7 @@ function MakeCustomerApps(props) {
 class ViewAppointments extends React.Component { 
 
     render() {
-        if (this.props.role === "admin") { // role check
+        if (this.props.role !== "admin") { // role check
             return (
                 <>
                 <Row style={{padding: '1%'}}>
@@ -815,7 +815,7 @@ class ViewAppointments extends React.Component {
                 <>
                 <Row style={{padding: '1%'}}>
                     <div className="Grid">     
-                        <MakeCards uid = {1085} aid = {null} role = {"user"}/>
+                        <MakeCards uid = {this.props.uid} aid = {null} role = {"user"}/>
                     </div>     
                 </Row> 
                 </>
