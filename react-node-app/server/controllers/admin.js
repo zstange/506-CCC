@@ -16,6 +16,40 @@ getAppointments(req, res){
                 res.send({message: "cannot get appointment information"})
               }
         });
-  }
+  },
+  getAppointmentByAppId(req, res){
+    const aid = req.body.aid
+    const sqlInsert = 
+    "SELECT * FROM appointmenttable WHERE aid = ?"
+    db.query(sqlInsert, [aid]
+        , (err, result) => {
+            if(err){
+                res.send({err: err});
+              }
+              else if (result != ""){
+                
+                return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+              }
+              else{
+                res.send({message: "cannot get appointment information"})
+              }
+        });
+  },
+  getUsers(req, res){
+    const sqlInsert = 
+    "SELECT uid, firstName, lastName, email, phoneNumber FROM usertable"
+    db.query(sqlInsert
+        , (err, result) => {
+            if(err){
+                res.send({err: err});
+              }
+              else if (result != ""){
+                return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+              }
+              else{
+                res.send({message: "cannot get user information"})
+              }
+        });
+}
 };
 module.exports = adminController;
