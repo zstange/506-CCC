@@ -412,6 +412,8 @@ function MakeCards(props) {
                             console.log(response.data.err)
                         } 
                         else {     
+                            if (contents.status === "Picked Up") 
+                                alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
                             if (props.role === "admin") {
                                 setTimeout(() => {setValidated(false); showModifyModal(false);
                                     Axios.get("http://localhost:3001/getAppointmentsAdmin",{
