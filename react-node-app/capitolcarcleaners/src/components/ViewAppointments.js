@@ -306,7 +306,7 @@ function MakeCards(props) {
                     tempStatus = "Not Ready"
 
                 if (aid === -1 && appNum < 4) {                 
-                    Axios.post("http://localhost:3001/addAppointment",{
+                    await Axios.post("http://localhost:3001/addAppointment",{
                         uid: id,
                         vid: contents.vid,
                         dateTime: contents.dateTime+" 09:00:00",
@@ -338,39 +338,55 @@ function MakeCards(props) {
                                     });
                                 },1000);                       
                             }
-                            // populate appointments table
-                            let newAppsTable = appointments
-                            let newApp = {
-                                aid: response.data.aid,
-                                vid: contents.vid,
-                                dateTime: contents.dateTime+" 09:00:00",
-                                service: contents.service,
-                                additionalInfo: contents.additionalInfo,
-                                status: contents.status,
-                                make: null,
-                                model: null,
-                                year: null,
-                                color: null,
-                                licensePlate: null
-                            }
-                            
-                            let j = 0; // search for the vehicle that the user chose
-                            for (j; j < userVehicles.length; j++) {
-                                if (Number(contents.vid) === userVehicles[j].vid) {
-                                    newApp.make = userVehicles[j].make
-                                    newApp.model = userVehicles[j].model
-                                    newApp.year = userVehicles[j].year
-                                    newApp.color = userVehicles[j].color
-                                    newApp.licensePlate = userVehicles[j].licensePlate
-                                    break;
-                                }
-                            }
-                            newAppsTable.push(newApp) // add new appointment to user apps table
-                            setAppointments(newAppsTable) // set state
-                            
-                            setTimeout(() => {setValidated(false); showModifyModal(false);},1000); //finished, give short time delay for feedback
                         }
                     });  
+
+                    // populate appointments table
+                    let newApps = []
+                    await Axios.post("http://localhost:3001/getUserAppointments",{ // get aid of latest appointment
+                        uid: id
+                        }).then((response) => {
+                        if(response.data.err) {
+                            console.log(response.data.err)
+                        }
+                        else if (response.data.message) {
+                            console.log(response.data.err)
+                        } 
+                        else {     
+                            // populate temporary array
+                            newApps = Array(response.data.data)[0]
+                        }    
+                    });
+                    let newAppsTable = appointments
+                    let newApp = {
+                        aid: newApps[newApps.length-1].aid,
+                        vid: contents.vid,
+                        dateTime: contents.dateTime+" 09:00:00",
+                        service: contents.service,
+                        additionalInfo: contents.additionalInfo,
+                        status: contents.status,
+                        make: null,
+                        model: null,
+                        year: null,
+                        color: null,
+                        licensePlate: null
+                    }
+                    
+                    let j = 0; // search for the vehicle that the user chose
+                    for (j; j < userVehicles.length; j++) {
+                        if (Number(contents.vid) === userVehicles[j].vid) {
+                            newApp.make = userVehicles[j].make
+                            newApp.model = userVehicles[j].model
+                            newApp.year = userVehicles[j].year
+                            newApp.color = userVehicles[j].color
+                            newApp.licensePlate = userVehicles[j].licensePlate
+                            break;
+                        }
+                    }
+                    newAppsTable.push(newApp) // add new appointment to user apps table
+                    setAppointments(newAppsTable) // set state
+                    
+                    setTimeout(() => {setValidated(false); showModifyModal(false);},1000); //finished, give short time delay for feedback
                 }
                 else if (aid !== -1 && appNum < 4) { // modifying appointment case
                     // edit appointment
@@ -406,29 +422,8 @@ function MakeCards(props) {
                                     });
                                 }, 1000);   
                             }
-
-                            // set user appointments table
-                            let newUserApps = appointments // set new appointment info
-                            newUserApps[index].aid = aid
-                            newUserApps[index].vid = contents.vid
-                            newUserApps[index].dateTime = contents.dateTime+" 09:00:00"
-                            newUserApps[index].service = contents.service
-                            newUserApps[index].additionalInfo = contents.additionalInfo
-
-                            let j = 0; // search for the vehicle that the user chose
-                            for (j; j < userVehicles.length; j++) {
-                                if (Number(contents.vid) === userVehicles[j].vid) {
-                                    newUserApps[index].make = userVehicles[j].make
-                                    newUserApps[index].model = userVehicles[j].model
-                                    newUserApps[index].year = userVehicles[j].year
-                                    newUserApps[index].color = userVehicles[j].color
-                                    newUserApps[index].licensePlate = userVehicles[j].licensePlate
-                                    break;
-                                }
-                            }
-
-                            setAppointments(newUserApps) // set apps table
-                            // short time delay for feedback
+                            setAppointments(null)
+                            
                             setTimeout(() => {setValidated(false); showModifyModal(false);}, 1000);
                         }
                     });  
@@ -449,7 +444,6 @@ function MakeCards(props) {
             null
         )
     }
-
     return (
         
         <>    
@@ -821,7 +815,7 @@ class ViewAppointments extends React.Component {
                 <>
                 <Row style={{padding: '1%'}}>
                     <div className="Grid">     
-                        <MakeCards uid = {this.props.uid} aid = {null} role = {"user"}/>
+                        <MakeCards uid = {1085} aid = {null} role = {"user"}/>
                     </div>     
                 </Row> 
                 </>
