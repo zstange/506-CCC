@@ -846,7 +846,7 @@ class ViewAppointments extends React.Component {
                 <>
                 <Row style={{padding: '1%'}}>
                     <div className="Grid">     
-                        <MakeCards uid = {25} aid = {null} role = {"user"}/>
+                        <MakeCards uid = {this.props.uid} aid = {null} role = {"user"}/>
                     </div>     
                 </Row> 
                 </>
