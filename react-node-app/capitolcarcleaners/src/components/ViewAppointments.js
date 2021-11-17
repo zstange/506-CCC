@@ -60,7 +60,7 @@ function MakeCards(props) {
                     else {     
                         // populate temporary array
                         apps = Array(response.data.data)[0]
-                        apps = apps.filter(app => app.status !== "Picked Up")
+                        
                     }    
                 });
             }
@@ -68,6 +68,9 @@ function MakeCards(props) {
             if (props.role === "admin") {
                 setShowingAdmin(true)
                 setUserInfo({firstName: props.firstName, lastName: props.lastName, email: props.email, phoneNumber: props.phoneNumber})
+            }
+            else {
+                apps = apps.filter(app => app.status !== "Picked Up")
             }
                 
 
@@ -286,7 +289,7 @@ function MakeCards(props) {
                             console.log(response.data.err)
                         } 
                         else {     
-                            appNum = response.data.length
+                            appNum = (Array(response.data.data)[0].filter(app => app.status !== "Picked Up")).length
                         }
                 });
                 let index = 0; // get appointment index
@@ -296,6 +299,9 @@ function MakeCards(props) {
                 } 
                 // if we are one of the appointments with the date we checked, then we don't count
                 if (aid !== -1 && new Date(contents.dateTime+" 09:00:00").valueOf() === new Date(appointments[index].dateTime).valueOf())
+                    appNum--
+                // if we are a picked up appointment, we also don't count.
+                if (contents.status === "Picked Up")
                     appNum--
                     
                 // if we have less than 4 appointments on the selected day
@@ -406,6 +412,8 @@ function MakeCards(props) {
                             console.log(response.data.err)
                         } 
                         else {     
+                            if (contents.status === "Picked Up") 
+                                alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
                             if (props.role === "admin") {
                                 setTimeout(() => {setValidated(false); showModifyModal(false);
                                     Axios.get("http://localhost:3001/getAppointmentsAdmin",{
@@ -423,7 +431,27 @@ function MakeCards(props) {
                                     });
                                 }, 1000);   
                             }
-                            setAppointments(null)
+                            // set user appointments table
+                            let newUserApps = appointments // set new appointment info
+                            newUserApps[index].aid = aid
+                            newUserApps[index].vid = contents.vid
+                            newUserApps[index].dateTime = contents.dateTime+" 09:00:00"
+                            newUserApps[index].service = contents.service
+                            newUserApps[index].additionalInfo = contents.additionalInfo
+
+                            let j = 0; // search for the vehicle that the user chose
+                            for (j; j < userVehicles.length; j++) {
+                                if (Number(contents.vid) === userVehicles[j].vid) {
+                                    newUserApps[index].make = userVehicles[j].make
+                                    newUserApps[index].model = userVehicles[j].model
+                                    newUserApps[index].year = userVehicles[j].year
+                                    newUserApps[index].color = userVehicles[j].color
+                                    newUserApps[index].licensePlate = userVehicles[j].licensePlate
+                                    break;
+                                }
+                            }
+
+                            setAppointments(newUserApps) // set apps table
                             
                             setTimeout(() => {setValidated(false); showModifyModal(false);}, 1000);
                         }

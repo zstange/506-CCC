@@ -78,10 +78,10 @@ getAppointmentsByDate(req, res){
               res.send({err: err});
             }
             else if (result != ""){
-              return res.json({length: result.length});
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
             }
             else{
-              return res.json({length: 0});
+              return res.json({data: [], length: 0});
             }
       });
 },
