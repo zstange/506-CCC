@@ -42,3 +42,70 @@ Content-Type: application/json
 ###
 GET http://localhost:3001/getAppointmentsAdmin
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mzk1LCJpYXQiOjE2MzcwMzQxMDJ9.sCYot7pfosu9b8CpDmU7y20SQEajDBBgOB3XGQdQOaQ
+
+###
+GET http://localhost:3001/getInventory
+
+###
+POST http://localhost:3001/addInventory
+Content-Type: application/json
+
+{
+    "price" : "4000$",
+    "make" : "Jaguar",
+    "model" : "F-type",
+    "year" : "2007",
+    "color" : "Blue",
+    "additionalInfo" : "testing to see if it is populating",
+    "image" : "No link now"
+}
+###
+POST http://localhost:3001/editInventory
+Content-Type: application/json
+
+{
+    "iid" : "15",
+    "price" : "3000$",
+    "make" : "Jaguar",
+    "model" : "F-type",
+    "year" : "2010",
+    "color" : "Red",
+    "additionalInfo" : "testing to see if it is editing",
+    "image" : "link"
+}
+###
+POST http://localhost:3001/deleteInventory
+Content-Type: application/json
+
+{
+    "iid" : "1"
+}
+
+###
+POST http://localhost:3001/deleteAppointment
+Content-Type: application/json
+
+{
+    "aid" : "1"
+}
+
+###
+POST http://localhost:3001/getUserAppointments
+Content-Type: application/json
+
+{
+    "uid" : "21"
+}
+
+###
+POST http://localhost:3001/editAppointment
+Content-Type: application/json
+
+{
+"aid" : "1485",
+"vid" : "15",
+"dateTime" : "2021-11-19 09:00:00",
+"service" : "service 1",
+"additionalInfo" : "Testing if it works with wrong aid",
+"status" : "Ready"
+}

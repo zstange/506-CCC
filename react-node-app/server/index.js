@@ -30,4 +30,8 @@ app.post("/getAppointmentsByDate", customerController.getAppointmentsByDate)
 app.get("/getUsers", adminController.getUsers)
 app.post("/getAppointmentByAppId", adminController.getAppointmentByAppId)
 app.get("/getAppointmentsAdmin", verifyJWT, adminController.getAppointments)
+app.post("/addInventory", adminController.addInventory)
+app.post("/editInventory", adminController.editInventory)
+app.post("/deleteInventory", adminController.deleteInventory)
+app.get("/getInventory", adminController.getInventory)
 module.exports = {app}
