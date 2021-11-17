@@ -32,27 +32,6 @@ createAcc(req, res) {
     
 },
 
-addAppointment(req, res){
-    const uid = req.body.uid
-    const vid = req.body.vid
-    const dateTime = req.body.dateTime
-    const service = req.body.service
-    const additionalInfo = req.body.additionalInfo
-    const status = req.body.status
-    const sqlInsert = 
-    "INSERT INTO appointmenttable (uid, vid,dateTime,service,additionalInfo,status) VALUES (?,?,?,?,?,?);"
-    db.query(sqlInsert, [uid, vid, dateTime, service, additionalInfo, status]
-        , (err, result) => {
-            if(err){
-                res.send({err: "db query error"});
-              }
-              else if (result != ""){
-                var redir = { redirect: "/viewAppointment" };
-                return res.json(redir);
-              }              
-        });
-},
-
 getAppointmentDates(req, res) {
   const sqlInsert = 
   "SELECT dateTime FROM appointmenttable"
@@ -103,25 +82,6 @@ getAppointmentsByDate(req, res){
             }
             else{
               return res.json({length: 0});
-            }
-      });
-},
-
-getAppointmentByAppId(req, res){
-  const aid = req.body.aid
-  const sqlInsert = 
-  "SELECT * FROM appointmenttable WHERE aid = ?"
-  db.query(sqlInsert, [aid]
-      , (err, result) => {
-          if(err){
-              res.send({err: err});
-            }
-            else if (result != ""){
-              
-              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
-            }
-            else{
-              res.send({message: "cannot get appointment information"})
             }
       });
 },
@@ -307,25 +267,8 @@ getUser(req, res){
                 res.send({message: "cannot get user information"})
               }
         });
-},
+}
 
-
-getUsers(req, res){
-    const sqlInsert = 
-    "SELECT uid, firstName, lastName, email, phoneNumber FROM usertable"
-    db.query(sqlInsert
-        , (err, result) => {
-            if(err){
-                res.send({err: err});
-              }
-              else if (result != ""){
-                return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
-              }
-              else{
-                res.send({message: "cannot get user information"})
-              }
-        });
-},
 
 };
 module.exports = customerController;
