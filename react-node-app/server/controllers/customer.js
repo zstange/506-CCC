@@ -173,12 +173,12 @@ db.query(sqlInsert, [vid, dateTime, service, additionalInfo, status, aid], (err,
   if(err){
     res.send({err: err});
   }
-  else if (result != ""){
+  else if (result["affectedRows"] != 0){
     var redir = { redirect: "/viewAppointment" };
     return res.json(redir);
   }
   else{
-    res.send({message: "Please fill out all information required."})
+    res.send({message: "appointment doesn't exist in the table."})
   }
 
 });
@@ -193,7 +193,7 @@ db.query(sqlInsert, [aid], (err, result) => {
   if(err){
     res.send({err: err});
   }
-  else if (result != ""){
+  else if (result["affectedRows"] != 0){
     var redir = { redirect: "/viewAppointment" };
     return res.json(redir);
   }
