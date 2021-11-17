@@ -289,7 +289,7 @@ function MakeCards(props) {
                             console.log(response.data.err)
                         } 
                         else {     
-                            appNum = response.data.length
+                            appNum = (Array(response.data.data)[0].filter(app => app.status !== "Picked Up")).length
                         }
                 });
                 let index = 0; // get appointment index
@@ -299,6 +299,9 @@ function MakeCards(props) {
                 } 
                 // if we are one of the appointments with the date we checked, then we don't count
                 if (aid !== -1 && new Date(contents.dateTime+" 09:00:00").valueOf() === new Date(appointments[index].dateTime).valueOf())
+                    appNum--
+                // if we are a picked up appointment, we also don't count.
+                if (contents.status === "Picked Up")
                     appNum--
                     
                 // if we have less than 4 appointments on the selected day
