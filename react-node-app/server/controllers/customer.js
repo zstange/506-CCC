@@ -32,31 +32,11 @@ createAcc(req, res) {
     
 },
 
-addAppointment(req, res){
-    const uid = req.body.uid
-    const vid = req.body.vid
-    const dateTime = req.body.dateTime
-    const service = req.body.service
-    const additionalInfo = req.body.additionalInfo
-    const status = "Not Ready"
-    const sqlInsert = 
-    "INSERT INTO appointmenttable (uid, vid,dateTime,service,additionalInfo,status) VALUES (?,?,?,?,?,?);"
-    db.query(sqlInsert, [uid, vid, dateTime, service, additionalInfo, status]
-        , (err, result) => {
-            if(err){
-                res.send({err: "db query error"});
-              }
-              else if (result != ""){
-                var redir = { redirect: "/viewAppointment" };
-                return res.json(redir);
-              }              
-        });
-},
-
 getAppointments(req, res){
+  const uid = req.body.uid
   const sqlInsert = 
-  "SELECT * FROM appointmenttable"
-  db.query(sqlInsert
+  "SELECT * FROM appointmenttable WHERE uid = ?"
+  db.query(sqlInsert, [uid]
       , (err, result) => {
           if(err){
               res.send({err: err});
