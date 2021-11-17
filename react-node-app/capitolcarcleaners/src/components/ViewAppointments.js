@@ -207,6 +207,7 @@ function MakeCards(props) {
             setValidatedStatus(true)
 
             if (event.currentTarget.checkValidity() === true) {
+                
                 Axios.post("http://localhost:3001/editAppointment",{
                             aid: contents.aid,
                             vid: contents.vid,
@@ -221,7 +222,9 @@ function MakeCards(props) {
                             else if (response.data.message) {
                                 console.log(response.data.err)
                             } 
-                            else {        
+                            else { 
+                                if (contents.status === "Picked Up") 
+                                    alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
                                 setTimeout(() => {setValidated(false); showStatusModal(false); 
                                     Axios.get("http://localhost:3001/getAppointments",{
                                     }).then((response) => {
