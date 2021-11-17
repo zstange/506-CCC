@@ -173,7 +173,12 @@ addVehicle(req, res){
         return res.send({err: err});
       }
       else if (result != ""){
+<<<<<<< HEAD
         return res.send({message: "Vehicle added successfully"});
+=======
+        var redir = { redirect: "/CustomerHomepage" };
+        return res.json(redir);
+>>>>>>> User data is populated on customer homepage
       }
       else{
         return res.send({message: "Please fill out all information required."})
@@ -203,23 +208,21 @@ db.query(sqlInsert, [vid], (err, result) => {
 
 getUser(req, res){
 	const uid = req.body.uid
-    const sqlInsert = 
-    "SELECT * FROM usertable WHERE uid = ?;"
-    db.query(sqlInsert, [uid]
-        , (err, result) => {
-            if(err){
-                res.send({err: err});
-              }
-              else if (result != ""){
-                var user = JSON.parse(JSON.stringify(result));
-                return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
-              }
-              else{
-                //console.log(JSON.stringify(result))
-                res.send({message: "cannot get user information"})
-              }
-        });
-}
+  const sqlInsert = 
+  "SELECT * FROM usertable WHERE uid = ?;"
+  db.query(sqlInsert, [uid],
+    (err, result) => {
+      if(err){
+          res.send({err: err});
+      }
+      else if (result != ""){
+        return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+      }
+      else{
+        res.send({message: "cannot get user information"})
+      }
+  });
+},
 
 
 };

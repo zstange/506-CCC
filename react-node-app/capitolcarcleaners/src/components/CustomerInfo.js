@@ -5,29 +5,18 @@ class CustomerInfo extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // firstName: "",
-            // lastName: "",
-            // email: "",
-            // phoneNum: "",
         }
     }
-
-    getFirstName() {
-        // fetches username from DB
-        console.log("Props userData values: "+ this.props.userData)
-        //var firstName = "User " + this.props.userId.value;
-        //return firstName
-    }
-
+    
     render() {
         return (
             <>          
                 <div className="border p-3">
                     <div className="sectionAcctBody">
-                        <h3>First Name: {}</h3>
-                        <h3>Last Name: {this.props.userData}</h3>
-                        <h3>Email: {this.props.userData}</h3>
-                        <h3>Phone Number: {this.props.userData}</h3>                                
+                        <h3 className="text">First Name: <span className="apiText">{this.props.userData[1]}</span></h3>
+                        <h3 className="text">Last Name: <span className="apiText">{this.props.userData[2]}</span></h3>
+                        <h3 className="text">Email: <span className="apiText">{this.props.userData[0]}</span></h3>
+                        <h3 className="text">Phone Number: <span className="apiText">{this.props.userData[4]}</span></h3>                                
                     </div>							
                 </div>
             </>
