@@ -423,7 +423,27 @@ function MakeCards(props) {
                                     });
                                 }, 1000);   
                             }
-                            setAppointments(null)
+                            // set user appointments table
+                            let newUserApps = appointments // set new appointment info
+                            newUserApps[index].aid = aid
+                            newUserApps[index].vid = contents.vid
+                            newUserApps[index].dateTime = contents.dateTime+" 09:00:00"
+                            newUserApps[index].service = contents.service
+                            newUserApps[index].additionalInfo = contents.additionalInfo
+
+                            let j = 0; // search for the vehicle that the user chose
+                            for (j; j < userVehicles.length; j++) {
+                                if (Number(contents.vid) === userVehicles[j].vid) {
+                                    newUserApps[index].make = userVehicles[j].make
+                                    newUserApps[index].model = userVehicles[j].model
+                                    newUserApps[index].year = userVehicles[j].year
+                                    newUserApps[index].color = userVehicles[j].color
+                                    newUserApps[index].licensePlate = userVehicles[j].licensePlate
+                                    break;
+                                }
+                            }
+
+                            setAppointments(newUserApps) // set apps table
                             
                             setTimeout(() => {setValidated(false); showModifyModal(false);}, 1000);
                         }
@@ -820,7 +840,7 @@ class ViewAppointments extends React.Component {
                 <>
                 <Row style={{padding: '1%'}}>
                     <div className="Grid">     
-                        <MakeCards uid = {this.props.uid} aid = {null} role = {"user"}/>
+                        <MakeCards uid = {25} aid = {null} role = {"user"}/>
                     </div>     
                 </Row> 
                 </>
