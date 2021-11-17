@@ -60,7 +60,7 @@ function MakeCards(props) {
                     else {     
                         // populate temporary array
                         apps = Array(response.data.data)[0]
-                        apps = apps.filter(app => app.status !== "Picked Up")
+                        
                     }    
                 });
             }
@@ -68,6 +68,9 @@ function MakeCards(props) {
             if (props.role === "admin") {
                 setShowingAdmin(true)
                 setUserInfo({firstName: props.firstName, lastName: props.lastName, email: props.email, phoneNumber: props.phoneNumber})
+            }
+            else {
+                apps = apps.filter(app => app.status !== "Picked Up")
             }
                 
 
@@ -824,7 +827,7 @@ function MakeCustomerApps(props) {
 class ViewAppointments extends React.Component { 
 
     render() {
-        if (this.props.role === "admin") { // role check
+        if (this.props.role !== "admin") { // role check
             return (
                 <>
                 <Row style={{padding: '1%'}}>
