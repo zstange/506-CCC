@@ -75,7 +75,7 @@ getVehicles(req, res){
   const uid = req.body.uid
 
   const sqlInsert = 
-  "SELECT vid, make, model, year, color, licensePlate FROM vehicletable WHERE uid = ?"
+  "SELECT vid, make, model, year, color, licensePlate FROM vehicletable WHERE uid = ?;"
   db.query(sqlInsert, [uid]
       , (err, result) => {
           if(err){
@@ -218,7 +218,7 @@ deleteVehicle(req, res){
   const vid = req.body.vid
   const sqlInsert = 
 "DELETE FROM vehicletable WHERE vid = ?;"
-db.query(sqlInsert, [aid], (err, result) => {
+db.query(sqlInsert, [vid], (err, result) => {
 
   if(err){
     res.send({err: err});
@@ -237,17 +237,18 @@ db.query(sqlInsert, [aid], (err, result) => {
 getUser(req, res){
 	const uid = req.body.uid
     const sqlInsert = 
-    "SELECT * FROM usertable WHERE uid = ?"
+    "SELECT * FROM usertable WHERE uid = ?;"
     db.query(sqlInsert, [uid]
         , (err, result) => {
             if(err){
                 res.send({err: err});
-              }
-              else if (result != ""){
-                var user = JSON.parse(JSON.stringify(result));
-				return res.json(user);
-              }
+            }
+            else if (result != ""){
+              var user = JSON.parse(JSON.stringify(result));
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+            }
               else{
+                //console.log(JSON.stringify(result))
                 res.send({message: "cannot get user information"})
               }
         });
