@@ -48,7 +48,6 @@ function MakeVehiclesForSale(props) {
                     console.log(response.data.err)
                 } 
                 else {     
-                    console.log("images inited")
                     images = Array(response.data.data)[0]
                 }
             });
@@ -63,6 +62,38 @@ function MakeVehiclesForSale(props) {
         fetchTables()
     }, [props.role]);
     
+    async function SetTables() {
+        let vehicles = []
+        await Axios.get("http://localhost:3001/getInventory",{
+        }).then((response) => {
+            if(response.data.err) {
+                console.log(response.data.err)
+            }
+            else if (response.data.message) {
+                console.log(response.data.err)
+            } 
+            else {     
+                vehicles = Array(response.data.data)[0]
+            }
+    });
+
+        let images = [] // temporary array so we can set the table state later    
+        await Axios.post("http://localhost:3001/getImages",{
+        }).then((response) => {
+            if(response.data.err) {
+                console.log(response.data.err)
+            }
+            else if (response.data.message) {
+                console.log(response.data.err)
+            } 
+            else {     
+                images = Array(response.data.data)[0]
+            }
+        });
+        setVehicles(vehicles)
+            setImages(images)
+    }
+
     const handleAddImage = (event) => {
         if (contents.image !== "") {
             setContents({...contents, [event.target.id]: ""})
@@ -145,6 +176,7 @@ function MakeVehiclesForSale(props) {
                 setModifyTitle("Create Vehicle Listing")
                 setContents({iid: null, price: null, make: "", model: "", year: null, color: "", additionalInfo: "", image: ""})
                 setVehicleImages([])
+                setHasImage(false)
             }
         }
     }
@@ -198,7 +230,6 @@ function MakeVehiclesForSale(props) {
             setValidated(true);
             disableSubmit(true)
             // check if form is valid
-
             if (vehicleImages.length === 0) {
                 setHasImage(false)
                 setImageRegex("^(?!"+contents.image+"$).*$")
@@ -206,56 +237,62 @@ function MakeVehiclesForSale(props) {
             else   
                 setImageRegex("\\S*")
             if (form.checkValidity() === true ) {
-                if (modifyTitle === "Create Vehicle Listing") {
-                    alert("pretend we're creating")
-                    
-                    // await Axios.post("http://localhost:3001/addInventory",{
-                    //     price: contents.price,
-                    //     make: contents.make,
-                    //     model: contents.model,
-                    //     year: contents.year,
-                    //     color: contents.color,
-                    //     additionalInfo: contents.additionalInfo,
-                    //     image: contents.image
-                    // }).then((response) => {
-                    //     if(response.data.err) {
-                    //         console.log(response.data.err)
-                    //     }
-                    //     else if (response.data.message) {
-                    //         console.log(response.data.err)
-                    //     } 
-                    //     else {     
-                    //         setTimeout(() => {setValidated(false); showModifyModal(false);
-                    //             Axios.get("http://localhost:3001/getAppointmentsAdmin",{
-                    //                 }).then((response) => {
-                    //                     if(response.data.err) {
-                    //                         console.log(response.data.err)
-                    //                     }
-                    //                     else if (response.data.message) {
-                    //                         console.log(response.data.err)
-                    //                     }
-                    //                     else {     
-                    //                     // populate temporary array
-                    //                         setVehicles(Array(response.data.data)[0])
-                    //                     }
-                    //                 });
-                                
-                    //         }, 1000);
-                    //     }
-                    // });
+                if (modifyTitle === "Create Vehicle Listing" && hasImage) {
+                    await Axios.post("http://localhost:3001/addInventory",{
+                        price: contents.price,
+                        make: contents.make,
+                        model: contents.model,
+                        year: contents.year,
+                        color: contents.color,
+                        additionalInfo: contents.additionalInfo,
+                    }).then((response) => {
+                        if(response.data.err) {
+                            console.log(response.data.err)
+                        }
+                        else if (response.data.message) {
+                            console.log(response.data.err)
+                        } 
+                        else {     
+                            Axios.get("http://localhost:3001/getInventory",{
+                            }).then((response) => {
+                                if(response.data.err) {
+                                    console.log(response.data.err)
+                                }
+                                else if (response.data.message) {
+                                    console.log(response.data.err)
+                                } 
+                                else {     
+                                    let temp = Array(response.data.data)[0]
+                                    for (let i = 0; i <vehicleImages.length; i++) {
+                                        Axios.post("http://localhost:3001/addImage",{
+                                            iid: temp[temp.length-1].iid,
+                                            url: vehicleImages[i].url
+                                        }).then((response) => {
+                                            if(response.data.err) {
+                                                console.log(response.data.err)
+                                                i = vehicleImages.length
+                                            }
+                                            else if (response.data.message) {
+                                                console.log(response.data.err)
+                                                i = vehicleImages.length
+                                            } 
+                                        });
+                                    }
+                                    setTimeout(() => {setValidated(false); showModifyModal(false); SetTables();}, 1000);
+                                }
+                            });
+                        }
+                    });
                 }
-                else {
-                    alert("pretend we're modding")
-                    
+                else if (modifyTitle === "Modify Vehicle Listing") {       
                     let oldVehicleImages = images.filter(image => image.iid === contents.iid)
-                    console.log(vehicleImages)
-                    console.log(oldVehicleImages)
                     let imageChange = oldVehicleImages.length !== vehicleImages.length
                     if (!imageChange) {
                         let i = oldVehicleImages.length
                         while(i-- && !imageChange) {
-                            if (oldVehicleImages[i].url !== vehicleImages[i].url)
+                            if (oldVehicleImages[i].url !== vehicleImages[i].url) {
                                 imageChange = true
+                            }
                         }
                     }
                     
@@ -264,44 +301,63 @@ function MakeVehiclesForSale(props) {
                     || contents.year !== vehicles[vehicleIndex].year || contents.color !== vehicles[vehicleIndex].color 
                     || contents.additionalInfo !== vehicles[vehicleIndex].additionalInfo || imageChange
                     alert(changed)
-                    // if (changed) {
-                    //     await Axios.post("http://localhost:3001/editInventory",{
-                    //         iid: contents.iid,
-                    //         price: contents.price,
-                    //         make: contents.make,
-                    //         model: contents.model,
-                    //         year: contents.year,
-                    //         color: contents.color,
-                    //         additionalInfo: contents.additionalInfo,
-                    //         image: ""
-                    //     }).then((response) => {
-                    //         if(response.data.err) {
-                    //             console.log(response.data.err)
-                    //         }
-                    //         else if (response.data.message) {
-                    //             console.log(response.data.err)
-                    //         } 
-                    //         else {     
-                    //             setTimeout(() => {setValidated(false); showModifyModal(false);
-                    //                 Axios.get("http://localhost:3001/getAppointmentsAdmin",{
-                    //                     }).then((response) => {
-                    //                         if(response.data.err) {
-                    //                             console.log(response.data.err)
-                    //                         }
-                    //                         else if (response.data.message) {
-                    //                             console.log(response.data.err)
-                    //                         }
-                    //                         else {     
-                    //                         // populate temporary array
-                    //                             setVehicles(Array(response.data.data)[0])
-                    //                         }
-                    //                     });
-                                    
-                    //             }, 1000);
-                    //         }
-                    //     });
-                    // }
+                    if (changed) {
+                        await Axios.post("http://localhost:3001/editInventory",{
+                            iid: contents.iid,
+                            price: contents.price,
+                            make: contents.make,
+                            model: contents.model,
+                            year: contents.year,
+                            color: contents.color,
+                            additionalInfo: contents.additionalInfo,
+                        }).then((response) => {
+                            if(response.data.err) {
+                                console.log(response.data.err)
+                            }
+                            else if (response.data.message) {
+                                console.log(response.data.err)
+                            } 
+                            else {    
+                                if(imageChange) {
+                                    Axios.post("http://localhost:3001/deleteImages",{
+                                    iid: contents.iid,
+                                    }).then((response) => {
+                                        if(response.data.err) {
+                                            console.log(response.data.err)
+                                        }
+                                        else if (response.data.message) {
+                                            console.log(response.data.err)
+                                        } 
+                                        else {
+                                            for (let i = 0; i <vehicleImages.length; i++) {
+                                                Axios.post("http://localhost:3001/addImage",{
+                                                    iid: contents.iid,
+                                                    url: vehicleImages[i].url
+                                                }).then((response) => {
+                                                    if(response.data.err) {
+                                                        console.log(response.data.err)
+                                                        i = vehicleImages.length
+                                                    }
+                                                    else if (response.data.message) {
+                                                        console.log(response.data.err)
+                                                        i = vehicleImages.length
+                                                    } 
+                                                });
+                                            }
+                                            setTimeout(() => {setValidated(false); showModifyModal(false); SetTables();}, 1000);
+                                        }
+                                    });       
+                                }
+                                else 
+                                    setTimeout(() => {setValidated(false); showModifyModal(false);SetTables()}, 1000);
+                            } 
+                        });
+                    }
+                    else 
+                        setTimeout(() => {setValidated(false); showModifyModal(false);}, 1000);
                 }
+                else
+                    disableSubmit(false)
             }  
             else
                 disableSubmit(false)
@@ -399,8 +455,9 @@ function MakeVehiclesForSale(props) {
                     </Col>                           
                 </Form.Group> 
                 <Form.Group as={Row} className="mb-3" controlId="image">
-                    <Form.Label column sm="3" className="createAccountLabels">New Image Link</Form.Label>
-                    <Col sm="7" >
+                    <div>
+                    <Form.Label column sm="3" className="createAccountLabels">New Image</Form.Label>
+                    <Col sm="7" style = {{display: "inline-block"}}>
                         <Form.Control  
                             required = {!hasImage}
                             pattern =  {imageRegex}
@@ -410,13 +467,14 @@ function MakeVehiclesForSale(props) {
                             onChange={handleChange}
                         />
                         <Form.Control.Feedback type="invalid">Add at least one image.</Form.Control.Feedback>    
-                    </Col>                           
+                    </Col>   
+                    <Button id="image" variant="primary" size='sm' style={{marginLeft: '200px', marginTop: '10px'}} onClick={handleAddImage}>Add Image</Button>
+                    </div>                        
                 </Form.Group> 
-                <Button id="image" variant="primary" size='sm' style={{margin: '5px'}} onClick={handleAddImage}>Add Image</Button>
                 {vehicleImages.map((image, index) => {
                     return <div>
                             <Form.Group as={Row} className="mb-3" controlId={"image_"+image.imageid}>
-                            <Form.Label column sm="3" className="createAccountLabels">{"Image "+index}</Form.Label>
+                            <Form.Label column sm="3" className="createAccountLabels">{"Image "+index+1}</Form.Label>
                             <Col sm="7" >
                                 <Form.Control  
                                     readOnly
@@ -427,7 +485,7 @@ function MakeVehiclesForSale(props) {
                                 />
                             </Col>                           
                             </Form.Group>
-                            <Button id={image.imageid} variant="primary" size='sm' style={{margin: '5px'}} onClick={handleDeleteImage}>Delete Image</Button>
+                            <Button id={image.imageid} variant="primary" size='sm' style={{marginLeft: '200px', marginBottom: '25px'}} onClick={handleDeleteImage}>Delete Image</Button>
                             </div>
                 })}
                 <div style={{textAlign: 'center'}}>
