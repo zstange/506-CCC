@@ -211,9 +211,9 @@ function MakeCards(props) {
             setValidatedStatus(true)
 
             if (event.currentTarget.checkValidity() === true) {
-                let changed = (appointments[0].vid !== contents.vid && appointments[0].datetime !== contents.dateTime
-                    && appointments[0].service !== contents.service && appointments[0].additionalInfo !== contents.additionalInfo
-                    && appointments[0].status !== contents.status)
+                let changed = (appointments[0].vid !== contents.vid || appointments[0].datetime || contents.dateTime
+                    || appointments[0].service !== contents.service || appointments[0].additionalInfo !== contents.additionalInfo
+                    || appointments[0].status !== contents.status)
                 if (changed) {
                     Axios.post("http://localhost:3001/editAppointment",{
                             aid: contents.aid,
@@ -403,9 +403,10 @@ function MakeCards(props) {
                 }
                 else if (aid !== -1 && appNum < 4) { // modifying appointment case
                     // edit appointment
-                    let changed = (appointments[index].vid !== contents.vid && appointments[index].datetime !== contents.dateTime
-                        && appointments[index].service !== contents.service && appointments[index].additionalInfo !== contents.additionalInfo
-                        && appointments[index].status !== contents.status)
+                    let changed = (appointments[index].vid !== contents.vid || appointments[index].datetime !== contents.dateTime
+                        || appointments[index].service !== contents.service || appointments[index].additionalInfo !== contents.additionalInfo
+                        || appointments[index].status !== contents.status)
+                        alert(changed)
                     if (changed) {
                         Axios.post("http://localhost:3001/editAppointment",{
                         aid: contents.aid,
@@ -845,7 +846,7 @@ function MakeCustomerApps(props) {
 class ViewAppointments extends React.Component { 
 
     render() {
-        if (this.props.role === "admin") { // role check
+        if (this.props.role !== "admin") { // role check
             return (
                 <>
                 <Row style={{padding: '1%'}}>
