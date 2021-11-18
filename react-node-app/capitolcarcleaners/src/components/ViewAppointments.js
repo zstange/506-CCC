@@ -211,8 +211,11 @@ function MakeCards(props) {
             setValidatedStatus(true)
 
             if (event.currentTarget.checkValidity() === true) {
-                
-                Axios.post("http://localhost:3001/editAppointment",{
+                let changed = (appointments[0].vid !== contents.vid && appointments[0].datetime !== contents.dateTime
+                    && appointments[0].service !== contents.service && appointments[0].additionalInfo !== contents.additionalInfo
+                    && appointments[0].status !== contents.status)
+                if (changed) {
+                    Axios.post("http://localhost:3001/editAppointment",{
                             aid: contents.aid,
                             vid: contents.vid,
                             dateTime: contents.dateTime+" 09:00:00",
@@ -245,7 +248,10 @@ function MakeCards(props) {
                                     });
                                 }, 1000);  
                             }
-                });
+                    });
+                }
+                else 
+                setTimeout(() => {setValidatedStatus(false); showStatusModal(false);}, 1000); 
             }
             else 
                 disableSubmit(false)
@@ -397,65 +403,72 @@ function MakeCards(props) {
                 }
                 else if (aid !== -1 && appNum < 4) { // modifying appointment case
                     // edit appointment
-                    Axios.post("http://localhost:3001/editAppointment",{
+                    let changed = (appointments[index].vid !== contents.vid && appointments[index].datetime !== contents.dateTime
+                        && appointments[index].service !== contents.service && appointments[index].additionalInfo !== contents.additionalInfo
+                        && appointments[index].status !== contents.status)
+                    if (changed) {
+                        Axios.post("http://localhost:3001/editAppointment",{
                         aid: contents.aid,
                         vid: contents.vid,
                         dateTime: contents.dateTime+" 09:00:00",
                         service: contents.service,
                         additionalInfo: contents.additionalInfo,
                         status: contents.status
-                    }).then((response) => {
-                        if(response.data.err) {
-                            console.log(response.data.err)
-                        }
-                        else if (response.data.message) {
-                            console.log(response.data.err)
-                        } 
-                        else {     
-                            if (contents.status === "Picked Up") 
-                                alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
-                            if (props.role === "admin") {
-                                setTimeout(() => {setValidated(false); showModifyModal(false);
-                                    Axios.get("http://localhost:3001/getAppointmentsAdmin",{
-                                        }).then((response) => {
-                                        if(response.data.err) {
-                                            console.log(response.data.err)
-                                        }
-                                        else if (response.data.message) {
-                                            console.log(response.data.err)
-                                        } 
-                                        else {     
-                                            // populate temporary array
-                                            props.setApps(Array(response.data.data)[0])
-                                        }
-                                    });
-                                }, 1000);   
+                        }).then((response) => {
+                            if(response.data.err) {
+                                console.log(response.data.err)
                             }
-                            // set user appointments table
-                            let newUserApps = appointments // set new appointment info
-                            newUserApps[index].aid = aid
-                            newUserApps[index].vid = contents.vid
-                            newUserApps[index].dateTime = contents.dateTime+" 09:00:00"
-                            newUserApps[index].service = contents.service
-                            newUserApps[index].additionalInfo = contents.additionalInfo
-
-                            let j = 0; // search for the vehicle that the user chose
-                            for (j; j < userVehicles.length; j++) {
-                                if (Number(contents.vid) === userVehicles[j].vid) {
-                                    newUserApps[index].make = userVehicles[j].make
-                                    newUserApps[index].model = userVehicles[j].model
-                                    newUserApps[index].year = userVehicles[j].year
-                                    newUserApps[index].color = userVehicles[j].color
-                                    newUserApps[index].licensePlate = userVehicles[j].licensePlate
-                                    break;
+                            else if (response.data.message) {
+                                console.log(response.data.err)
+                            } 
+                            else {     
+                                if (contents.status === "Picked Up") 
+                                    alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
+                                if (props.role === "admin") {
+                                    setTimeout(() => {setValidated(false); showModifyModal(false);
+                                        Axios.get("http://localhost:3001/getAppointmentsAdmin",{
+                                            }).then((response) => {
+                                            if(response.data.err) {
+                                                console.log(response.data.err)
+                                            }
+                                            else if (response.data.message) {
+                                                console.log(response.data.err)
+                                            } 
+                                            else {     
+                                                // populate temporary array
+                                                props.setApps(Array(response.data.data)[0])
+                                            }
+                                        });
+                                    }, 1000);   
                                 }
-                            }
+                                // set user appointments table
+                                let newUserApps = appointments // set new appointment info
+                                newUserApps[index].aid = aid
+                                newUserApps[index].vid = contents.vid
+                                newUserApps[index].dateTime = contents.dateTime+" 09:00:00"
+                                newUserApps[index].service = contents.service
+                                newUserApps[index].additionalInfo = contents.additionalInfo
 
-                            setAppointments(newUserApps) // set apps table
-                            
-                            setTimeout(() => {setValidated(false); showModifyModal(false);}, 1000);
-                        }
-                    });  
+                                let j = 0; // search for the vehicle that the user chose
+                                for (j; j < userVehicles.length; j++) {
+                                    if (Number(contents.vid) === userVehicles[j].vid) {
+                                        newUserApps[index].make = userVehicles[j].make
+                                        newUserApps[index].model = userVehicles[j].model
+                                        newUserApps[index].year = userVehicles[j].year
+                                        newUserApps[index].color = userVehicles[j].color
+                                        newUserApps[index].licensePlate = userVehicles[j].licensePlate
+                                        break;
+                                    }
+                                }
+
+                                setAppointments(newUserApps) // set apps table
+                                
+                                setTimeout(() => {setValidated(false); showModifyModal(false);}, 1000);
+                            }
+                        });  
+                    }
+                    else
+                        setTimeout(() => {setValidated(false); showModifyModal(false);}, 1000);
                 }
                 else {
                     // but if we have more than 4 appointments for the user's chosen day, set regex to reject it
@@ -557,7 +570,7 @@ function MakeCards(props) {
                         />
                     </Col>                           
                 </Form.Group> 
-                <div style={{ display: (showAdminInfo ? 'block': 'none') ,textAlign: 'center'}}> 
+                <div style={{ display: (showAdminInfo && modifyTitle !== "Schedule Appointment" ? 'block': 'none') ,textAlign: 'center'}}> 
                 <Form.Group as={Row} className="mb-3" controlId="status">
                     <Form.Label column sm="3" className="createAccountLabels">Status</Form.Label>
                     <Col sm="7" >
