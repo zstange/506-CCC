@@ -1,4 +1,3 @@
-const  db  = require('../db.js')
 const { bcrypt } = require('../hash.js')
 const { jwt, env} = require('../jwt.js')
 

@@ -1,9 +1,10 @@
 var supertest = require('supertest');
-const { app } = require('../index.js');
+var module = require('../index.js');
+const app = module.app;
+module.db.end();
+module.db = require('../testdb.js');
 const { server } = require('../server.js');
-const request = supertest(server);
-const db = require('../db.js');
-const { JsonWebTokenError } = require('jsonwebtoken');
+const request = supertest(app);
 jest.setTimeout(30000);
 
 afterEach(function () {
@@ -11,7 +12,7 @@ afterEach(function () {
 });
 
 afterAll(function () {
-  db.end();
+  module.db.end();
 });
 
 test('get /createAccount with no password', async() => {
