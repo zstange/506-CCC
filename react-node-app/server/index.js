@@ -13,6 +13,8 @@ app.post("/login", combinedUserController.login)
 app.post("/addAppointment", combinedUserController.addAppointment)
 app.post("/editAppointment", combinedUserController.editAppointment)
 app.post("/deleteAppointment", combinedUserController.deleteAppointment)
+app.post("/getImages", combinedUserController.getImages)
+app.post("/deleteImages", combinedUserController.deleteImages)
 
 //customer api calls
 app.post("/createAccount", customerController.createAcc)
@@ -27,7 +29,6 @@ app.get("/getAppointmentDates", customerController.getAppointmentDates)
 app.post("/getAppointmentsByDate", customerController.getAppointmentsByDate)
 
 //admin api calls
-
 app.get("/getUsers", adminController.getUsers)
 app.post("/getAppointmentByAppId", adminController.getAppointmentByAppId)
 app.get("/getAppointmentsAdmin", verifyJWT, adminController.getAppointments)

@@ -2,7 +2,7 @@ import React, {useEffect,useState} from "react";
 import Axios from 'axios';
 import '../css/VehiclesForSale.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import MakeCarsForSale from './MakeCarsForSale';
+import MakeVehiclesForSale from './MakeVehiclesForSale';
 import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal, Image, Carousel} from "react-bootstrap";
 
 function MakeAdminVehiclesForSale() {
@@ -23,7 +23,7 @@ function MakeAdminVehiclesForSale() {
     if (ready) {
         return (
             <div>
-                <MakeCarsForSale role = {"admin"} setVehicles = {setVehiclesTable} vehicles = {vehiclesTable}/>
+                <MakeVehiclesForSale role = {"admin"} setVehicles = {setVehiclesTable} vehicles = {vehiclesTable}/>
             </div>
         );
     }
