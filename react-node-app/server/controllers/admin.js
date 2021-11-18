@@ -134,5 +134,41 @@ deleteInventory(req, res){
   
   },
 
+  addPromotion(req, res){
+    const promotionName = req.body.promotionName
+    const message = req.body.message
+    const sqlInsert = 
+    "INSERT INTO promotionTable (promotionName, message) VALUES (?,?);"
+    db.query(sqlInsert, [promotionName, message], (err, result) => {
+      if(err){
+        res.send({err: err});
+      }
+      else if (result != ""){
+        return res.send({message: "Added a vehicle to inventory successfully"});
+      } else {
+        res.send({message: "Could not create promotion!"})
+      }
+
+    });
+},
+
+deletePromotion(req, res){
+  const pid = req.body.pid
+  const sqlInsert = 
+  "DELETE FROM promotionTable WHERE pid = ?;"
+  db.query(sqlInsert, [pid], (err, result) => {
+    if(err){
+      res.send({err: err});
+    }
+    else if (result["affectedRows"] != 0){
+      return res.json({message: "Successful deletion!"});
+    }
+    else{
+      res.send({message: "Vehicle is not found in Inventory!"})
+    }             
+  });
+},
+
+
 };
 module.exports = adminController;
