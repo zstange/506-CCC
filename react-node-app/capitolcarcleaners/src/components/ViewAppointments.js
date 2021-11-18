@@ -31,8 +31,6 @@ function ViewAppointments() {
             </>
         );
     }
-
-
 }
 
 export default ViewAppointments;
