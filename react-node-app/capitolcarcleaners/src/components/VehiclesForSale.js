@@ -15,7 +15,7 @@ function VehiclesForSale() {
             <>
             <Row style={{padding: '1%'}}>
                 <div className = "List">    
-                    <label className="AllAppHeader">Vehicles For Sale</label>
+                    <label className="AllAppHeader">Cars For Sale</label>
                     <MakeAdminVehiclesForSale/>
                 </div>     
             </Row> 
@@ -27,7 +27,7 @@ function VehiclesForSale() {
             <>
             <Row style={{padding: '1%'}}>
                 <div className = "List">     
-                    <label className="AllAppHeader">Vehicles For Sale</label>
+                    <label className="AllAppHeader">Cars For Sale</label>
                     <MakeVehiclesForSale role = {"user"}/>
                 </div>     
             </Row> 
