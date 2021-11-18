@@ -3,7 +3,8 @@ const { app } = require('../index.js');
 const { server } = require('../server.js');
 const request = supertest(server);
 const db = require('../db.js');
-
+const { JsonWebTokenError } = require('jsonwebtoken');
+jest.setTimeout(30000);
 
 afterEach(function () {
   server.close();
@@ -21,7 +22,7 @@ test('get /createAccount with no password', async() => {
   });
 
 test('get /createAccount with correct info', async () =>{
-      const expected =  {redirect: "/login" };
+      const expected =  {message: "Created an account successfully"};
       const response = await request.post('/createAccount').send({
       firstName: 'preetham',
       lastName: 'mukkara',
@@ -50,7 +51,7 @@ test('get /createAccount with correct info', async () =>{
   });
 
   test('get /addAppointment with correct info', async() => {
-    const expected = { redirect: "/viewAppointment" }; 
+    const expected = { message: "Appointment added successfully" }; 
     const response = await request.post('/addAppointment').send({
       uid: 165,
       vid: 15,

@@ -3,6 +3,8 @@ const { app } = require('../index.js');
 const { server } = require('../server.js');
 const db = require('../db.js');
 var request = supertest(server);
+jest.setTimeout(30000);
+
 
 afterEach(function (){
   server.close();
@@ -39,11 +41,11 @@ test('get /login with wrong info for password', async () => {
 });
 
 test('get /login with correct info', async () => {
-  const expected = { userID: 485, role: "user"}; 
+  const expected = { userID: 1115, role: 'user' }; 
   const response = await request.post('/login').send({ 
   email: 'fake', 
   password: 'pwd'
    });
-   expect(response.body).toStrictEqual(expected);
+   expect(response.body.userInfo).toStrictEqual(expected);
    expect(response.status).toBe(200);
 });
