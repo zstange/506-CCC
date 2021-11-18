@@ -1,8 +1,10 @@
 var supertest = require('supertest');
-const { app } = require('../index.js');
+var module = require('../index.js');
+const app = module.app;
+module.db.end();
+module.db = require('../testdb.js');
 const { server } = require('../server.js');
-const db = require('../db.js');
-var request = supertest(server);
+var request = supertest(app);
 jest.setTimeout(30000);
 
 
@@ -11,7 +13,7 @@ afterEach(function (){
 });
 
 afterAll(function () {
-  db.end();
+  module.db.end();
 });
 
 test('get /', async() => {
@@ -46,6 +48,7 @@ test('get /login with correct info', async () => {
   email: 'fake', 
   password: 'pwd'
    });
+   console.log(response.body.userInfo);
    expect(response.body.userInfo).toStrictEqual(expected);
    expect(response.status).toBe(200);
 });

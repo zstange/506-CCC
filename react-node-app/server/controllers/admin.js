@@ -1,4 +1,3 @@
-const  db  = require('../db.js')
 const adminController ={
 getAppointments(req, res){
     const sqlInsert = 

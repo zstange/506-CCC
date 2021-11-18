@@ -1,4 +1,5 @@
 // server/index.js
+var db  = require('./db.js')
 
 const customerController = require('./controllers/customer')
 const adminController = require('./controllers/admin')
@@ -36,4 +37,6 @@ app.post("/deleteInventory", adminController.deleteInventory)
 app.get("/getInventory", adminController.getInventory)
 app.post("/addPromotion", adminController.addPromotion)
 app.post("/deletePromotion", adminController.deletePromotion)
-module.exports = {app}
+exports.app = app;
+exports.db = db;
+
