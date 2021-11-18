@@ -183,7 +183,7 @@ function MakeAdminPage() {
         return (
             <>
             <br></br>
-            <label className="AllAppHeader">Customer History</label>
+            <label className="AllAppHeader">Service History</label>
             <div>
                 <MakeCustomerApps setApps = {setApps} appointments = {appointments} users = {users}/>
             </div>
@@ -255,6 +255,7 @@ class CustomerHistory extends React.Component {
             return (
                 <>
                 <Row style={{padding: '1%'}}>
+                    <label className="AllAppHeader">Service History</label>
                     <div className="List">     
                         <MakeCards uid = {this.props.uid} aid = {null} role = {"user"}/>
                     </div>     
