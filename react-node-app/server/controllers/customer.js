@@ -23,8 +23,7 @@ createAcc(req, res) {
         return res.send({err: "db query error"});
       }
       else if (result != ""){
-        var redir = { redirect: "/login" };
-        return res.json(redir);
+        return res.json({message: "Created an account successfully"});
       }
     });
    })
@@ -128,8 +127,7 @@ forgotPassword(req, res){
               return res.send({err: "db query error"});
             }
             else if (result != ""){
-              var redir = { redirect: "/login" };
-              return res.json(redir);
+              return res.send({message: "Updated password successfully"});
             }
           });
          })
@@ -159,51 +157,7 @@ checkEmail(req, res){
   });
 
 },
-editAppointment(req, res){
-  const aid = req.body.aid
-  const vid = req.body.vid
-  const dateTime = req.body.dateTime
-  const service = req.body.service
-  const additionalInfo = req.body.additionalInfo
-  const status = req.body.status
-  const sqlInsert = 
-"UPDATE appointmenttable SET vid = ?, dateTime = ?, service = ?, additionalInfo = ?, status = ? WHERE aid = ?;"
-db.query(sqlInsert, [vid, dateTime, service, additionalInfo, status, aid], (err, result) => {
 
-  if(err){
-    res.send({err: err});
-  }
-  else if (result["affectedRows"] != 0){
-    var redir = { redirect: "/viewAppointment" };
-    return res.json(redir);
-  }
-  else{
-    res.send({message: "appointment doesn't exist in the table."})
-  }
-
-});
-
-},
-deleteAppointment(req, res){
-  const aid = req.body.aid
-  const sqlInsert = 
-"DELETE FROM appointmenttable WHERE aid = ?;"
-db.query(sqlInsert, [aid], (err, result) => {
-
-  if(err){
-    res.send({err: err});
-  }
-  else if (result["affectedRows"] != 0){
-    var redir = { redirect: "/viewAppointment" };
-    return res.json(redir);
-  }
-  else{
-    res.send({message: "Appointement is not found!"})
-  }
-
-});
-
-},
 addVehicle(req, res){
   const uid = req.body.uid
   const make = req.body.make
@@ -220,8 +174,7 @@ addVehicle(req, res){
         return res.send({err: err});
       }
       else if (result != ""){
-        var redir = { redirect: "/viewVehicles" };
-        return res.json(redir);
+        return res.send({message: "Vehicle added successfully"});
       }
       else{
         return res.send({message: "Please fill out all information required."})
@@ -238,9 +191,8 @@ db.query(sqlInsert, [vid], (err, result) => {
   if(err){
     res.send({err: err});
   }
-  else if (result != ""){
-    var redir = { redirect: "/viewVehicles" };
-    return res.json(redir);
+  else if (result["affectedRows"] != 0){
+    return res.send({message: "Vehicle deleted successfully"});
   }
   else{
     res.send({message: "Vehicle is not found!"});

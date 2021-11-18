@@ -109,3 +109,24 @@ Content-Type: application/json
 "additionalInfo" : "Testing if it works with wrong aid",
 "status" : "Ready"
 }
+
+###
+POST http://localhost:3001/addVehicle
+Content-Type: application/json
+
+{
+    "uid" : "1085",
+    "make" : "Jaguar",
+    "model" : "F-type",
+    "year" : "2010",
+    "color" : "Red",
+    "licensePlate" : "LPP0000",
+    "additionalInfo" : "testing to see if it is editing"
+}
+###
+POST http://localhost:3001/deleteVehicle
+Content-Type: application/json
+
+{
+    "vid" : "135"
+}
