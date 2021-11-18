@@ -29,11 +29,11 @@ login(req, res){
             var userInfo = { userID: user[0].uid, role: user[0].role};
             return res.json({auth: true, token: token, userInfo: userInfo});
           } else{
-            return res.json({message: "Wrong username/password combination!"})
+            return res.send({message: "Wrong username/password combination!"})
           }
         }) 
       } else{
-          return res.json({message: "User doesn't exist!"})
+          return res.send({message: "User doesn't exist!"})
       }
       
     });
@@ -53,10 +53,52 @@ login(req, res){
                 res.send({err: "db query error"});
               }
               else if (result != ""){
-                var redir = { redirect: "/viewAppointment" };
-                return res.json(redir);
+                return res.send({message: "Appointment added successfully"});
               }              
         });
+},
+editAppointment(req, res){
+  const aid = req.body.aid
+  const vid = req.body.vid
+  const dateTime = req.body.dateTime
+  const service = req.body.service
+  const additionalInfo = req.body.additionalInfo
+  const status = req.body.status
+  const sqlInsert = 
+"UPDATE appointmenttable SET vid = ?, dateTime = ?, service = ?, additionalInfo = ?, status = ? WHERE aid = ?;"
+db.query(sqlInsert, [vid, dateTime, service, additionalInfo, status, aid], (err, result) => {
+
+  if(err){
+    res.send({err: err});
+  }
+  else if (result["affectedRows"] != 0){
+    return res.send({message: "Appointment edited successfully"});
+  }
+  else{
+    res.send({message: "appointment doesn't exist in the table."})
+  }
+
+});
+
+},
+deleteAppointment(req, res){
+  const aid = req.body.aid
+  const sqlInsert = 
+"DELETE FROM appointmenttable WHERE aid = ?;"
+db.query(sqlInsert, [aid], (err, result) => {
+
+  if(err){
+    res.send({err: err});
+  }
+  else if (result["affectedRows"] != 0){
+    return res.send({message: "Appointment deleted successfully"});
+  }
+  else{
+    res.send({message: "Appointement is not found!"})
+  }
+
+});
+
 }
 };
 

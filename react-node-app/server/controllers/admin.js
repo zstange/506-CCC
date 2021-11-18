@@ -75,17 +75,15 @@ addInventory(req, res){
     const year = req.body.year
     const color = req.body.color
     const additionalInfo = req.body.additionalInfo
-    const image = req.body.image
     const sqlInsert = 
-    "INSERT INTO inventorytable (price, make,model,year,color,additionalInfo,image) VALUES (?,?,?,?,?,?,?);"
-    db.query(sqlInsert, [price, make, model, year, color, additionalInfo, image]
+    "INSERT INTO inventorytable (price, make,model,year,color,additionalInfo) VALUES (?,?,?,?,?,?);"
+    db.query(sqlInsert, [price, make, model, year, color, additionalInfo]
         , (err, result) => {
             if(err){
                 res.send({err: "db query error"});
               }
               else if (result != ""){
-                var redir = { redirect: "/viewInventory" };
-                return res.json(redir);
+                return res.send({message: "Added a vehicle to inventory successfully"});
               }              
         });
 },
@@ -98,17 +96,15 @@ editInventory(req, res){
   const year = req.body.year
   const color = req.body.color
   const additionalInfo = req.body.additionalInfo
-  const image = req.body.image
     const sqlInsert = 
-  "UPDATE inventorytable SET price = ?, make = ?, model = ?, year = ?, color = ?, additionalInfo = ?, image = ? WHERE iid = ?;"
+  "UPDATE inventorytable SET price = ?, make = ?, model = ?, year = ?, color = ?, additionalInfo = ? WHERE iid = ?;"
   db.query(sqlInsert, [price, make, model, year, color, additionalInfo, image, iid], (err, result) => {
   
     if(err){
       res.send({err: err});
     }
     else if (result["affectedRows"] != 0){
-      var redir = { redirect: "/viewInventory" };
-      return res.json(redir);
+      return res.send({message: "Edited a vehicle in the inventory successfully"});
     }
     else{
       res.send({message: "Vechicle does not exist in inventory!"})
@@ -128,11 +124,10 @@ deleteInventory(req, res){
       res.send({err: err});
     }
     else if (result["affectedRows"] != 0){
-      var redir = { redirect: "/viewInventory" };
-      return res.json(redir);
+      return res.send({message: "Deleted a vehicle in the inventory successfully"});
     }
     else{
-      res.send({message: "Vehicle is not found in Inventory!"})
+      res.send({message: "Vehicle is not found in inventory!"})
     }
   
   });
