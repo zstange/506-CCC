@@ -35,5 +35,8 @@ app.post("/addInventory", adminController.addInventory)
 app.post("/editInventory", adminController.editInventory)
 app.post("/deleteInventory", adminController.deleteInventory)
 app.get("/getInventory", adminController.getInventory)
+app.post("/addPromotion", adminController.addPromotion)
+app.post("/deletePromotion", adminController.deletePromotion)
 exports.app = app;
 exports.db = db;
+
