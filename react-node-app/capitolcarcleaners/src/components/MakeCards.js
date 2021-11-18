@@ -1,9 +1,9 @@
 import React, {useEffect,useState} from "react"; 
 import Axios from 'axios';
+import { useSelector } from "react-redux";
 import '../css/ViewAppointments.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "react-bootstrap";
-import { useSelector } from "react-redux";
 
 function MakeCards(props) {
   // let id = 25
@@ -409,7 +409,6 @@ function MakeCards(props) {
                     let changed = (appointments[index].vid !== contents.vid || appointments[index].datetime !== contents.dateTime
                         || appointments[index].service !== contents.service || appointments[index].additionalInfo !== contents.additionalInfo
                         || appointments[index].status !== contents.status)
-                        alert(changed)
                     if (changed) {
                         Axios.post("http://localhost:3001/editAppointment",{
                         aid: contents.aid,
