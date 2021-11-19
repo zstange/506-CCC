@@ -6,6 +6,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "react-bootstrap";
 
 function MakeHistoryCards(props) {
+    const token = useSelector((state) => state.token.value);
+
     const id = props.uid
     const [userInfo, setUserInfo] = useState({firstName: "", lastName: "", email: "", phoneNumber: ""})
     const [showAdminInfo, setShowingAdmin] = useState(false)
@@ -22,6 +24,10 @@ function MakeHistoryCards(props) {
             
             await Axios.post("http://localhost:3001/getUserAppointments",{
                     uid: id
+                }, {
+                    headers: {
+                        authorization: token
+                    },
                 }).then((response) => {
                     if(response.data.err) {
                         console.log(response.data.err)
@@ -47,6 +53,10 @@ function MakeHistoryCards(props) {
         
             await Axios.post("http://localhost:3001/getVehicles",{
                 uid: id
+            }, {
+                headers: {
+                    authorization: token
+                },
             }).then((response) => {
                 if(response.data.err) {
                     console.log(response.data.err)

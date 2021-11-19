@@ -17,16 +17,21 @@ function CustomerHomepage(props) {
     useEffect(() => { 
         if (userId != null){
             Axios.post("http://localhost:3001/getUser", {
+                uid: userId
+            },{
                 headers: {
                     authorization: token
                 },
-                uid: userId
             }).then((response) => {
                 setUserData(response.data.data[0]);
             });
         
             Axios.post("http://localhost:3001/getVehicles",{
                 uid: userId
+            }, {
+                headers: {
+                    authorization: token
+                },
             }).then((response) => {
                 if(response.data.err) {
                     console.log("ERR: " + JSON.stringify(response.data.err))
