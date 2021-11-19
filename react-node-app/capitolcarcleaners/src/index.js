@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import store from './store';
+import createStore from './store';
+import { PersistGate } from 'redux-persist/integration/react';
 import './index.css';
 import Header from './components/Header';
 import CreateAccount from './components/CreateAccount';
@@ -15,23 +16,26 @@ import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
 
+const { store, persistor } = createStore();
+
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Provider store={store}>
-        <Header/>
-        <Switch>
-          <Route exact path="/">
-            <Redirect to="/Home" />
-          </Route>
-          <Route exact path="/Home" component={Home} />
-          <Route path="/Login" component={Login} />
-          <Route path="/CreateAccount" component={CreateAccount} />
-          <Route path="/ForgotPassword" component={ForgotPassword} />
-          <Route path="/ViewAppointments" component={ViewAppointments} />
-          <Route path="/CustomerHomepage" component={CustomerHomepage} />
-          <Route path="/CustomerHistory" component={CustomerHistory} />
-      </Switch>
+        <PersistGate loading={null} persistor={persistor}>
+          <Header/>
+          <Switch>
+            <Route exact path="/">
+              <Redirect to="/Home" />
+            </Route>
+            <Route exact path="/Home" component={Home} />
+            <Route path="/Login" component={Login} />
+            <Route path="/CreateAccount" component={CreateAccount} />
+            <Route path="/ForgotPassword" component={ForgotPassword} />
+            <Route path="/ViewAppointments" component={ViewAppointments} />
+            <Route path="/CustomerHomepage" component={CustomerHomepage} />
+          </Switch>
+        </PersistGate>
       </Provider>
     </BrowserRouter>
   </React.StrictMode>,

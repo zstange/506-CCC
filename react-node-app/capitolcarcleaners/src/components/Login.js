@@ -40,8 +40,8 @@ function LoginPage(props) {
           else {
             setRedirect(true);
             dispatch(logUserIn());
-            dispatch(setUserId(response.data.userID));
-            dispatch(setRole(response.data.role));
+            dispatch(setUserId(response.data.userInfo.userID));
+            dispatch(setRole(response.data.userInfo.role));
           }
         });
       
