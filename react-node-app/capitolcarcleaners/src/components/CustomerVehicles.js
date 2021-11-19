@@ -24,10 +24,10 @@ function CustomerVehicles(props) {
                 }
                 else if (response.data.message) {
                     // No vehicles added to account
+                    setUserVehicles([]);
                     console.log(JSON.stringify(response.data.message))   
                 } 
-                else { 
-                    console.log(response)    
+                else {   
                     var vehicles = []
                     vehicles = Array(response.data.data)[0]
                     setUserVehicles(vehicles);
@@ -48,7 +48,6 @@ function CustomerVehicles(props) {
                 </Card>
             )
         }
-
         let vehicles = [];
 
         for(let i =0; i < userVehicles.length; i++) {
@@ -72,7 +71,6 @@ function CustomerVehicles(props) {
             }
             
             setValidated(true);
-            event.preventDefault();
     
             // Output Caputured Data
             if (form.checkValidity() === true) {          
@@ -187,7 +185,7 @@ function CustomerVehicles(props) {
                 if(response.data.err) {
                     console.log(response.data.err)
                 }
-                else if (response.data.message) {
+                else if (response.data.message === "Vehicle is not found!") { //change this later as it does not match with the alert
                     return (
                         <Alert 
                             variant={"primary"} >
@@ -196,7 +194,7 @@ function CustomerVehicles(props) {
                     )
                 } 
                 else { 
-                    setShowDeleteModal(false)    
+                    setShowDeleteModal(false)
                 }
             });
             
