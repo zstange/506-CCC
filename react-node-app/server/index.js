@@ -1,4 +1,5 @@
 // server/index.js
+var db  = require('./db.js')
 
 const customerController = require('./controllers/customer')
 const adminController = require('./controllers/admin')
@@ -10,15 +11,15 @@ const { verifyJWT } = require('./jwt.js')
 app.get("/", combinedUserController.home)
 app.post("/login", combinedUserController.login)
 app.post("/addAppointment", combinedUserController.addAppointment)
+app.post("/editAppointment", combinedUserController.editAppointment)
+app.post("/deleteAppointment", combinedUserController.deleteAppointment)
 
 //customer api calls
 app.post("/createAccount", customerController.createAcc)
 app.post("/forgotPassword", customerController.forgotPassword)
 app.post("/checkEmail", customerController.checkEmail)
 app.post("/getVehicles", customerController.getVehicles)
-app.post("/editAppointment", customerController.editAppointment)
 app.post("/addVehicle", customerController.addVehicle)
-app.post("/deleteAppointment", customerController.deleteAppointment)
 app.post("/deleteVehicle", customerController.deleteVehicle)
 app.post("/getUser", customerController.getUser)
 app.post("/getUserAppointments", customerController.getUserAppointments)
@@ -34,4 +35,8 @@ app.post("/addInventory", adminController.addInventory)
 app.post("/editInventory", adminController.editInventory)
 app.post("/deleteInventory", adminController.deleteInventory)
 app.get("/getInventory", adminController.getInventory)
-module.exports = {app}
+app.post("/addPromotion", adminController.addPromotion)
+app.post("/deletePromotion", adminController.deletePromotion)
+exports.app = app;
+exports.db = db;
+

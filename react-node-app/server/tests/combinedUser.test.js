@@ -1,15 +1,19 @@
 var supertest = require('supertest');
-const { app } = require('../index.js');
+var module = require('../index.js');
+const app = module.app;
+module.db.end();
+module.db = require('../testdb.js');
 const { server } = require('../server.js');
-const db = require('../db.js');
-var request = supertest(server);
+var request = supertest(app);
+jest.setTimeout(30000);
+
 
 afterEach(function (){
   server.close();
 });
 
 afterAll(function () {
-  db.end();
+  module.db.end();
 });
 
 test('get /', async() => {
@@ -39,11 +43,12 @@ test('get /login with wrong info for password', async () => {
 });
 
 test('get /login with correct info', async () => {
-  const expected = { userID: 485, role: "user"}; 
+  const expected = { userID: 1115, role: 'user' }; 
   const response = await request.post('/login').send({ 
   email: 'fake', 
   password: 'pwd'
    });
-   expect(response.body).toStrictEqual(expected);
+   console.log(response.body.userInfo);
+   expect(response.body.userInfo).toStrictEqual(expected);
    expect(response.status).toBe(200);
 });
