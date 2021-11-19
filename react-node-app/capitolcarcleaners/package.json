@@ -24,7 +24,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
     "eject": "react-scripts eject"
   },
   "proxy": "http://localhost:3001",
@@ -40,6 +40,13 @@
       "not dead",
       "not op_mini all"
     ],
+    "devDependencies": {
+      "@babel/preset-env": "8.1.0",
+      "@babel/preset-react": "8.1.0",
+      "babel-jest": "8.1.0",
+      "jest": "8.1.0",
+      "react-test-renderer": "8.1.0"
+    },
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",

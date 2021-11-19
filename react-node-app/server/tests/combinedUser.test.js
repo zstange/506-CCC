@@ -3,10 +3,23 @@ var module = require('../index.js');
 const app = module.app;
 module.db.end();
 module.db = require('../testdb.js');
+var tables = require ('../dbTables.js');
+var sqlApptTable = tables.sqlApptTable;
+var sqlImgTable = tables.sqlImgTable;
+var sqlInvTable = tables.sqlInvTable;
+var sqlMsgTable = tables.sqlMsgTable;
+var sqlPromoTable = tables.sqlPromoTable;
+var sqlTestiTable = tables.sqlTestiTable;
+var sqlUserTable = tables.sqlUserTable;
+var sqlVhlTable = tables.sqlVhlTable;
+const tableCreation = [sqlApptTable,sqlImgTable,sqlInvTable,sqlMsgTable,sqlPromoTable,sqlTestiTable,sqlUserTable,sqlVhlTable];
 const { server } = require('../server.js');
 var request = supertest(app);
 jest.setTimeout(30000);
 
+beforeEach(function(){
+
+});
 
 afterEach(function (){
   server.close();
