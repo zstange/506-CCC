@@ -37,7 +37,6 @@ function MakeAdminPage() {
               } 
               else {     
                   // populate temporary array
-                  console.log((response.data.data)[0])
                   setUsers(Array(response.data.data)[0])
               }
           });
