@@ -50,22 +50,6 @@ getAppointments(req, res){
               }
         });
 },
-getInventory(req, res){
-    const sqlInsert = 
-    "SELECT * FROM inventorytable"
-    db.query(sqlInsert
-        , (err, result) => {
-            if(err){
-                res.send({err: err});
-              }
-              else if (result != ""){
-                return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
-              }
-              else{
-                res.send({message: "cannot fetch inventory"})
-              }
-        });
-},
 
 addInventory(req, res){
     const price = req.body.price
