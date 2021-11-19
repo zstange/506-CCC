@@ -1,4 +1,5 @@
 import React, {useEffect,useState} from "react"; 
+import { useSelector } from "react-redux";
 import Axios from 'axios';
 import MakeCards from './MakeCards.js';
 import '../css/ViewAppointments.css';
@@ -6,6 +7,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "react-bootstrap";
 
 function MakeAdminPage() {
+  const token = useSelector((state) => state.token.value);
+
   const [appointments, setApps] = useState([])
   const [users,setUsers] = useState([])
   const [ready,setReady] = useState(false)
@@ -13,7 +16,11 @@ function MakeAdminPage() {
   useEffect(() => {
       // useEffect lets us fetch tables once the page is finished loading
       async function fetchTables() {
+        console.log(token)
           await Axios.get("http://localhost:3001/getAppointmentsAdmin",{
+            headers: {
+                authorization: token
+            },
           }).then((response) => {
               if(response.data.err) {
                   console.log(response.data.err)

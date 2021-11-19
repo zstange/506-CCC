@@ -5,11 +5,13 @@ import storage from 'redux-persist/lib/storage'; //defaults to LocalStorage for 
 import statusReducer from './statusSlice';
 import userIdReducer from './userIdSlice';
 import roleReducer from './roleSlice';
+import tokenReducer from './tokenSlice';
 
 const reducers = combineReducers({
   loggedIn: statusReducer,
   userId: userIdReducer,
   role: roleReducer,
+  token: tokenReducer,
 });
 
 const persistConfig = {

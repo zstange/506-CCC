@@ -9,6 +9,7 @@ import CustomerVehicles from "./CustomerVehicles";
 
 function CustomerHomepage(props) {
     const userId = useSelector((state) => state.userId.value);
+    const token = useSelector((state) => state.token.value);
 
     const [userVehicles, setUserVehicles] = useState([]);
     const [userData, setUserData] = useState({});
@@ -16,6 +17,9 @@ function CustomerHomepage(props) {
     useEffect(() => { 
         if (userId != null){
             Axios.post("http://localhost:3001/getUser", {
+                headers: {
+                    authorization: token
+                },
                 uid: userId
             }).then((response) => {
                 setUserData(response.data.data[0]);
