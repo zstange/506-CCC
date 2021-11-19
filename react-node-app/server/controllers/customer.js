@@ -61,7 +61,7 @@ getUserAppointments(req, res){
               return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
             }
             else{
-              return res.json({data: [], length: 0});
+              res.send({message: "cannot get appointment information"})
             }
       });
 },
@@ -99,7 +99,7 @@ getVehicles(req, res){
               return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
             }
             else{
-              return res.json({data: [], length: 0});
+              res.send({message: "cannot get vehicle information"})
             }
       });
 },
