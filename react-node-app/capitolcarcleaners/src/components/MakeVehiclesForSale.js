@@ -492,7 +492,7 @@ function MakeVehiclesForSale(props) {
                 {vehicleImages.map((image, index) => {
                     return <div>
                             <Form.Group as={Row} className="mb-3" controlId={"image_"+image.imageid}>
-                            <Form.Label column sm="3" className="createAccountLabels">{"Image "+index+1}</Form.Label>
+                            <Form.Label column sm="3" className="createAccountLabels">{"Image "+Number(index+1)}</Form.Label>
                             <Col sm="7" >
                                 <Form.Control  
                                     readOnly

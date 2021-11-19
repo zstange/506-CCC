@@ -10,7 +10,7 @@ import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "re
 function ViewAppointments() {
     const role = useSelector((state) => state.role.value);
     const uid = useSelector((state) => state.userId.value);
-    console.log(role)
+
     if (role === "admin"){
         return (
             <>
