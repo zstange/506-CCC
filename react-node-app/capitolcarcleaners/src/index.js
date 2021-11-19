@@ -35,6 +35,8 @@ ReactDOM.render(
             <Route path="/ForgotPassword" component={ForgotPassword} />
             <Route path="/ViewAppointments" component={ViewAppointments} />
             <Route path="/CustomerHomepage" component={CustomerHomepage} />
+            <Route path="/CustomerHistory" component={CustomerHistory} />
+            <Route path="/VehiclesForSale" component={VehiclesForSale} />
           </Switch>
         </PersistGate>
       </Provider>

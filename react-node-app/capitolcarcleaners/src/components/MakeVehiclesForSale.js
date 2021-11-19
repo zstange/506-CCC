@@ -31,7 +31,7 @@ function MakeVehiclesForSale(props) {
                         console.log(response.data.err)
                     }
                     else if (response.data.message) {
-                        console.log(response.data.err)
+                        console.log(response.data.message)
                     } 
                     else {     
                         vehicles = Array(response.data.data)[0]
@@ -194,8 +194,8 @@ function MakeVehiclesForSale(props) {
                 if(response.data.err) {
                     console.log(response.data.err)
                 }
-                else if (response.data.message) {
-                    console.log(response.data.err)
+                else if (response.data.message === "Image not found!") {
+                    console.log(response.data.message)
                 } 
                 else {     
                     setVehicles(vehicles.filter(vehicle => vehicle.iid !== iid))
@@ -205,8 +205,8 @@ function MakeVehiclesForSale(props) {
                         if(response.data.err) {
                             console.log(response.data.err)
                         }
-                        else if (response.data.message) {
-                            console.log(response.data.err)
+                        else if (response.data.message === "Vehicle is not found in inventory!") {
+                            console.log(response.data.message)
                         } 
                     });
                     setTimeout(() => {showDeleteModal(false)},1000); //finished, give short time delay for feedback
@@ -249,9 +249,6 @@ function MakeVehiclesForSale(props) {
                         if(response.data.err) {
                             console.log(response.data.err)
                         }
-                        else if (response.data.message) {
-                            console.log(response.data.err)
-                        } 
                         else {     
                             Axios.get("http://localhost:3001/getInventory",{
                             }).then((response) => {
@@ -259,7 +256,7 @@ function MakeVehiclesForSale(props) {
                                     console.log(response.data.err)
                                 }
                                 else if (response.data.message) {
-                                    console.log(response.data.err)
+                                    console.log(response.data.message)
                                 } 
                                 else {     
                                     let temp = Array(response.data.data)[0]
@@ -272,10 +269,6 @@ function MakeVehiclesForSale(props) {
                                                 console.log(response.data.err)
                                                 i = vehicleImages.length
                                             }
-                                            else if (response.data.message) {
-                                                console.log(response.data.err)
-                                                i = vehicleImages.length
-                                            } 
                                         });
                                     }
                                     setTimeout(() => {setValidated(false); showModifyModal(false); SetTables();}, 1000);
@@ -300,7 +293,6 @@ function MakeVehiclesForSale(props) {
                     || contents.make !== vehicles[vehicleIndex].make || contents.model !== vehicles[vehicleIndex].model 
                     || contents.year !== vehicles[vehicleIndex].year || contents.color !== vehicles[vehicleIndex].color 
                     || contents.additionalInfo !== vehicles[vehicleIndex].additionalInfo || imageChange
-                    alert(changed)
                     if (changed) {
                         await Axios.post("http://localhost:3001/editInventory",{
                             iid: contents.iid,
@@ -314,8 +306,8 @@ function MakeVehiclesForSale(props) {
                             if(response.data.err) {
                                 console.log(response.data.err)
                             }
-                            else if (response.data.message) {
-                                console.log(response.data.err)
+                            else if (response.data.message === "Vechicle does not exist in inventory!") {
+                                console.log(response.data.message)
                             } 
                             else {    
                                 if(imageChange) {
@@ -325,9 +317,8 @@ function MakeVehiclesForSale(props) {
                                         if(response.data.err) {
                                             console.log(response.data.err)
                                         }
-                                        else if (response.data.message) {
-                                            console.log(response.data.err)
-                                        } 
+                                        else if (response.data.message === "Image not found!")
+                                            console.log(response.data.message)
                                         else {
                                             for (let i = 0; i <vehicleImages.length; i++) {
                                                 Axios.post("http://localhost:3001/addImage",{
@@ -338,10 +329,6 @@ function MakeVehiclesForSale(props) {
                                                         console.log(response.data.err)
                                                         i = vehicleImages.length
                                                     }
-                                                    else if (response.data.message) {
-                                                        console.log(response.data.err)
-                                                        i = vehicleImages.length
-                                                    } 
                                                 });
                                             }
                                             setTimeout(() => {setValidated(false); showModifyModal(false); SetTables();}, 1000);
