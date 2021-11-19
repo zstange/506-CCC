@@ -1,37 +1,40 @@
 import React, {useEffect,useState} from "react"; 
 import Axios from 'axios';
 import { useSelector } from "react-redux";
-import MakeCards from './MakeCards.js';
-import MakeAdminPage from "./MakeAdminPage.js";
-import '../css/ViewAppointments.css';
+import '../css/CustomerHistory.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import MakeHistoryCards from "./MakeHistoryCards";
+import MakeAdminHistory from "./MakeAdminHistory";
 import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "react-bootstrap";
 
-function ViewAppointments() {
+
+function CustomerHistory() {
     const role = useSelector((state) => state.role.value);
     const uid = useSelector((state) => state.userId.value);
-    console.log(role)
-    if (role === "admin"){
+
+    if (role === "admin") { // role check
         return (
             <>
             <Row style={{padding: '1%'}}>
                 <div className = "List">     
-                   <MakeAdminPage/>
-                </div>     
-            </Row> 
-            </>
-        );
-    } else {
-        return (
-            <>
-            <Row style={{padding: '1%'}}>
-                <div className="Grid">     
-                    <MakeCards uid = {uid} aid = {null} role = {"user"}/>
+                   <MakeAdminHistory/>
                 </div>     
             </Row> 
             </>
         );
     }
+    else {
+        return (
+            <>
+            <Row style={{padding: '1%'}}>
+                <label className="AllAppHeader">Service History</label>
+                <div className="List">     
+                    <MakeHistoryCards uid = {uid} aid = {null} role = {"user"}/>
+                </div>     
+            </Row> 
+            </>
+        );
+    } 
 }
 
-export default ViewAppointments;
+export default CustomerHistory;

@@ -3,6 +3,7 @@ import { useDispatch, connect } from 'react-redux';
 import { logUserIn } from "../statusSlice";
 import { setUserId } from "../userIdSlice";
 import { setRole } from "../roleSlice";
+import { setToken } from "../tokenSlice";
 import Axios from 'axios';
 import '../css/Login.css';
 import { Form, Button, Row, Col} from "react-bootstrap";
@@ -14,6 +15,7 @@ function LoginPage(props) {
 
   const [validated, setValidated] = useState(false);
   const [redirect, setRedirect] = useState(false);
+  //const [userHcId, setuserHcId] = useState("");
 
   const handleSubmit = (event) => {
     const form = event.currentTarget;
@@ -40,8 +42,9 @@ function LoginPage(props) {
           else {
             setRedirect(true);
             dispatch(logUserIn());
-            dispatch(setUserId(response.data.userID));
-            dispatch(setRole(response.data.role));
+            dispatch(setUserId(response.data.userInfo.userID));
+            dispatch(setRole(response.data.userInfo.role));
+            dispatch(setToken(response.data.token));
           }
         });
       

@@ -97,8 +97,45 @@ db.query(sqlInsert, [aid], (err, result) => {
   }
 
 });
+},
 
+getImages(req, res){
+  const iid = req.body.iid
+  const sqlInsert = 
+  "SELECT * FROM imagetable"
+  db.query(sqlInsert, [iid]
+      , (err, result) => {
+          if(err){
+              res.send({err: err});
+            }
+            else if (result != ""){
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+            }
+            else{
+              res.send({message: "cannot fetch inventory"})
+            }
+      });
+},
+
+getInventory(req, res){
+  const sqlInsert = 
+  "SELECT * FROM inventorytable"
+  db.query(sqlInsert
+      , (err, result) => {
+          if(err){
+              res.send({err: err});
+            }
+            else if (result != ""){
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+            }
+            else{
+              res.send({message: "cannot fetch inventory"})
+            }
+      });
 }
+
 };
+
+
 
 module.exports = combinedUserController; 
