@@ -3,8 +3,11 @@ import Axios from 'axios';
 import '../css/VehiclesForSale.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal, Image, Carousel} from "react-bootstrap";
+import { useSelector } from "react-redux";
 
 function MakeVehiclesForSale(props) {
+    const token = useSelector((state) => state.token.value);
+
     const [validated, setValidated] = useState(false)
     const [contents, setContents] = useState({iid: null, price: null, make: "", model: "", year: null, color: "", additionalInfo: "", image: ""});
     const [vehicles, setVehicles] = useState([])
@@ -190,6 +193,10 @@ function MakeVehiclesForSale(props) {
         else { // delete car
             await Axios.post("http://localhost:3001/deleteImages",{
                 iid: contents.iid,
+            }, {
+                headers: {
+                    authorization: token
+                },
             }).then((response) => {
                 if(response.data.err) {
                     console.log(response.data.err)
@@ -201,6 +208,10 @@ function MakeVehiclesForSale(props) {
                     setVehicles(vehicles.filter(vehicle => vehicle.iid !== iid))
                     Axios.post("http://localhost:3001/deleteInventory",{
                         iid: contents.iid,
+                    }, {
+                        headers: {
+                            authorization: token
+                        },
                     }).then((response) => {
                         if(response.data.err) {
                             console.log(response.data.err)
@@ -245,6 +256,10 @@ function MakeVehiclesForSale(props) {
                         year: contents.year,
                         color: contents.color,
                         additionalInfo: contents.additionalInfo,
+                    }, {
+                        headers: {
+                            authorization: token
+                        },
                     }).then((response) => {
                         if(response.data.err) {
                             console.log(response.data.err)
@@ -264,6 +279,10 @@ function MakeVehiclesForSale(props) {
                                         Axios.post("http://localhost:3001/addImage",{
                                             iid: temp[temp.length-1].iid,
                                             url: vehicleImages[i].url
+                                        }, {
+                                            headers: {
+                                                authorization: token
+                                            },
                                         }).then((response) => {
                                             if(response.data.err) {
                                                 console.log(response.data.err)
@@ -302,6 +321,10 @@ function MakeVehiclesForSale(props) {
                             year: contents.year,
                             color: contents.color,
                             additionalInfo: contents.additionalInfo,
+                        }, {
+                            headers: {
+                                authorization: token
+                            },
                         }).then((response) => {
                             if(response.data.err) {
                                 console.log(response.data.err)
@@ -312,7 +335,11 @@ function MakeVehiclesForSale(props) {
                             else {    
                                 if(imageChange) {
                                     Axios.post("http://localhost:3001/deleteImages",{
-                                    iid: contents.iid,
+                                        iid: contents.iid,
+                                    }, {
+                                        headers: {
+                                            authorization: token
+                                        },
                                     }).then((response) => {
                                         if(response.data.err) {
                                             console.log(response.data.err)
@@ -324,6 +351,10 @@ function MakeVehiclesForSale(props) {
                                                 Axios.post("http://localhost:3001/addImage",{
                                                     iid: contents.iid,
                                                     url: vehicleImages[i].url
+                                                }, {
+                                                    headers: {
+                                                        authorization: token
+                                                    },
                                                 }).then((response) => {
                                                     if(response.data.err) {
                                                         console.log(response.data.err)

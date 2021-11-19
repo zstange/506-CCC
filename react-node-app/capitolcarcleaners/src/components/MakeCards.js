@@ -37,6 +37,10 @@ function MakeCards(props) {
             if (props.aid !== null) { 
                 await Axios.post("http://localhost:3001/getAppointmentByAppId",{
                     aid: props.aid
+                }, {
+                    headers: {
+                        authorization: token
+                    },
                 }).then((response) => {
                     if(response.data.err) {
                         console.log(response.data.err)
@@ -54,6 +58,10 @@ function MakeCards(props) {
             else { // otherwise just fill the appointments table with all the user's appointments
                 await Axios.post("http://localhost:3001/getUserAppointments",{
                     uid: id
+                }, {
+                    headers: {
+                        authorization: token
+                    },
                 }).then((response) => {
                     if(response.data.err) {
                         console.log(response.data.err)
@@ -82,6 +90,10 @@ function MakeCards(props) {
         
             await Axios.post("http://localhost:3001/getVehicles",{
                 uid: id
+            }, {
+                headers: {
+                    authorization: token
+                },
             }).then((response) => {
                 if(response.data.err) {
                     console.log(response.data.err)
@@ -173,6 +185,10 @@ function MakeCards(props) {
         else { // otherwise remove the appointment from our database
             Axios.post("http://localhost:3001/deleteAppointment",{
                 aid: aid
+            }, {
+                headers: {
+                    authorization: token
+                },
             }).then((response) => {
                 if(response.data.err) 
                     console.log(response.data.err)
@@ -180,7 +196,7 @@ function MakeCards(props) {
                     console.log(response.data.message)
                 else {     
                     if (props.role === "admin") {
-                        Axios.get("http://localhost:3001/getAppointmentsAdmin",{
+                        Axios.get("http://localhost:3001/getAppointmentsAdmin", {
                             headers: {
                                 authorization: token
                             },
@@ -228,6 +244,10 @@ function MakeCards(props) {
                             service: contents.service,
                             additionalInfo: contents.additionalInfo,
                             status: contents.status
+                        }, {
+                            headers: {
+                                authorization: token
+                            },
                         }).then((response) => {
                             if(response.data.err) {
                                 console.log(response.data.err)
@@ -239,7 +259,7 @@ function MakeCards(props) {
                                 if (contents.status === "Picked Up") 
                                     alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
                                 setTimeout(() => {setValidated(false); showStatusModal(false); 
-                                    Axios.get("http://localhost:3001/getAppointmentsAdmin",{
+                                    Axios.get("http://localhost:3001/getAppointmentsAdmin", {
                                         headers: {
                                             authorization: token
                                         },
@@ -296,6 +316,10 @@ function MakeCards(props) {
                 let appNum = 0
                 await Axios.post("http://localhost:3001/getAppointmentsByDate",{
                         dateTime: contents.dateTime+" 09:00:00"
+                    }, {
+                        headers: {
+                            authorization: token
+                        },
                     }).then((response) => {
                         if(response.data.err) {
                             console.log(response.data.err)
@@ -332,6 +356,10 @@ function MakeCards(props) {
                         service: contents.service,
                         additionalInfo: contents.additionalInfo,
                         status: tempStatus
+                    }, {
+                        headers: {
+                            authorization: token
+                        },
                     }).then((response) => {
                         if(response.data.err) {
                             console.log(response.data.err)
@@ -339,7 +367,7 @@ function MakeCards(props) {
                         else {
                             if (props.role === "admin") {
                                 setTimeout(() => {setValidated(false); showModifyModal(false);
-                                    Axios.get("http://localhost:3001/getAppointmentsAdmin",{
+                                    Axios.get("http://localhost:3001/getAppointmentsAdmin", {
                                         headers: {
                                             authorization: token
                                         },
@@ -364,6 +392,10 @@ function MakeCards(props) {
                     let newApps = []
                     await Axios.post("http://localhost:3001/getUserAppointments",{ // get aid of latest appointment
                         uid: id
+                    }, {
+                        headers: {
+                            authorization: token
+                        },
                         }).then((response) => {
                         if(response.data.err) {
                             console.log(response.data.err)
@@ -414,12 +446,16 @@ function MakeCards(props) {
                         || appointments[index].status !== contents.status)
                     if (changed) {
                         Axios.post("http://localhost:3001/editAppointment",{
-                        aid: contents.aid,
-                        vid: contents.vid,
-                        dateTime: contents.dateTime+" 09:00:00",
-                        service: contents.service,
-                        additionalInfo: contents.additionalInfo,
-                        status: contents.status
+                            aid: contents.aid,
+                            vid: contents.vid,
+                            dateTime: contents.dateTime+" 09:00:00",
+                            service: contents.service,
+                            additionalInfo: contents.additionalInfo,
+                            status: contents.status
+                        }, {
+                            headers: {
+                                authorization: token
+                            },
                         }).then((response) => {
                             if(response.data.err) {
                                 console.log(response.data.err)
@@ -432,7 +468,7 @@ function MakeCards(props) {
                                     alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
                                 if (props.role === "admin") {
                                     setTimeout(() => {setValidated(false); showModifyModal(false);
-                                        Axios.get("http://localhost:3001/getAppointmentsAdmin",{
+                                        Axios.get("http://localhost:3001/getAppointmentsAdmin", {
                                             headers: {
                                                 authorization: token
                                             },

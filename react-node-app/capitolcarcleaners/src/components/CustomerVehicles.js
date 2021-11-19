@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 
 function CustomerVehicles(props) {
     const userId = useSelector((state) => state.userId.value);
+    const token = useSelector((state) => state.token.value);
 
     const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
     const [validated, setValidated] = useState(false);
@@ -18,6 +19,10 @@ function CustomerVehicles(props) {
         if (userId != null){
             Axios.post("http://localhost:3001/getVehicles",{
                 uid: userId
+            }, {
+                headers: {
+                    authorization: token
+                },
             }).then((response) => {
                 if(response.data.err) {
                     console.log("ERR: " + JSON.stringify(response.data.err))
@@ -82,6 +87,10 @@ function CustomerVehicles(props) {
                     color: event.target.elements.VehColor.value,
                     licensePlate: event.target.elements.VehLicensePlate.value,
                     additionalInfo: event.target.elements.VehAddtlInfo.value,
+                }, {
+                    headers: {
+                        authorization: token
+                    },
                 }).then((response) => {
                     if(response.data.err) {
                         console.log(response.data.err)
@@ -181,6 +190,10 @@ function CustomerVehicles(props) {
         const deleteVehicle = () => {
             Axios.post("http://localhost:3001/deleteVehicle",{
                 vid: vehicle.vid
+            }, {
+                headers: {
+                    authorization: token
+                },
             }).then((response) => {
                 if(response.data.err) {
                     console.log(response.data.err)

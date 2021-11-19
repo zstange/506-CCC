@@ -16,7 +16,7 @@ function MakeAdminHistory() {
     useEffect(() => {
         // useEffect lets us fetch tables once the page is finished loading
         async function fetchTables() {
-            await Axios.get("http://localhost:3001/getAppointmentsAdmin",{
+            await Axios.get("http://localhost:3001/getAppointmentsAdmin", {
                 headers: {
                     authorization: token
                 },
@@ -33,7 +33,10 @@ function MakeAdminHistory() {
                 }
             });
 
-            await Axios.get("http://localhost:3001/getUsers",{
+            await Axios.get("http://localhost:3001/getUsers", {
+                headers: {
+                    authorization: token
+                },
             }).then((response) => {
                 if(response.data.err) {
                     console.log(response.data.err)
