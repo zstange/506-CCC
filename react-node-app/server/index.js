@@ -15,6 +15,7 @@ app.post("/editAppointment", verifyJWT, combinedUserController.editAppointment)
 app.post("/deleteAppointment", verifyJWT, combinedUserController.deleteAppointment)
 app.post("/getImages", combinedUserController.getImages)
 app.get("/getInventory", combinedUserController.getInventory)
+app.get("/getPromotions", combinedUserController.getPromotions)
 
 //customer api calls
 app.post("/createAccount", customerController.createAcc)
