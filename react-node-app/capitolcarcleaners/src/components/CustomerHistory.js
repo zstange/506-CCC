@@ -10,6 +10,7 @@ import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "re
 
 function CustomerHistory() {
     const role = useSelector((state) => state.role.value);
+    const uid = useSelector((state) => state.uid.value);
 
     if (role === "admin") { // role check
         return (
@@ -28,7 +29,7 @@ function CustomerHistory() {
             <Row style={{padding: '1%'}}>
                 <label className="AllAppHeader">Service History</label>
                 <div className="List">     
-                    <MakeHistoryCards aid = {null} role = {"user"}/>
+                    <MakeHistoryCards uid = {uid} aid = {null} role = {"user"}/>
                 </div>     
             </Row> 
             </>

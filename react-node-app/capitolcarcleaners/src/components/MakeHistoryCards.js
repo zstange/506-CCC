@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "react-bootstrap";
 
 function MakeHistoryCards(props) {
-    const id = useSelector((state) => state.userId.value);
+    const id = props.uid
     const [userInfo, setUserInfo] = useState({firstName: "", lastName: "", email: "", phoneNumber: ""})
     const [showAdminInfo, setShowingAdmin] = useState(false)
     const [appointments, setAppointments] = useState([])
