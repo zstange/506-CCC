@@ -221,7 +221,6 @@ function CustomerVehicles(props) {
                         <Card.Title>{vehicle.year}, {vehicle.make} {vehicle.model} </Card.Title>
                         <Card.Text>
                             Color: {vehicle.color} <br />
-                            Date of last detailing: 
                         <br />
                         </Card.Text>
                         <div style={{textAlign: 'center'}}>
