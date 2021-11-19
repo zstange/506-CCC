@@ -26,7 +26,6 @@ function CheckEmail() {
         
         if (form.checkValidity() === true) {
             // check if email exists
-            console.log("polling")
             emailExists = await Axios.post("http://localhost:3001/checkEmail",{
                 email: contents.email,
                 }).then((response) => {
@@ -39,12 +38,11 @@ function CheckEmail() {
                         return response.data.value
                     }
             });
-            console.log(emailExists)
+
             if (emailExists) {
                 setResetPerm(true)
             }
             else {
-                console.log("bad")
                 setEmailRegex("^(?!"+contents.email+"$).*$")
                 setEmailError("No account exists with this email")
             }
@@ -135,7 +133,7 @@ function PasswordReset(props) {
                 if(response.data.err) { // print error messages
                     console.log(response.data.err);
                 }
-                else if (response.data.message) { // print failure messages
+                else if (response.data.message === "Please fill out all information required.") { // print failure messages
                     console.log(response.data.message);
                 } else { // successful password change
                     setDisableSubmit(true);
