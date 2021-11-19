@@ -173,12 +173,7 @@ addVehicle(req, res){
         return res.send({err: err});
       }
       else if (result != ""){
-<<<<<<< HEAD
         return res.send({message: "Vehicle added successfully"});
-=======
-        var redir = { redirect: "/CustomerHomepage" };
-        return res.json(redir);
->>>>>>> User data is populated on customer homepage
       }
       else{
         return res.send({message: "Please fill out all information required."})
