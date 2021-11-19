@@ -117,25 +117,6 @@ getImages(req, res){
       });
 },
 
-deleteImages(req, res){
-  const iid = req.body.iid
-  const sqlInsert = 
-  "DELETE FROM imagetable where iid = ?"
-  db.query(sqlInsert, [iid]
-      , (err, result) => {
-          if(err){
-              res.send({err: err});
-            }
-            else if (result["affectedRows"] != 0){
-              var redir = { redirect: "/viewInventory" };
-              return res.json(redir);
-            }
-            else{
-              res.send({message: "Images not in table!"})
-            }
-      });
-},
-
 };
 
 

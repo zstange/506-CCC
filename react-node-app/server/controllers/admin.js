@@ -178,12 +178,10 @@ deleteImages(req, res){
         res.send({err: err});
       }
       else if (result["affectedRows"] != 0){
-        var redir = { redirect: "/viewInventory" };
-        return res.json(redir);
+        return res.json({message: "Successful deletion!"});
       }
       else{
-        var redir = { redirect: "/viewInventory" };
-        return res.json(redir);
+        res.send({message: "Image not found!"})
       }
     
     });
@@ -200,8 +198,7 @@ addImage(req, res){
       res.send({err: err});
     }
     else if (result != ""){
-      var redir = { redirect: "/viewInventory" };
-      return res.json(redir);
+      return res.json({message: "Successfully added image!"});
     }    
   });
   
