@@ -67,7 +67,7 @@ function MakeCards(props) {
                         console.log(response.data.err)
                     }
                     else if (response.data.message) {
-                        console.log(response.data.err)
+                        console.log(response.data.message)
                     } 
                     else {     
                         // populate temporary array
@@ -99,7 +99,7 @@ function MakeCards(props) {
                     console.log(response.data.err)
                 }
                 else if (response.data.message) {
-                    console.log(response.data.err)
+                    console.log(response.data.message)
                 } 
                 else {     
                     // populate temporary array

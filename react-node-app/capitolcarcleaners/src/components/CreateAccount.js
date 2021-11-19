@@ -64,9 +64,6 @@ function CreateAccountForm() {
                 }).then((response) => {
                     if(response.data.err) { // print error messages
                         console.log(response.data.err);
-                    }
-                    else if (response.data.message) { // print failure messages
-                        console.log(response.data.message);
                     } else { // successful account creation
                         disableSubmit(true)
                         setSuccessMsg("Success, account created!") 
