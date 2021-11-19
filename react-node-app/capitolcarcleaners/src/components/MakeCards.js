@@ -8,6 +8,7 @@ import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "re
 function MakeCards(props) {
   // let id = 25
   const id = props.uid
+  const token = useSelector((state) => state.token.value);
 
   const [validated, setValidated] = useState(false)
     const [validatedStatus, setValidatedStatus] = useState(false)
@@ -180,6 +181,9 @@ function MakeCards(props) {
                 else {     
                     if (props.role === "admin") {
                         Axios.get("http://localhost:3001/getAppointmentsAdmin",{
+                            headers: {
+                                authorization: token
+                            },
                         }).then((response) => {
                             if(response.data.err) {
                                 console.log(response.data.err)
@@ -236,6 +240,9 @@ function MakeCards(props) {
                                     alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
                                 setTimeout(() => {setValidated(false); showStatusModal(false); 
                                     Axios.get("http://localhost:3001/getAppointmentsAdmin",{
+                                        headers: {
+                                            authorization: token
+                                        },
                                     }).then((response) => {
                                         if(response.data.err) {
                                             console.log(response.data.err)
@@ -333,6 +340,9 @@ function MakeCards(props) {
                             if (props.role === "admin") {
                                 setTimeout(() => {setValidated(false); showModifyModal(false);
                                     Axios.get("http://localhost:3001/getAppointmentsAdmin",{
+                                        headers: {
+                                            authorization: token
+                                        },
                                     }).then((response) => {
                                         if(response.data.err) {
                                             console.log(response.data.err)
@@ -423,6 +433,9 @@ function MakeCards(props) {
                                 if (props.role === "admin") {
                                     setTimeout(() => {setValidated(false); showModifyModal(false);
                                         Axios.get("http://localhost:3001/getAppointmentsAdmin",{
+                                            headers: {
+                                                authorization: token
+                                            },
                                             }).then((response) => {
                                             if(response.data.err) {
                                                 console.log(response.data.err)

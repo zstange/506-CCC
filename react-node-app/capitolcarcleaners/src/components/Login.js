@@ -3,6 +3,7 @@ import { useDispatch, connect } from 'react-redux';
 import { logUserIn } from "../statusSlice";
 import { setUserId } from "../userIdSlice";
 import { setRole } from "../roleSlice";
+import { setToken } from "../tokenSlice";
 import Axios from 'axios';
 import '../css/Login.css';
 import { Form, Button, Row, Col} from "react-bootstrap";
@@ -43,6 +44,7 @@ function LoginPage(props) {
             dispatch(logUserIn());
             dispatch(setUserId(response.data.userInfo.userID));
             dispatch(setRole(response.data.userInfo.role));
+            dispatch(setToken(response.data.token));
           }
         });
       

@@ -1,4 +1,5 @@
 import React, {useEffect,useState} from "react"; 
+import { useSelector } from "react-redux";
 import Axios from 'axios';
 import '../css/CustomerHistory.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,6 +7,7 @@ import MakeHistoryCards from "./MakeHistoryCards";
 import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "react-bootstrap";
 
 function MakeAdminHistory() {
+    const token = useSelector((state) => state.token.value);
 
     const [appointments, setApps] = useState([])
     const [users,setUsers] = useState([])
@@ -15,6 +17,9 @@ function MakeAdminHistory() {
         // useEffect lets us fetch tables once the page is finished loading
         async function fetchTables() {
             await Axios.get("http://localhost:3001/getAppointmentsAdmin",{
+                headers: {
+                    authorization: token
+                },
             }).then((response) => {
                 if(response.data.err) {
                     console.log(response.data.err)
