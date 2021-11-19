@@ -27,3 +27,17 @@
     margin-left: 15px;
     text-align: left;
 }
+
+.text {
+    font-size: 12;
+}
+.apiText {
+    font-size: 12;
+    font-weight: 200;
+}
+
+.welcomeText {
+    text-align:center;
+    justify-content:center;
+    font-family: factoria,serif;
+}

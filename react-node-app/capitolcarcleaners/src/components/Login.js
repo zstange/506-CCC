@@ -14,6 +14,7 @@ function LoginPage(props) {
 
   const [validated, setValidated] = useState(false);
   const [redirect, setRedirect] = useState(false);
+  //const [userHcId, setuserHcId] = useState("");
 
   const handleSubmit = (event) => {
     const form = event.currentTarget;
