@@ -88,8 +88,8 @@ function Header() {
                     <NavDropdown.Item>Boat Detailing</NavDropdown.Item>
                     <NavDropdown.Item>Window Blind Cleaning</NavDropdown.Item>
                   </NavDropdown>
-                  <Link to="/">
-                      <Nav.Link disabled>Cars for Sale!</Nav.Link>
+                  <Link to="/VehiclesForSale">
+                      <Nav.Link>Cars for Sale!</Nav.Link>
                   </Link>
                   <Link to="/">
                       <Nav.Link disabled>Contact Us</Nav.Link>

@@ -97,7 +97,7 @@ editInventory(req, res){
   const additionalInfo = req.body.additionalInfo
     const sqlInsert = 
   "UPDATE inventorytable SET price = ?, make = ?, model = ?, year = ?, color = ?, additionalInfo = ? WHERE iid = ?;"
-  db.query(sqlInsert, [price, make, model, year, color, additionalInfo, image, iid], (err, result) => {
+  db.query(sqlInsert, [price, make, model, year, color, additionalInfo, iid], (err, result) => {
   
     if(err){
       res.send({err: err});
@@ -111,7 +111,7 @@ editInventory(req, res){
   
   });
   
-  },
+},
 
 deleteInventory(req, res){
     const iid = req.body.iid
@@ -131,24 +131,24 @@ deleteInventory(req, res){
   
   });
   
-  },
+},
 
-  addPromotion(req, res){
-    const promotionName = req.body.promotionName
-    const message = req.body.message
-    const sqlInsert = 
-    "INSERT INTO promotionTable (promotionName, message) VALUES (?,?);"
-    db.query(sqlInsert, [promotionName, message], (err, result) => {
-      if(err){
-        res.send({err: err});
-      }
-      else if (result != ""){
-        return res.send({message: "Added a vehicle to inventory successfully"});
-      } else {
-        res.send({message: "Could not create promotion!"})
-      }
+addPromotion(req, res){
+  const promotionName = req.body.promotionName
+  const message = req.body.message
+  const sqlInsert = 
+  "INSERT INTO promotionTable (promotionName, message) VALUES (?,?);"
+  db.query(sqlInsert, [promotionName, message], (err, result) => {
+    if(err){
+      res.send({err: err});
+    }
+    else if (result != ""){
+      return res.send({message: "Added a vehicle to inventory successfully"});
+    } else {
+      res.send({message: "Could not create promotion!"})
+    }
 
-    });
+  });
 },
 
 deletePromotion(req, res){
@@ -168,6 +168,40 @@ deletePromotion(req, res){
   });
 },
 
+deleteImages(req, res){
+    const iid = req.body.iid
+    const sqlInsert = 
+    "DELETE FROM imagetable where iid = ?"
+    db.query(sqlInsert, [iid], (err, result) => {
+    
+      if(err){
+        res.send({err: err});
+      }
+      else if (result["affectedRows"] != 0){
+        return res.json({message: "Successful deletion!"});
+      }
+      else{
+        res.send({message: "Image not found!"})
+      }
+    
+    });
+},
 
+addImage(req, res){
+  const iid = req.body.iid
+  const url = req.body.url
+  const sqlInsert = 
+  "INSERT INTO imagetable (iid, url) VALUES (?,?);"
+  db.query(sqlInsert, [iid, url], (err, result) => {
+  
+    if(err){
+      res.send({err: err});
+    }
+    else if (result != ""){
+      return res.json({message: "Successfully added image!"});
+    }    
+  });
+  
+},
 };
 module.exports = adminController;

@@ -19,7 +19,7 @@ function MakeAdminPage() {
                   console.log(response.data.err)
               }
               else if (response.data.message) {
-                  console.log(response.data.err)
+                  console.log(response.data.message)
               } 
               else {     
                   // populate temporary array
@@ -37,6 +37,7 @@ function MakeAdminPage() {
               } 
               else {     
                   // populate temporary array
+                  console.log((response.data.data)[0])
                   setUsers(Array(response.data.data)[0])
               }
           });

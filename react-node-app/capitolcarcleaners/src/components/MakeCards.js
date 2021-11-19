@@ -7,7 +7,7 @@ import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "re
 
 function MakeCards(props) {
   // let id = 25
-  const id = useSelector((state) => state.userId.value);
+  const id = props.uid
 
   const [validated, setValidated] = useState(false)
     const [validatedStatus, setValidatedStatus] = useState(false)
@@ -63,7 +63,6 @@ function MakeCards(props) {
                     else {     
                         // populate temporary array
                         apps = Array(response.data.data)[0]
-                        
                     }    
                 });
             }
@@ -176,8 +175,8 @@ function MakeCards(props) {
             }).then((response) => {
                 if(response.data.err) 
                     console.log(response.data.err)
-                else if (response.data.message) 
-                    console.log(response.data.err)
+                else if (response.data.message === "Appointement is not found!") 
+                    console.log(response.data.message)
                 else {     
                     if (props.role === "admin") {
                         Axios.get("http://localhost:3001/getAppointmentsAdmin",{
@@ -186,7 +185,7 @@ function MakeCards(props) {
                                 console.log(response.data.err)
                             }
                             else if (response.data.message) {
-                                console.log(response.data.err)
+                                console.log(response.data.message)
                             } 
                             else {     
                                 // populate temporary array
@@ -229,8 +228,8 @@ function MakeCards(props) {
                             if(response.data.err) {
                                 console.log(response.data.err)
                             }
-                            else if (response.data.message) {
-                                console.log(response.data.err)
+                            else if (response.data.message === "Appointement is not found!") {
+                                console.log(response.data.message)
                             } 
                             else { 
                                 if (contents.status === "Picked Up") 
@@ -242,7 +241,7 @@ function MakeCards(props) {
                                             console.log(response.data.err)
                                         }
                                         else if (response.data.message) {
-                                            console.log(response.data.err)
+                                            console.log(response.data.message)
                                         } 
                                         else {     
                                             // populate temporary array
@@ -294,9 +293,6 @@ function MakeCards(props) {
                         if(response.data.err) {
                             console.log(response.data.err)
                         }
-                        else if (response.data.message) {
-                            console.log(response.data.err)
-                        } 
                         else {     
                             appNum = (Array(response.data.data)[0].filter(app => app.status !== "Picked Up")).length
                         }
@@ -333,9 +329,6 @@ function MakeCards(props) {
                         if(response.data.err) {
                             console.log(response.data.err)
                         }
-                        else if (response.data.message) {
-                            console.log(response.data.err)
-                        } 
                         else {
                             if (props.role === "admin") {
                                 setTimeout(() => {setValidated(false); showModifyModal(false);
@@ -421,8 +414,8 @@ function MakeCards(props) {
                             if(response.data.err) {
                                 console.log(response.data.err)
                             }
-                            else if (response.data.message) {
-                                console.log(response.data.err)
+                            else if (response.data.message === "appointment doesn't exist in the table.") {
+                                console.log(response.data.message)
                             } 
                             else {     
                                 if (contents.status === "Picked Up") 
@@ -435,7 +428,7 @@ function MakeCards(props) {
                                                 console.log(response.data.err)
                                             }
                                             else if (response.data.message) {
-                                                console.log(response.data.err)
+                                                console.log(response.data.message)
                                             } 
                                             else {     
                                                 // populate temporary array
