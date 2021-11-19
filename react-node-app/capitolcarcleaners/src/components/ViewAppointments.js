@@ -11,7 +11,7 @@ function ViewAppointments() {
     const role = useSelector((state) => state.role.value);
     const uid = useSelector((state) => state.userId.value);
 
-    if (role !== "admin"){
+    if (role === "admin"){
         return (
             <>
             <Row style={{padding: '1%'}}>
