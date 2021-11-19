@@ -41,6 +41,7 @@ function MakeAdminPage() {
               }
           });
       }
+      
       fetchTables()
       setReady(true)
   }, []);

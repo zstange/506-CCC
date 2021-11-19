@@ -6,8 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "react-bootstrap";
 
 function MakeCards(props) {
-  // let id = 25
-  const id = useSelector((state) => state.userId.value);
+  const id = props.uid
 
   const [validated, setValidated] = useState(false)
     const [validatedStatus, setValidatedStatus] = useState(false)
@@ -63,7 +62,7 @@ function MakeCards(props) {
                     else {     
                         // populate temporary array
                         apps = Array(response.data.data)[0]
-                        
+                        console.log(apps)
                     }    
                 });
             }

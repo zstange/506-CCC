@@ -9,8 +9,9 @@ import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "re
 
 function ViewAppointments() {
     const role = useSelector((state) => state.role.value);
+    const uid = useSelector((state) => state.userId.value);
 
-    if (role === "admin"){
+    if (role !== "admin"){
         return (
             <>
             <Row style={{padding: '1%'}}>
@@ -25,7 +26,7 @@ function ViewAppointments() {
             <>
             <Row style={{padding: '1%'}}>
                 <div className="Grid">     
-                    <MakeCards aid = {null} role = {"user"}/>
+                    <MakeCards uid = {uid} aid = {null} role = {"user"}/>
                 </div>     
             </Row> 
             </>

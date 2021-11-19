@@ -52,7 +52,8 @@ login(req, res){
                 res.send({err: "db query error"});
               }
               else if (result != ""){
-                return res.send({message: "Appointment added successfully"});
+                var msg = { msg: "/appointment added" };
+                return res.json(msg);
               }              
         });
 },
@@ -71,7 +72,8 @@ db.query(sqlInsert, [vid, dateTime, service, additionalInfo, status, aid], (err,
     res.send({err: err});
   }
   else if (result["affectedRows"] != 0){
-    return res.send({message: "Appointment edited successfully"});
+    var msg = { msg: "/appointment edited" };
+    return res.json(msg);
   }
   else{
     res.send({message: "appointment doesn't exist in the table."})
@@ -90,7 +92,8 @@ db.query(sqlInsert, [aid], (err, result) => {
     res.send({err: err});
   }
   else if (result["affectedRows"] != 0){
-    return res.send({message: "Appointment deleted successfully"});
+      var msg = { msg: "/appointment deleted" };
+      return res.json(msg);
   }
   else{
     res.send({message: "Appointement is not found!"})
