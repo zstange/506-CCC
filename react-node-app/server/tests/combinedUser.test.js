@@ -93,8 +93,7 @@ test('get /login with correct info', async() => {
               expect(response.body.userInfo).toStrictEqual(expected);
               expect(response.status).toBe(200);
       });
-
-
+/*
 test('get /', async() => {
       const response = await request.get('/');
       const expected = { message: "Hello from server!" }  
@@ -120,4 +119,4 @@ test('get /login with wrong info for password', async () => {
    expect(response.body).toStrictEqual(expected);
    expect(response.status).toBe(200);
 });
-
+*/

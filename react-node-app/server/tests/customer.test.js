@@ -21,7 +21,8 @@ test('get /createAccount with no password', async() => {
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual(expected);
   });
-
+  
+/*
 test('get /createAccount with correct info', async () =>{
       const expected =  {message: "Created an account successfully"};
       const response = await request.post('/createAccount').send({
@@ -65,3 +66,4 @@ test('get /createAccount with correct info', async () =>{
     expect(response.body).toStrictEqual(expected);
   });
 
+*/
