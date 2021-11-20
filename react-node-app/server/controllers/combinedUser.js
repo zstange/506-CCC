@@ -18,16 +18,15 @@ login(req, res){
       }
       else if (result != ""){
         bcrypt.compare(password, result[0].password, (error, response) => {
-          if(response){
-
-            
-
+          if(response){  
             var user = JSON.parse(JSON.stringify(result));
             const id = user[0].uid
             const token = jwt.sign({id}, process.env.ACCESS_TOKEN_SECRET)
             var userInfo = { userID: user[0].uid, role: user[0].role};
             return res.json({auth: true, token: token, userInfo: userInfo});
           } else{
+            console.log("password:" + password);
+            console.log("checking with:" + result[0].password);
             return res.send({message: "Wrong username/password combination!"})
           }
         }) 
