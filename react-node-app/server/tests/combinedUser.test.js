@@ -15,63 +15,70 @@ var sqlUserTable = tables.sqlUserTable;
 var sqlVhlTable = tables.sqlVhlTable;
 const tableCreation = [sqlApptTable,sqlImgTable,sqlInvTable,sqlMsgTable,sqlPromoTable,sqlTestiTable,sqlUserTable,sqlVhlTable];
 const { server } = require('../server.js');
+const combinedUserController = require('../controllers/combinedUser.js');
 var request = supertest(app);
-jest.setTimeout(30000);
+jest.setTimeout(15000);
 
- function createTable(){
-   module.db.query(sqlUserTable, (err, result) => {
+async function createTable(){
+await module.db.query(sqlUserTable, (err, result) => {
     if(err){
       console.log(err.code + "," + err.sqlMessage);
     }
     else if (result != ""){
-       console.log("create table works");
+      console.log("create table works");
+        } else{
+       console.log(result);
+        }
+    });
+
+  }
+
+async function clean(){   
+  sqlDrop = "DELETE FROM usertable;";
+   await module.db.query(sqlDrop, (err, result) => {
+    if(err){
+    console.log(err.code + "," + err.sqlMessage);
+    }
+    else if (result != ""){
+       return console.log("delete works");
         } else{
         console.log(result);
         }
       });
-}
-
-function clean(){   
-  sqlDrop = "DELETE FROM usertable;";
-  module.db.query(sqlDrop, (err, result) => {
-    if(err){
-      console.log(err.code + "," + err.sqlMessage);
-    }
-    else if (result != ""){
-       console.log("delete works");
-        } else{
-         console.log(result);
-        }
-      });
-  };
+    };
   
-async function userInsert(){
-    module.db = require('../testdb.js');
+ function hashPwd(){
     sqlInsert = "INSERT INTO usertable (uid,firstName,lastName,email,password,phoneNumber,role,recievePromotions) VALUES (?,?,?,?,?,?,?,?);";
     password = 'pwd';
-   await bcrypt.hash(password,saltRounds, (err, hash) =>{
+    bcrypt.hash(password,saltRounds, (err, hash) =>{
       if(err){
-         console.log({err: "cannot hash password"});
-      }
-    const u1 = [195,"P","M",'fake1',hash,'000-000-0000','user','false'];
-    module.db.query(sqlInsert,u1,(err, result) => {
+        console.log({err: "cannot hash password"});
+      }    
+      const result = userInsert(sqlInsert,hash);
+      console.log(result);
+    });
+};
+
+async function userInsert(sql,password){
+  
+     const u1 = [195,"P","M",'fake1',password,'000-000-0000','user','false'];
+      await module.db.query(sql,u1,(err, result) => {
               if(err){
-                console.log(err);
+               console.log(err);
               }
                 else if (result != ""){
-                   console.log({message: "insert worked"});
+                  console.log({message: "insert worked"});
                 }              
           });
-        });
-  };
+      };
 
-beforeAll(function() {
-  createTable();
+beforeAll(async()=>{
+  await createTable();
+  await clean();
 });
 
 beforeEach(function(){
-  clean();
-  userInsert();
+  hashPwd();
 });
 
 afterEach(function(){
