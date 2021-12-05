@@ -93,10 +93,12 @@ function CustomerVehicles(props) {
                     },
                 }).then((response) => {
                     if(response.data.err) {
-                        console.log(response.data.err)
+                        console.log(response.data.err);
+                        setShowAddVehicleModal(false);
                     }
                     else if (response.data.message) {
-                        console.log(response.data.message)
+                        console.log(response.data.message);
+                        setShowAddVehicleModal(false);
                     } 
                     else {     
                         setShowAddVehicleModal(false);
@@ -169,7 +171,6 @@ function CustomerVehicles(props) {
                             <Form.Label column sm="3">Additional Information</Form.Label>
                             <Col sm="8" >
                                 <Form.Control  
-                                required
                                 type="text"
                                 placeholder=""
                                 />
@@ -195,19 +196,29 @@ function CustomerVehicles(props) {
                     authorization: token
                 },
             }).then((response) => {
-                if(response.data.err) {
-                    console.log(response.data.err)
+                if(response.data.err) { // Can't delete vehicle that still has scheduled appointments
+                    if(response.data.err.errno === 1451) {
+                        setShowDeleteModal(false);
+                        return (
+                            alert("Please delete any appointments attached to this vehicle before attempting to remove it from your account." )
+                        )
+                    }
+                    else {
+                        setShowDeleteModal(false);
+                        return (
+                            alert("Please see console for error." )
+                        )
+                    }
+                    
                 }
                 else if (response.data.message === "Vehicle is not found!") { //change this later as it does not match with the alert
+                    setShowDeleteModal(false);
                     return (
-                        <Alert 
-                            variant={"primary"} >
-                            "Please delete any appointments attached to this vehicle before attempting to remove it from your account." 
-                        </Alert>
+                        alert("Vehicle was not found in system.")
                     )
                 } 
                 else { 
-                    setShowDeleteModal(false)
+                    setShowDeleteModal(false);
                 }
             });
             
@@ -216,11 +227,12 @@ function CustomerVehicles(props) {
         return (
             <> 
                <Card style={{ width: '18rem', marginLeft: '10px', marginTop: '10px' }}>
-                    <Card.Img variant="top" src="/CarLogo.png" />
+                    <Card.Img variant="top" src="/CarLogo.png" style={{width: "75%"}} />
                     <Card.Body>
                         <Card.Title>{vehicle.year}, {vehicle.make} {vehicle.model} </Card.Title>
                         <Card.Text>
                             Color: {vehicle.color} <br />
+                            License Plate: {vehicle.licensePlate}
                         <br />
                         </Card.Text>
                         <div style={{textAlign: 'center'}}>
@@ -254,7 +266,7 @@ function CustomerVehicles(props) {
         <> 
             <Row>								
                 <Col>
-                    <h2>Your Vehicles:</h2>
+                    <h2 className="sectionVehicleTitle">Your Vehicles:</h2>
                 </Col>
 
                 <Col>
@@ -275,21 +287,21 @@ function CustomerVehicles(props) {
                             </Modal.Body>                                            
                         </Modal>
                     </div>
-                </Col>                           
-                
-                <hr 
-                    style= {{
-                        height: 5, 
-                        width: "100%", 
-                        color: "black",
-                        marginBottom: '10px'                                
-                    }}
-                />                                
+                </Col>                                  
             </Row>
+
+            <hr 
+                style= {{
+                    height: 5, 
+                    width: "100%", 
+                    color: "black",
+                    marginTop: "9px"                               
+                }}
+            />
 
             <br />
 
-            <Row xs={2} md={3} className="g-4">
+            <Row style={{justifyContent: "center"}} xs={2} md={3} className="g-4">
                 {getVehicles()}
             </Row>
         </>
