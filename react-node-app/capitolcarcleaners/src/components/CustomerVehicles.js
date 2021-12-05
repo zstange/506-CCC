@@ -227,7 +227,7 @@ function CustomerVehicles(props) {
         return (
             <> 
                <Card style={{ width: '18rem', marginLeft: '10px', marginTop: '10px' }}>
-                    <Card.Img variant="top" src="/CarLogo.png" style={{width: "75%"}} />
+                    <Card.Img variant="top" src="/CarLogo.png"  />
                     <Card.Body>
                         <Card.Title>{vehicle.year}, {vehicle.make} {vehicle.model} </Card.Title>
                         <Card.Text>
