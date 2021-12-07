@@ -472,7 +472,6 @@ function MakeCards(props) {
                     let changed = (Number(appointments[index].vid) !== Number(contents.vid) || new Date(appointments[index].dateTime).getTime() !== new Date(contents.dateTime + " 09:00:00").getTime()
                         || appointments[index].service !== contents.service || appointments[index].additionalInfo !== contents.additionalInfo
                         || appointments[index].status !== contents.status)
-                    alert(changed)
                     if (changed) {
                         let exists = false;
                         await Axios.post("http://localhost:3001/getAppointmentsByInfo",{

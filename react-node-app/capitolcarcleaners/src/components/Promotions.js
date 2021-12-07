@@ -10,7 +10,7 @@ import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal, Image, C
 function Promotions() { 
     const role = useSelector((state) => state.role.value);
 
-    if (role !== "admin") { // role check
+    if (role === "admin") { // role check
         return (
             <>
             <Row style={{padding: '1%'}}>
