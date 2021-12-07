@@ -5,13 +5,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal, Image, Carousel} from "react-bootstrap";
 import { useSelector } from "react-redux";
 
-function MakeVehiclesForSale(props) {
+function MakePromotions(props) {
     const token = useSelector((state) => state.token.value);
 
     const [validated, setValidated] = useState(false)
     const [contents, setContents] = useState({pid: null, promotionName: "", message: ""});
     const [promotions, setPromotions] = useState([])
-    const [vehicleIndex, setVehicleIndex] = useState(-1)
+    const [promotionIndex, setPromotionIndex] = useState(-1)
     const [modifyModal, showModifyModal] = useState(false)
     const [deleteModal, showDeleteModal] = useState(false)
     const [modifyTitle, setModifyTitle] = useState("")
@@ -29,7 +29,7 @@ function MakeVehiclesForSale(props) {
                     if(response.data.err) {
                         console.log(response.data.err)
                     }
-                    else if (response.data.message) {
+                    else if (response.data.message === "cannot fetch promotions") {
                         console.log(response.data.message)
                     } 
                     else {     
@@ -47,7 +47,7 @@ function MakeVehiclesForSale(props) {
         fetchTables()
     }, [props.role]);
     
-    async function SetPromotions() {
+    async function SetPromotionsTable() {
         let promotions = []
         // pull promotions table from the database
         await Axios.get("http://localhost:3001/getPromotions",{
@@ -55,7 +55,7 @@ function MakeVehiclesForSale(props) {
             if(response.data.err) {
                 console.log(response.data.err)
             }
-            else if (response.data.message) {
+            else if (response.data.message === "cannot fetch promotions") {
                 console.log(response.data.message)
             } 
             else {     
@@ -73,43 +73,28 @@ function MakeVehiclesForSale(props) {
     const handleCardClick = (event) => {
         disableSubmit(false)
         let mode = event.target.id.substring(0, 6) // get mode from button id
-        let iid = Number(event.target.id.substring(7, event.target.id.length))
+        let pid = Number(event.target.id.substring(7, event.target.id.length))
         if (mode === "delete") {
             showDeleteModal(true)
             let temp = contents
-            temp.iid = iid // get iid from the last portion of button id
+            temp.pid = pid // get iid from the last portion of button id
             setContents(temp)
         }
         else {
             showModifyModal(true)
-            if (vehicleImages.length < 0) {
-                setHasImage(false)
-                setImageRegex("^(?!"+contents.image+"$).*$")
-            }
-            else   {
-                setHasImage(true)
-                setImageRegex("\\S*")
-            }
-
             if (mode === "Modify") {
-                setModifyTitle("Modify Vehicle Listing")
+                setModifyTitle("Modify Promotion")
                 let index = 0;
-                for (index; index < vehicles.length; index++) {
-                    if (vehicles[index].iid === iid) 
+                for (index; index < promotions.length; index++) {
+                    if (promotions[index].pid === pid) 
                         break
                 }
-                setVehicleIndex(index)
-                setContents({iid: iid, price: vehicles[index].price, make: vehicles[index].make, model: vehicles[index].model,
-                    year: vehicles[index].year, color: vehicles[index].color, additionalInfo: vehicles[index].additionalInfo
-                    ,image: ""})
-                let temp = images.filter(image => image.iid === iid)
-                setVehicleImages(temp)
+                setPromotionIndex(index)
+                setContents({pid: pid, promotionName: promotions[index].promotionName, message: promotions[index].message})
             }
             else {
-                setModifyTitle("Create Vehicle Listing")
-                setContents({iid: null, price: null, make: "", model: "", year: null, color: "", additionalInfo: "", image: ""})
-                setVehicleImages([])
-                setHasImage(false)
+                setModifyTitle("Create Promotion")
+                setContents({pid: -1, promotionName: null, message: null})
             }
         }
     }
@@ -117,12 +102,11 @@ function MakeVehiclesForSale(props) {
     // handle delete modal buttons
     const handleDeleteModal = async(event) => {
         disableSubmit(true)
-        let iid = contents.iid // get aid from contents array
         if (event.target.id === "delete_cancel")
             showDeleteModal(false) // cancel lets us just close the modal
         else { // delete car
-            await Axios.post("http://localhost:3001/deleteImages",{
-                iid: contents.iid,
+            await Axios.post("http://localhost:3001/deletePromotion",{
+                pid: contents.pid,
             }, {
                 headers: {
                     authorization: token
@@ -131,34 +115,17 @@ function MakeVehiclesForSale(props) {
                 if(response.data.err) {
                     console.log(response.data.err)
                 }
-                else if (response.data.message === "Image not found!") {
+                else if (response.data.message !== "Successful deletion!") {
                     console.log(response.data.message)
                 } 
-                else {     
-                    setVehicles(vehicles.filter(vehicle => vehicle.iid !== iid))
-                    Axios.post("http://localhost:3001/deleteInventory",{
-                        iid: contents.iid,
-                    }, {
-                        headers: {
-                            authorization: token
-                        },
-                    }).then((response) => {
-                        if(response.data.err) {
-                            console.log(response.data.err)
-                        }
-                        else if (response.data.message === "Vehicle is not found in inventory!") {
-                            console.log(response.data.message)
-                        } 
-                    });
-                    setTimeout(() => {showDeleteModal(false)},1000); //finished, give short time delay for feedback
-                }
             });
+            setTimeout(() => {showDeleteModal(false); SetPromotionsTable();}, 1000); //finished, give short time delay for feedback
         }
     }
 
     // handle modify modal buttons
     const handleModifyModal = async(event) => {
-        let iid = contents.iid // get aid from contents array
+        let pid = contents.pid // get aid from contents array
         let mode = event.target.id
         if (mode === "Modify_cancel") { // if we are canceling, just close the window
             event.preventDefault();
@@ -170,22 +137,13 @@ function MakeVehiclesForSale(props) {
             event.preventDefault();
             setValidated(true);
             disableSubmit(true)
+
             // check if form is valid
-            if (vehicleImages.length === 0) {
-                setHasImage(false)
-                setImageRegex("^(?!"+contents.image+"$).*$")
-            }
-            else   
-                setImageRegex("\\S*")
             if (form.checkValidity() === true ) {
-                if (modifyTitle === "Create Vehicle Listing" && hasImage) {
-                    await Axios.post("http://localhost:3001/addInventory",{
-                        price: contents.price,
-                        make: contents.make,
-                        model: contents.model,
-                        year: contents.year,
-                        color: contents.color,
-                        additionalInfo: contents.additionalInfo,
+                if (modifyTitle === "Create Promotion") {
+                    await Axios.post("http://localhost:3001/addPromotion",{
+                        promotionName: contents.promotionName,
+                        message: contents.message,
                     }, {
                         headers: {
                             authorization: token
@@ -195,62 +153,32 @@ function MakeVehiclesForSale(props) {
                             console.log(response.data.err)
                         }
                         else {     
-                            Axios.get("http://localhost:3001/getInventory",{
+                            Axios.get("http://localhost:3001/getPromotions",{
                             }).then((response) => {
                                 if(response.data.err) {
                                     console.log(response.data.err)
                                 }
-                                else if (response.data.message) {
+                                else if (response.data.message === "cannot fetch promotions") {
                                     console.log(response.data.message)
                                 } 
                                 else {     
-                                    let temp = Array(response.data.data)[0]
-                                    for (let i = 0; i <vehicleImages.length; i++) {
-                                        Axios.post("http://localhost:3001/addImage",{
-                                            iid: temp[temp.length-1].iid,
-                                            url: vehicleImages[i].url
-                                        }, {
-                                            headers: {
-                                                authorization: token
-                                            },
-                                        }).then((response) => {
-                                            if(response.data.err) {
-                                                console.log(response.data.err)
-                                                i = vehicleImages.length
-                                            }
-                                        });
-                                    }
-                                    setTimeout(() => {setValidated(false); showModifyModal(false); SetTables();}, 1000);
+                                    // TO DO - SEND EMAIL TO ALL THOSE OPTED IN
+                                    alert("INSERT SENDING PROMOTIONS EMAIL HERE")
+                                    setTimeout(() => {setValidated(false); showModifyModal(false); SetPromotionsTable();}, 1000);
                                 }
                             });
                         }
                     });
                 }
-                else if (modifyTitle === "Modify Vehicle Listing") {       
-                    let oldVehicleImages = images.filter(image => image.iid === contents.iid)
-                    let imageChange = oldVehicleImages.length !== vehicleImages.length
-                    if (!imageChange) {
-                        let i = oldVehicleImages.length
-                        while(i-- && !imageChange) {
-                            if (oldVehicleImages[i].url !== vehicleImages[i].url) {
-                                imageChange = true
-                            }
-                        }
-                    }
+                else if (modifyTitle === "Modify Promotion") {       
                     
-                    let changed = contents.iid !== vehicles[vehicleIndex].iid || contents.price !== vehicles[vehicleIndex].price 
-                    || contents.make !== vehicles[vehicleIndex].make || contents.model !== vehicles[vehicleIndex].model 
-                    || contents.year !== vehicles[vehicleIndex].year || contents.color !== vehicles[vehicleIndex].color 
-                    || contents.additionalInfo !== vehicles[vehicleIndex].additionalInfo || imageChange
+                    let changed = contents.promotionName !== promotions[promotionIndex].name 
+                    || contents.message !== promotions[promotionIndex].message;
                     if (changed) {
-                        await Axios.post("http://localhost:3001/editInventory",{
-                            iid: contents.iid,
-                            price: contents.price,
-                            make: contents.make,
-                            model: contents.model,
-                            year: contents.year,
-                            color: contents.color,
-                            additionalInfo: contents.additionalInfo,
+                        await Axios.post("http://localhost:3001/editPromotion",{
+                            pid: contents.pid,
+                            promotionName: contents.promotionName,
+                            message: contents.message
                         }, {
                             headers: {
                                 authorization: token
@@ -259,45 +187,11 @@ function MakeVehiclesForSale(props) {
                             if(response.data.err) {
                                 console.log(response.data.err)
                             }
-                            else if (response.data.message === "Vechicle does not exist in inventory!") {
+                            else if (response.data.message === "promotion does not exist in inventory!") {
                                 console.log(response.data.message)
                             } 
                             else {    
-                                if(imageChange) {
-                                    Axios.post("http://localhost:3001/deleteImages",{
-                                        iid: contents.iid,
-                                    }, {
-                                        headers: {
-                                            authorization: token
-                                        },
-                                    }).then((response) => {
-                                        if(response.data.err) {
-                                            console.log(response.data.err)
-                                        }
-                                        else if (response.data.message === "Image not found!")
-                                            console.log(response.data.message)
-                                        else {
-                                            for (let i = 0; i <vehicleImages.length; i++) {
-                                                Axios.post("http://localhost:3001/addImage",{
-                                                    iid: contents.iid,
-                                                    url: vehicleImages[i].url
-                                                }, {
-                                                    headers: {
-                                                        authorization: token
-                                                    },
-                                                }).then((response) => {
-                                                    if(response.data.err) {
-                                                        console.log(response.data.err)
-                                                        i = vehicleImages.length
-                                                    }
-                                                });
-                                            }
-                                            setTimeout(() => {setValidated(false); showModifyModal(false); SetTables();}, 1000);
-                                        }
-                                    });       
-                                }
-                                else 
-                                    setTimeout(() => {setValidated(false); showModifyModal(false);SetTables()}, 1000);
+                                setTimeout(() => {setValidated(false); showModifyModal(false); SetPromotionsTable()}, 1000);
                             } 
                         });
                     }
@@ -327,115 +221,30 @@ function MakeVehiclesForSale(props) {
         </Modal.Header>
         <Modal.Body>
             <Form noValidate validated={validated} onSubmit={handleModifyModal}>
-                <Form.Group as={Row} className="mb-3" controlId="price">
-                    <Form.Label column sm="3" className="createAccountLabels">Price</Form.Label>
+                <Form.Group as={Row} className="mb-3" controlId="promotionName">
+                    <Form.Label column sm="3" className="createAccountLabels">Promotion Name</Form.Label>
                     <Col sm="7" >
                         <Form.Control  
                             required
-                            value = {contents.price}
-                            pattern = "^\d+.{0,1}\d{0,2}"
+                            value = {contents.promotionName}
                             type = "text"
-                            placeholder="Price"
+                            placeholder="Promotion Name"
                             onChange={handleChange}
                         />
-                        <Form.Control.Feedback type="invalid">Must be proper dollar amount.</Form.Control.Feedback>    
                     </Col>                  
                 </Form.Group> 
-                <Form.Group as={Row} className="mb-3" controlId="make">
-                    <Form.Label column sm="3" className="createAccountLabels">Make</Form.Label>
+                <Form.Group as={Row} className="mb-3" controlId="message">
+                    <Form.Label column sm="3" className="createAccountLabels">Message</Form.Label>
                     <Col sm="7" >
                         <Form.Control  
                             required
-                            value = {contents.make}
+                            value = {contents.message}
                             type = "text"
-                            placeholder="Make"
+                            placeholder="Message"
                             onChange={handleChange}
                         />
                     </Col>                           
                 </Form.Group> 
-                <Form.Group as={Row} className="mb-3" controlId="model">
-                    <Form.Label column sm="3" className="createAccountLabels">Model</Form.Label>
-                    <Col sm="7" >
-                        <Form.Control  
-                            required
-                            value = {contents.model}
-                            type = "text"
-                            placeholder="Model"
-                            onChange={handleChange}
-                        />
-                    </Col>                           
-                </Form.Group> 
-                <Form.Group as={Row} className="mb-3" controlId="year">
-                    <Form.Label column sm="3" className="createAccountLabels">Year</Form.Label>
-                    <Col sm="7" >
-                        <Form.Control  
-                            required
-                            value = {contents.year}
-                            pattern = "^\d+"
-                            type = "text"
-                            placeholder="Year"
-                            onChange={handleChange}
-                        />
-                        <Form.Control.Feedback type="invalid">Must be proper year.</Form.Control.Feedback>   
-                    </Col>                         
-                </Form.Group> 
-                <Form.Group as={Row} className="mb-3" controlId="color">
-                    <Form.Label column sm="3" className="createAccountLabels">Color</Form.Label>
-                    <Col sm="7" >
-                        <Form.Control  
-                            required
-                            value = {contents.color}
-                            type = "text"
-                            placeholder="Color"
-                            onChange={handleChange}
-                        />
-                    </Col>                           
-                </Form.Group> 
-                <Form.Group as={Row} className="mb-3" controlId="additionalInfo">
-                    <Form.Label column sm="3" className="createAccountLabels">Additional Info</Form.Label>
-                    <Col sm="7" >
-                        <Form.Control  
-                            value = {contents.additionalInfo}
-                            type = "text"
-                            placeholder="Additional Info"
-                            onChange={handleChange}
-                        />
-                    </Col>                           
-                </Form.Group> 
-                <Form.Group as={Row} className="mb-3" controlId="image">
-                    <div>
-                    <Form.Label column sm="3" className="createAccountLabels">New Image</Form.Label>
-                    <Col sm="7" style = {{display: "inline-block"}}>
-                        <Form.Control  
-                            required = {!hasImage}
-                            pattern =  {imageRegex}
-                            value = {contents.image}
-                            type = "text"
-                            placeholder="Image Link"
-                            onChange={handleChange}
-                        />
-                        <Form.Control.Feedback type="invalid">Add at least one image.</Form.Control.Feedback>    
-                    </Col>   
-                    <Button id="image" variant="primary" size='sm' style={{marginLeft: '200px', marginTop: '10px'}} onClick={handleAddImage}>Add Image</Button>
-                    </div>                        
-                </Form.Group> 
-                {vehicleImages.map((image, index) => {
-                    return <div>
-                            <Form.Group as={Row} className="mb-3" controlId={"image_"+image.imageid}>
-                            <Form.Label column sm="3" className="createAccountLabels">{"Image "+Number(index+1)}</Form.Label>
-                            <Col sm="7" >
-                                <Form.Control  
-                                    readOnly
-                                    value = {image.url}
-                                    type = "text"
-                                    placeholder="Image Link"
-                                    onChange={handleChange}
-                                />
-                            </Col>                           
-                            </Form.Group>
-                            <Button id={image.imageid} variant="primary" size='sm' style={{marginLeft: '200px', marginBottom: '25px'}} onClick={handleDeleteImage}>Delete Image</Button>
-                            </div>
-                })}
                 <div style={{textAlign: 'center'}}>
                     <Button type = "submit" disabled = {allowSubmit} variant="primary" size='sm' style={{margin: '5px'}}>Confirm</Button>
                     <Button id="Modify_cancel" variant="secondary" size='sm' style={{margin: '5px'}} onClick={handleModifyModal}>Cancel</Button>  
@@ -446,10 +255,10 @@ function MakeVehiclesForSale(props) {
 
         <Modal show={deleteModal} centered id = "deleteModal">
         <Modal.Header >
-        <Modal.Title>Delete Vehicle</Modal.Title>
+        <Modal.Title>Delete Promotion</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <p>Are you sure you want to delete this vehicle?</p>
+            <p>Are you sure you want to delete this promotion?</p>
                 <div style={{textAlign: 'center'}}>
                     <Button id="delete_confir" disabled = {allowSubmit} variant="primary" size='sm' style={{margin: '5px'}} onClick={handleDeleteModal}>Confirm</Button>
                     <Button id="delete_cancel" variant="secondary" size='sm' style={{margin: '5px'}} onClick={handleDeleteModal}>Cancel</Button>
@@ -457,53 +266,39 @@ function MakeVehiclesForSale(props) {
         </Modal.Body>                   
         </Modal>
         <div >
-            <GenerateAppsList vehicles = {vehicles} images = {images}/>
+            <GenerateAppsList promotions = {promotions}/>
         </div>
         <br></br>
-        <Button className="btn" id = "Create" style={{ display: (showAdminInfo ? 'block': 'none'), margin:"auto"}} onClick={handleCardClick}>Create Vehicle Listing</Button>
+        <Button className="btn" id = "Create" style={{ display: (showAdminInfo ? 'block': 'none'), margin:"auto"}} onClick={handleCardClick}>Create New Promotion</Button>
         </div>
         </>
     );
 
     function GenerateAppsList(props) {
-        let vehicles = props.vehicles
+        let promotions = props.promotions
         
-        const GenerateList = ((vehicle, index) => {
-            let vehImages = props.images.filter(image => image.iid === vehicle.iid)
+        const GenerateList = ((promotion, index) => {
             return (
                 <>
-                <Card id = {"card_"+vehicle.iid} style = {{width: window.innerWidth/3, margin:"15px"}} className = "box">
+                <Card id = {"card_"+promotion.pid} style = {{width: window.innerWidth/3, margin:"15px"}} className = "box">
                 <Card.Body>
                     <ListGroup className="list-group-flush" style = {{textAlign: "center"}}>
-                        <Card.Title style = {{fontSize: "20px", fontWeight: "bold"}}>{vehicle.color+" "+vehicle.year+" "+vehicle.make+" "+vehicle.model}</Card.Title>
+                        <Card.Title style = {{fontSize: "20px", fontWeight: "bold"}}>{promotion.promotionName}</Card.Title>
                         <ListGroupItem style = {{marginTop: "-10px"}}></ListGroupItem>
-                        <ListGroupItem style = {{fontSize: "22px", fontWeight: "600"}}>{"$"+vehicle.price.toFixed(2)}</ListGroupItem>
-                        <Carousel style={{margin: '20px'}}>
-                            {vehImages.map((image) => {
-                                    return <Carousel.Item interval={6000}>
-                                    <Image
-                                        style={{ width: '550px', height: "425px"}}
-                                        src={image.url}
-                                        rounded
-                                    />
-                                    </Carousel.Item>
-                            })}
-                        </Carousel>
-                        <ListGroupItem style = {{fontSize: "15px", textAlign: "left"}}>
-                            <label style={{fontSize: "15px", fontWeight: "500"}}>{"Additional Info:"}</label>{" "+vehicle.additionalInfo}</ListGroupItem>
+                        <ListGroupItem style = {{fontSize: "22px", fontWeight: "600"}}>{promotion.message}</ListGroupItem>
                     </ListGroup> 
                     
                 </Card.Body>
                 <div style = {{display: (showAdminInfo ? 'block': 'none'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
-                    <Button id = {"Modify-"+vehicle.iid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify</Button>   
-                    <Button id = {"delete-"+vehicle.iid} style = {{marginLeft: '5px'}} variant="danger" onClick={handleCardClick}>Delete</Button>
+                    <Button id = {"Modify-"+promotion.pid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify</Button>   
+                    <Button id = {"delete-"+promotion.pid} style = {{marginLeft: '5px'}} variant="danger" onClick={handleCardClick}>Delete</Button>
                 </div>
                 </Card>
                 </>
             )
         });
-        return <div className = "grid" >{vehicles.map(GenerateList)}</div>
+        return <div className = "grid" >{promotions.map(GenerateList)}</div>
     }
 }
 
-export default MakeVehiclesForSale
+export default MakePromotions

@@ -152,6 +152,28 @@ deletePromotion(req, res){
   });
 },
 
+editPromotion(req, res){
+  const pid = req.body.pid
+  const promotionName = req.body.promotionName
+  const message = req.body.message
+    const sqlInsert = 
+  "UPDATE promotionTable SET promotionName = ?, message = ? WHERE pid = ?;"
+  db.query(sqlInsert, [promotionName, message, pid], (err, result) => {
+  
+    if(err){
+      res.send({err: err});
+    }
+    else if (result["affectedRows"] != 0){
+      return res.send({message: "edited promotion successfully"});
+    }
+    else{
+      res.send({message: "promotion does not exist in inventory!"})
+    }
+  
+  });
+  
+},
+
 deleteImages(req, res){
     const iid = req.body.iid
     const sqlInsert = 

@@ -10,7 +10,7 @@ import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal, Image, C
 function Promotions() { 
     const role = useSelector((state) => state.role.value);
 
-    if (role === "admin") { // role check
+    if (role !== "admin") { // role check
         return (
             <>
             <Row style={{padding: '1%'}}>
@@ -28,6 +28,10 @@ function Promotions() {
             <Row style={{padding: '1%'}}>
                 <div className = "List">     
                     <label className="AllAppHeader">Promotions</label>
+                    <br></br>
+                    <label style={{fontSize: "18px", fontWeight: "500"}}>To redeem, simply let an employee know</label>
+                    <label style={{fontSize: "18px", fontWeight: "500"}}>you saw the promotion on our website when you come in!</label>
+                    <br></br>
                     <MakePromotions role = {"user"}/>
                 </div>     
             </Row> 
