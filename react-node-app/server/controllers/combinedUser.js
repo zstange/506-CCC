@@ -98,6 +98,26 @@ db.query(sqlInsert, [aid], (err, result) => {
 });
 },
 
+getAppointmentsByInfo(req, res){
+  const vid = req.body.vid
+  const dateTime = req.body.dateTime
+  const service = req.body.service
+  const sqlInsert = 
+  "SELECT * FROM appointmenttable WHERE vid = ? AND dateTime = ? AND service = ?"
+  db.query(sqlInsert, [vid, dateTime, service]
+      , (err, result) => {
+          if(err){
+              res.send({err: err});
+            }
+            else if (result != ""){
+              return res.json({data: true});
+            }
+            else{
+              return res.json({data: false});
+            }
+      });
+},
+
 getImages(req, res){
   const iid = req.body.iid
   const sqlInsert = 

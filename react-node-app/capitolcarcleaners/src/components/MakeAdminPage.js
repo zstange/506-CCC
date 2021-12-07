@@ -12,6 +12,7 @@ function MakeAdminPage() {
   const [appointments, setApps] = useState([])
   const [users,setUsers] = useState([])
   const [ready,setReady] = useState(false)
+  const [selectedUser, setSelectedUser] = useState(-1);
 
   useEffect(() => {
       // useEffect lets us fetch tables once the page is finished loading
@@ -53,7 +54,7 @@ function MakeAdminPage() {
       }
       fetchTables()
       setReady(true)
-  }, []);
+  }, [token]);
 
   function GenerateTodaysModals() {
       let date = new Date()
@@ -108,7 +109,7 @@ function MakeAdminPage() {
           </div>
           <label className="AllAppHeader">All Customer Appointments</label>
           <div>
-              <MakeCustomerApps setApps = {setApps} appointments = {appointments} users = {users}/>
+              <MakeCustomerApps selectedUser = {selectedUser} setSelectedUser = {setSelectedUser} setApps = {setApps} appointments = {appointments} users = {users}/>
           </div>
           </>
       );
@@ -120,9 +121,8 @@ function MakeAdminPage() {
   }
 
   function MakeCustomerApps(props) {
-    const [selectedUser, setSelectedUser] = useState(-1);
     const handleChange = (event) => {
-        setSelectedUser(event.target.value)
+        props.setSelectedUser(event.target.value)
     }
     function GenerateCustomerModals() {
         let filteredUsers = props.users.filter(use => use.uid === Number(selectedUser)) // filter users array by selected user
@@ -140,7 +140,7 @@ function MakeAdminPage() {
              <Form.Group style = {{width: "360px", margin:"auto", fontSize:"22px"}} as={Row} onChange = {handleChange} className="mb-3" controlId="dateMenu">
                     <Form.Label column sm="3" className="createAccountLabels">Customer</Form.Label>
                     <Col sm="8" >
-                        <Form.Select style = {{marginLeft:"20px",fontSize:"18px"}} aria-label="Default select example" className="mb-3" name="priority">
+                        <Form.Select value = {props.selectedUser} style = {{marginLeft:"20px",fontSize:"18px"}} aria-label="Default select example" className="mb-3" name="priority">
                             <option value = {-1}>Customer...</option>
                             {props.users.map((user) => {
                                 return <option value ={user.uid}>
