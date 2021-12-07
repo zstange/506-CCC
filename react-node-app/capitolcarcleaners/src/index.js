@@ -13,6 +13,7 @@ import CustomerHomepage from './components/CustomerHomepage';
 import CustomerHistory from './components/CustomerHistory';
 import Login from './components/Login';
 import VehiclesForSale from './components/VehiclesForSale';
+import Promotions from './components/Promotions';
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -37,6 +38,7 @@ ReactDOM.render(
             <Route path="/CustomerHomepage" component={CustomerHomepage} />
             <Route path="/CustomerHistory" component={CustomerHistory} />
             <Route path="/VehiclesForSale" component={VehiclesForSale} />
+            <Route path="/Promotions" component={Promotions} />
           </Switch>
         </PersistGate>
       </Provider>
