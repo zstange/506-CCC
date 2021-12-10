@@ -69,14 +69,14 @@ function Header() {
               </Link>
               <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="container-fluid">
-                  <Link to="/">
-                      <Nav.Link disabled>Complete Auto Detailing</Nav.Link>
+                  <Link to="/ServiceCompleteAD">
+                      <Nav.Link>Complete Auto Detailing</Nav.Link>
                   </Link>
-                  <Link to="/">
-                      <Nav.Link disabled>Interior Cleaning</Nav.Link>
+                  <Link to="/ServiceInteriorAD">
+                      <Nav.Link>Interior Cleaning</Nav.Link>
                   </Link>
-                  <Link to="/">
-                      <Nav.Link disabled>Exterior Cleaning</Nav.Link>
+                  <Link to="/ServiceExteriorAD">
+                      <Nav.Link>Exterior Cleaning</Nav.Link>
                   </Link>
                   <Link to="/">
                       <Nav.Link disabled>Odor Removal</Nav.Link>

@@ -13,6 +13,9 @@ import CustomerHomepage from './components/CustomerHomepage';
 import CustomerHistory from './components/CustomerHistory';
 import Login from './components/Login';
 import VehiclesForSale from './components/VehiclesForSale';
+import ServiceCompleteAD from './components/ServiceCompleteAD';
+import ServiceExteriorAD from './components/ServiceExteriorAD';
+import ServiceInteriorAD from './components/ServiceInteriorAD';
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -37,6 +40,9 @@ ReactDOM.render(
             <Route path="/CustomerHomepage" component={CustomerHomepage} />
             <Route path="/CustomerHistory" component={CustomerHistory} />
             <Route path="/VehiclesForSale" component={VehiclesForSale} />
+            <Route path="/ServiceCompleteAD" component={ServiceCompleteAD} />
+            <Route path="/ServiceInteriorAD" component={ServiceInteriorAD} />
+            <Route path="/ServiceExteriorAD" component={ServiceExteriorAD} />
           </Switch>
         </PersistGate>
       </Provider>
