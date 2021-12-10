@@ -52,7 +52,7 @@ function ServiceInteriorAD() {
                     </Col>
 
                     <Col style={{display:'flex',flexWrap:'wrap', alignItems:'center', justifyContent:'center', }}>  
-                        <Image src="interiorCleaning3.png" style={{width: '75%', marginBottom: '12px', height:'45%'}}/>                                                 
+                        <Image src="interiorCleaning3.png" style={{width: '75%', marginBottom: '12px', height:'50%'}}/>                                                 
                     </Col>
                 </Row> 
             </div>            

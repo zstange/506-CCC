@@ -49,7 +49,7 @@ function ServiceExteriorAD() {
                     </Col>                    
 
                     <Col style={{display:'flex',flexWrap:'wrap', alignItems:'center', justifyContent:'center', }}>  
-                        <Image src="ExteriorCleaning1.png" style={{width: '75%', height:'45%'}}/>                                            
+                        <Image src="ExteriorCleaning1.png" style={{width: '75%', height:'50%'}}/>                                            
                     </Col>
                 </Row> 
             </div>            

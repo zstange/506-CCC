@@ -78,8 +78,8 @@ function Header() {
                   <Link to="/ServiceExteriorAD">
                       <Nav.Link>Exterior Cleaning</Nav.Link>
                   </Link>
-                  <Link to="/">
-                      <Nav.Link disabled>Odor Removal</Nav.Link>
+                  <Link to="/ServiceOdorRemoval">
+                      <Nav.Link>Odor Removal</Nav.Link>
                   </Link>
                   <NavDropdown title="Other Services" id="basic-nav-dropdown">
                     <NavDropdown.Item>Rust Proofing</NavDropdown.Item>

@@ -1,0 +1,65 @@
+@import url("https://use.typekit.net/tce1zir.css");
+.headerTitle {
+    text-align: center;
+    vertical-align: middle;
+    margin-bottom: 1px;
+    color: black;
+    font-family: factoria,serif;
+}
+
+.pricingTitle {
+    text-align: center;
+    vertical-align: middle;
+    margin-bottom: 1px;
+    color: black;
+    font-family: factoria,serif;
+}
+
+.disclaimer {
+    text-align: center;
+    vertical-align: middle;
+    margin-bottom: 25px;
+    color: black;
+    font-family: factoria,serif;
+    font-style: italic;
+    font-size: 14px;
+}
+
+.bestSellerTitle {
+    text-align: center;
+    vertical-align: middle;
+    margin-top: 50px;
+    margin-bottom: 25px;
+    color: black;
+    font-family: factoria,serif;
+    font-weight:bolder;
+}
+
+.cleaningTitles {
+    text-align: center;
+    vertical-align: middle;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    color: black;
+    font-family: factoria,serif;
+    font-size: 20px;
+    font-weight:lighter;
+    font-weight:bolder;
+}
+
+.textTitle {
+    margin-bottom: 12px;
+    margin-left: 48px;
+    color: black;
+    font-family: factoria,serif;
+    font-weight: bold;
+}
+
+.textParagraph {
+    margin-bottom: 1px;
+    margin-left: 48px;
+    color: black;
+    font-family: factoria,serif;
+    font-size: 16px;
+    font-weight: lighter;
+}
