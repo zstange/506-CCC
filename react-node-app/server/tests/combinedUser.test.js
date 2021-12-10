@@ -1,4 +1,5 @@
 var supertest = require('supertest');
+const util = require('util');
 var module = require('../index.js');
 const { bcrypt, saltRounds} = require('../hash.js');
 const app = module.app;
@@ -20,65 +21,69 @@ var request = supertest(app);
 jest.setTimeout(15000);
 
 async function createTable(){
+var retVal = "";
 await module.db.query(sqlUserTable, (err, result) => {
     if(err){
-      console.log(err.code + "," + err.sqlMessage);
+     retVal = err.code + "," + err.sqlMessage;
     }
     else if (result != ""){
-      console.log("create table works");
+      retVal = "create table works";
         } else{
-       console.log(result);
+          retVal = result;
         }
     });
-
+    return retVal;
   }
 
-async function clean(){   
+function clean(){   
   sqlDrop = "DELETE FROM usertable;";
-   await module.db.query(sqlDrop, (err, result) => {
+  return new Promise( ( resolve, reject ) => {
+  module.db.query(sqlDrop, (err, result) => {
     if(err){
-    console.log(err.code + "," + err.sqlMessage);
+    var err = err.code + "," + err.sqlMessage;
+    reject(err);
     }
     else if (result != ""){
-       return console.log("delete works");
+       var message = "delete works";
+       resolve(message);
         } else{
         console.log(result);
         }
       });
-    };
+  });
+  };
   
- function hashPwd(){
+ async function hashPwd(){
     sqlInsert = "INSERT INTO usertable (uid,firstName,lastName,email,password,phoneNumber,role,recievePromotions) VALUES (?,?,?,?,?,?,?,?);";
     password = 'pwd';
-    bcrypt.hash(password,saltRounds, (err, hash) =>{
-      if(err){
-        console.log({err: "cannot hash password"});
-      }    
-      const result = userInsert(sqlInsert,hash);
-      console.log(result);
-    });
+    const hash = await bcrypt.hash(password,saltRounds);
+    var res = await userInsert(sqlInsert,hash)
+    return res;
 };
 
-async function userInsert(sql,password){
-  
+   function userInsert(sql,password){
      const u1 = [195,"P","M",'fake1',password,'000-000-0000','user','false'];
-      await module.db.query(sql,u1,(err, result) => {
+     return new Promise( ( resolve, reject ) => {
+      retVal = module.db.query(sql,u1,(err, result) => {
               if(err){
-               console.log(err);
+                reject(err);
               }
                 else if (result != ""){
-                  console.log({message: "insert worked"});
+                  var message = {message: "insert worked"};
+                  resolve(message);
                 }              
           });
+        });
       };
 
-beforeAll(async()=>{
-  await createTable();
-  await clean();
+beforeAll(async() => {
+  var res = await clean();
+  console.log(res);
 });
 
-beforeEach(function(){
-  hashPwd();
+beforeEach(async() => {
+  var res = await hashPwd();
+  console.log(res);
 });
 
 afterEach(function(){
