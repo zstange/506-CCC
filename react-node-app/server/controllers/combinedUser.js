@@ -25,8 +25,6 @@ login(req, res){
             var userInfo = { userID: user[0].uid, role: user[0].role};
             return res.json({auth: true, token: token, userInfo: userInfo});
           } else{
-            console.log("password:" + password);
-            console.log("checking with:" + result[0].password);
             return res.send({message: "Wrong username/password combination!"})
           }
         }) 
