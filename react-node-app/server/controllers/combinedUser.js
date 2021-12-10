@@ -63,7 +63,6 @@ editAppointment(req, res){
   const sqlInsert = 
 "UPDATE appointmenttable SET vid = ?, dateTime = ?, service = ?, additionalInfo = ?, status = ? WHERE aid = ?;"
 db.query(sqlInsert, [vid, dateTime, service, additionalInfo, status, aid], (err, result) => {
-
   if(err){
     res.send({err: err});
   }
