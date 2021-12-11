@@ -6,6 +6,7 @@ import { logUserOut } from "../statusSlice";
 import { removeRole } from "../roleSlice";
 import { Button } from 'react-bootstrap';
 import { removeUserId } from '../userIdSlice';
+import "../css/Header.css";
 
 function Header() {
   const loggedIn = useSelector((state) => state.loggedIn.value);
@@ -22,7 +23,7 @@ function Header() {
         </Nav.Item>
         <Nav.Item className="ms-auto">
           <Link to='/'>
-          <Button onClick={() => logoutUser()}>Logout</Button>
+          <Button variant='danger' onClick={() => logoutUser()}>Logout</Button>
           </Link>
         </Nav.Item>
         </>
@@ -56,13 +57,13 @@ function Header() {
         <Row style={{height: '75%'}}>
           <Col>
             <Row>
-              <div>Capitol Car & Motorcyle Cleaners</div>
-              <div>Auto Detailing at its best!</div>
+              <div class="title">Capitol Car & Motorcyle Cleaners</div>
+              <div class="subtitle">Auto Detailing at its best!</div>
             </Row>
           </Col>
         </Row>
         <Row>
-          <Navbar fixed='bottom' bg='light' expand="lg" style={{position: 'relative'}}>
+          <Navbar className="header" fixed='bottom' expand="lg" style={{position: 'relative', fontSize: '14px', bottom: '16px', left: '-25px'}}>
             <Container fluid>
               <Link to="/">
                   <Navbar.Brand>Home</Navbar.Brand>
