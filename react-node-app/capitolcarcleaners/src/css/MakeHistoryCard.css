@@ -1,10 +1,6 @@
 @import url("https://use.typekit.net/tce1zir.css");
 
-.cardImage {
-    width: 50%;
-}
-
-.sectionVehicleTitle{
+.noAppointmentsHeader{
     text-align: left;
     vertical-align: middle;
     margin-bottom: 1px;
