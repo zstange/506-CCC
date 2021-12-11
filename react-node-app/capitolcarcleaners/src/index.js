@@ -17,6 +17,11 @@ import ServiceCompleteAD from './components/ServiceCompleteAD';
 import ServiceExteriorAD from './components/ServiceExteriorAD';
 import ServiceInteriorAD from './components/ServiceInteriorAD';
 import ServiceOdorRemoval from './components/ServiceOdorRemoval';
+import ServiceRustProof from './components/ServiceRustProof';
+import ServiceCeramicCoat from './components/ServiceCeramicCoat';
+import ServiceMotorcycle from './components/ServiceMotorcycle';
+import ServiceBoat from './components/ServiceBoat';
+import ServiceBlinds from './components/ServiceBlinds';
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -45,6 +50,11 @@ ReactDOM.render(
             <Route path="/ServiceInteriorAD" component={ServiceInteriorAD} />
             <Route path="/ServiceExteriorAD" component={ServiceExteriorAD} />
             <Route path="/ServiceOdorRemoval" component={ServiceOdorRemoval} />
+            <Route path="/ServiceRustProof" component={ServiceRustProof} />
+            <Route path="/ServiceCeramicCoat" component={ServiceCeramicCoat} />
+            <Route path="/ServiceMotorcycle" component={ServiceMotorcycle} />
+            <Route path="/ServiceBoat" component={ServiceBoat} />
+            <Route path="/ServiceBlinds" component={ServiceBlinds} />
           </Switch>
         </PersistGate>
       </Provider>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Col, Row, Image, Navbar, Nav, NavDropdown} from "react-bootstrap";
-import {LinkContainer as Link} from 'react-router-bootstrap';
+import {LinkContainer as Link, LinkContainer} from 'react-router-bootstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { logUserOut } from "../statusSlice";
 import { removeRole } from "../roleSlice";
@@ -82,11 +82,21 @@ function Header() {
                       <Nav.Link>Odor Removal</Nav.Link>
                   </Link>
                   <NavDropdown title="Other Services" id="basic-nav-dropdown">
-                    <NavDropdown.Item>Rust Proofing</NavDropdown.Item>
-                    <NavDropdown.Item>Ceramic Coating</NavDropdown.Item>
+                    <Link to="/ServiceRustProof">
+                      <NavDropdown.Item>Rust Proofing</NavDropdown.Item>
+                    </Link>  
+                    <Link to="/ServiceCeramicCoat">
+                      <NavDropdown.Item>Ceramic Coating</NavDropdown.Item>
+                    </Link>
+                    <Link to="/ServiceMotorcycle">
                     <NavDropdown.Item>Motorcycle Detailing</NavDropdown.Item>
+                    </Link>
+                    <Link to="/ServiceBoat">
                     <NavDropdown.Item>Boat Detailing</NavDropdown.Item>
+                    </Link>
+                    <Link to="/ServiceBlinds">
                     <NavDropdown.Item>Window Blind Cleaning</NavDropdown.Item>
+                    </Link>
                   </NavDropdown>
                   <Link to="/VehiclesForSale">
                       <Nav.Link>Cars for Sale!</Nav.Link>
