@@ -17,9 +17,7 @@ const tableDeletion = ["appointmentTable","vehicleTable","messageTable","promoti
 const tableCreation = [sqlApptTable,sqlImgTable,sqlInvTable,sqlMsgTable,sqlPromoTable,sqlTestiTable,sqlUserTable,sqlVhlTable];
 const { server } = require('../server.js');
 const combinedUserController = require('../controllers/combinedUser.js');
-const { table } = require('console');
 var request = supertest(app);
-const { verifyJWT } = require('../jwt.js');
 jest.setTimeout(30000);
 
 function createTable(sql){
