@@ -4,11 +4,7 @@ getAppointments(req, res){
     "SELECT * FROM appointmenttable"
     db.query(sqlInsert
         , (err, result) => {
-            if(err){
-                res.send({err: err});
-              }
-              else if (result != ""){
-                
+           if (result != ""){ 
                 return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
               }
               else{
@@ -22,11 +18,7 @@ getAppointments(req, res){
     "SELECT * FROM appointmenttable WHERE aid = ?"
     db.query(sqlInsert, [aid]
         , (err, result) => {
-            if(err){
-                res.send({err: err});
-              }
-              else if (result != ""){
-                
+             if (result != ""){ 
                 return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
               }
               else{
@@ -39,10 +31,7 @@ getAppointments(req, res){
     "SELECT uid, firstName, lastName, email, phoneNumber FROM usertable"
     db.query(sqlInsert
         , (err, result) => {
-            if(err){
-                res.send({err: err});
-              }
-              else if (result != ""){
+            if (result != ""){
                 return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
               }
               else{
@@ -62,10 +51,7 @@ addInventory(req, res){
     "INSERT INTO inventorytable (price, make,model,year,color,additionalInfo) VALUES (?,?,?,?,?,?);"
     db.query(sqlInsert, [price, make, model, year, color, additionalInfo]
         , (err, result) => {
-            if(err){
-                res.send({err: "db query error"});
-              }
-              else if (result != ""){
+             if (result != ""){
                 return res.send({message: "Added a vehicle to inventory successfully"});
               }              
         });
@@ -82,11 +68,7 @@ editInventory(req, res){
     const sqlInsert = 
   "UPDATE inventorytable SET price = ?, make = ?, model = ?, year = ?, color = ?, additionalInfo = ? WHERE iid = ?;"
   db.query(sqlInsert, [price, make, model, year, color, additionalInfo, iid], (err, result) => {
-  
-    if(err){
-      res.send({err: err});
-    }
-    else if (result["affectedRows"] != 0){
+   if (result["affectedRows"] != 0){
       return res.send({message: "Edited a vehicle in the inventory successfully"});
     }
     else{
@@ -102,11 +84,7 @@ deleteInventory(req, res){
     const sqlInsert = 
   "DELETE FROM inventorytable WHERE iid = ?;"
   db.query(sqlInsert, [iid], (err, result) => {
-  
-    if(err){
-      res.send({err: err});
-    }
-    else if (result["affectedRows"] != 0){
+   if (result["affectedRows"] != 0){
       return res.send({message: "Deleted a vehicle in the inventory successfully"});
     }
     else{
@@ -123,15 +101,9 @@ addPromotion(req, res){
   const sqlInsert = 
   "INSERT INTO promotionTable (promotionName, message) VALUES (?,?);"
   db.query(sqlInsert, [promotionName, message], (err, result) => {
-    if(err){
-      res.send({err: err});
-    }
-    else if (result != ""){
+    if (result != ""){
       return res.send({message: "Added a vehicle to inventory successfully"});
-    } else {
-      res.send({message: "Could not create promotion!"})
-    }
-
+    } 
   });
 },
 
@@ -140,14 +112,11 @@ deletePromotion(req, res){
   const sqlInsert = 
   "DELETE FROM promotionTable WHERE pid = ?;"
   db.query(sqlInsert, [pid], (err, result) => {
-    if(err){
-      res.send({err: err});
-    }
-    else if (result["affectedRows"] != 0){
+    if (result["affectedRows"] != 0){
       return res.json({message: "Successful deletion!"});
     }
     else{
-      res.send({message: "Vehicle is not found in Inventory!"})
+      res.send({message: "Promotion is not found in Inventory!"})
     }             
   });
 },
@@ -157,11 +126,7 @@ deleteImages(req, res){
     const sqlInsert = 
     "DELETE FROM imagetable where iid = ?"
     db.query(sqlInsert, [iid], (err, result) => {
-    
-      if(err){
-        res.send({err: err});
-      }
-      else if (result["affectedRows"] != 0){
+     if (result["affectedRows"] != 0){
         return res.json({message: "Successful deletion!"});
       }
       else{
@@ -177,11 +142,7 @@ addImage(req, res){
   const sqlInsert = 
   "INSERT INTO imagetable (iid, url) VALUES (?,?);"
   db.query(sqlInsert, [iid, url], (err, result) => {
-  
-    if(err){
-      res.send({err: err});
-    }
-    else if (result != ""){
+     if (result != ""){
       return res.json({message: "Successfully added image!"});
     }    
   });

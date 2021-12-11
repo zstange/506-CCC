@@ -17,9 +17,7 @@ const tableDeletion = ["appointmentTable","vehicleTable","messageTable","promoti
 const tableCreation = [sqlApptTable,sqlImgTable,sqlInvTable,sqlMsgTable,sqlPromoTable,sqlTestiTable,sqlUserTable,sqlVhlTable];
 const { server } = require('../server.js');
 const customerController = require('../controllers/customer.js');
-const { table } = require('console');
 var request = supertest(app);
-const { verifyJWT } = require('../jwt.js');
 jest.setTimeout(30000);
 
 function createTable(sql){
@@ -100,51 +98,6 @@ function apptInsert(appt){
   const sql = "INSERT INTO appointmenttable (aid, uid, vid,dateTime,service,additionalInfo,status) VALUES (?,?,?,?,?,?,?);"
   return new Promise( ( resolve, reject ) => {
       module.db.query(sql,appt,(err, result) => {
-            if(err){
-              reject(err);
-            }
-            else if (result != ""){
-                var message = {message: "insert worked"};
-                resolve(message);
-            }              
-      });
-  });
-};
-
-function inventoryInsert(inventory){
-  const sql = "INSERT INTO inventoryTable (iid,price,make,model,year,color,additionalInfo) VALUES (?,?,?,?,?,?,?);"
-  return new Promise( ( resolve, reject ) => {
-      module.db.query(sql,inventory,(err, result) => {
-            if(err){
-              reject(err);
-            }
-            else if (result != ""){
-                var message = {message: "insert worked"};
-                resolve(message);
-            }              
-      });
-  });
-};
-
-function imageInsert(img){
-  const sql = "INSERT INTO imageTable(imageid,iid,url) VALUES (?,?,?);"
-  return new Promise( ( resolve, reject ) => {
-      module.db.query(sql,img,(err, result) => {
-            if(err){
-              reject(err);
-            }
-            else if (result != ""){
-                var message = {message: "insert worked"};
-                resolve(message);
-            }              
-      });
-  });
-};
-
-function promotionInsert(promo){
-  const sql = "INSERT INTO promotionTable (pid,promotionName,message) VALUES (?,?,?);"
-  return new Promise( ( resolve, reject ) => {
-      module.db.query(sql,promo,(err, result) => {
             if(err){
               reject(err);
             }
