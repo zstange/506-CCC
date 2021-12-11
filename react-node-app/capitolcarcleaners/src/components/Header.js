@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Col, Row, Image, Navbar, Nav, NavDropdown} from "react-bootstrap";
-import {LinkContainer as Link} from 'react-router-bootstrap';
+import {LinkContainer as Link, LinkContainer} from 'react-router-bootstrap';
 import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { logUserOut } from "../statusSlice";
 import { removeRole } from "../roleSlice";
@@ -69,24 +69,34 @@ function Header() {
               </Link>
               <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="container-fluid">
-                  <Link to="/">
-                      <Nav.Link disabled>Complete Auto Detailing</Nav.Link>
+                  <Link to="/ServiceCompleteAD">
+                      <Nav.Link>Complete Auto Detailing</Nav.Link>
                   </Link>
-                  <Link to="/">
-                      <Nav.Link disabled>Interior Cleaning</Nav.Link>
+                  <Link to="/ServiceInteriorAD">
+                      <Nav.Link>Interior Cleaning</Nav.Link>
                   </Link>
-                  <Link to="/">
-                      <Nav.Link disabled>Exterior Cleaning</Nav.Link>
+                  <Link to="/ServiceExteriorAD">
+                      <Nav.Link>Exterior Cleaning</Nav.Link>
                   </Link>
-                  <Link to="/">
-                      <Nav.Link disabled>Odor Removal</Nav.Link>
+                  <Link to="/ServiceOdorRemoval">
+                      <Nav.Link>Odor Removal</Nav.Link>
                   </Link>
                   <NavDropdown title="Other Services" id="basic-nav-dropdown">
-                    <NavDropdown.Item>Rust Proofing</NavDropdown.Item>
-                    <NavDropdown.Item>Ceramic Coating</NavDropdown.Item>
+                    <Link to="/ServiceRustProof">
+                      <NavDropdown.Item>Rust Proofing</NavDropdown.Item>
+                    </Link>  
+                    <Link to="/ServiceCeramicCoat">
+                      <NavDropdown.Item>Ceramic Coating</NavDropdown.Item>
+                    </Link>
+                    <Link to="/ServiceMotorcycle">
                     <NavDropdown.Item>Motorcycle Detailing</NavDropdown.Item>
+                    </Link>
+                    <Link to="/ServiceBoat">
                     <NavDropdown.Item>Boat Detailing</NavDropdown.Item>
+                    </Link>
+                    <Link to="/ServiceBlinds">
                     <NavDropdown.Item>Window Blind Cleaning</NavDropdown.Item>
+                    </Link>
                   </NavDropdown>
                   <Link to="/VehiclesForSale">
                       <Nav.Link>Cars for Sale!</Nav.Link>

@@ -2,10 +2,14 @@ import React, {useEffect, useState} from "react";
 import "../css/CustomerHomepage.css"
 import ViewAppointments from "./ViewAppointments";
 import Axios from 'axios';
-import { Row, } from "react-bootstrap";
+import { Row} from "react-bootstrap";
+import Accordion from 'react-bootstrap/Accordion'
 import { useSelector } from 'react-redux';
 import CustomerInfo from "./CustomerInfo";
 import CustomerVehicles from "./CustomerVehicles";
+import CustomerHistory from "./CustomerHistory";
+import AccordionHeader from "react-bootstrap/esm/AccordionHeader";
+import AccordionBody from "react-bootstrap/esm/AccordionBody";
 
 function CustomerHomepage(props) {
     const userId = useSelector((state) => state.userId.value);
@@ -41,7 +45,6 @@ function CustomerHomepage(props) {
                     console.log(JSON.stringify(response.data.message))   
                 } 
                 else { 
-                    console.log(response)    
                     var vehicles = []
                     vehicles = Array(response.data.data)[0]
                     setUserVehicles(vehicles);
@@ -59,50 +62,84 @@ function CustomerHomepage(props) {
                 </Row>
             </div> 
 
-            <Row style={{justifyContent: 'center'}}>
-                <div className="col-lg-4 col-xs-5 mx-4">
-                    {/* Account Info Section */}
-                    <div className="border p-3">
-                        <h3 className="sectionAccTitle">Account Information:</h3>
-                        <hr 
-                            style= {{
-                                height: 5, 
-                                width: "100%", 
-                                color: "black",                              
-                            }}
-                        />
-                        <CustomerInfo 
-                            userData={userData}
-                        />
-                    </div>
+            <div style={{ background: "#F0F2F4"}} >
+                <div style={{padding:'50px'}}>
+                    <Row style={{justifyContent: 'center'}}>
+                        <div className="col-lg-4 col-xs-5 mx-4" >
+                            {/* Account Info Section */}
+                            <div className="border p-3" style={{ background: "#FFFFFF"}}>
+                                <h3 className="sectionAccTitle">Account Information:</h3>
+                                <hr 
+                                    style= {{
+                                        height: 5, 
+                                        width: "100%", 
+                                        color: "black",                              
+                                    }}
+                                />
+                                <CustomerInfo 
+                                    userData={userData}
+                                />
+                            </div>
 
+                            <br />
+                        </div>
+
+                        <div className='col-lg-7 col-xs-5 mx-4'>
+                            {/* User's Vehicles Section */}
+                            <div className="border p-3" style={{ background: "#FFFFFF"}}>
+                                <CustomerVehicles
+                                    userId = {userId}
+                                    userVehicles = {userVehicles}
+                                />
+                            </div>
+                        </div>
+                    </Row>
                     <br />
+                    <Accordion>
+                        <Accordion.Item eventKey="0">
+                            <Row style={{justifyContent: 'center'}}>                                
+                                <div className="border p-3" style={{ background: "#FFFFFF"}}>
+                                    <AccordionHeader>
+                                        <h3 className="sectionAccTitle">Appointments:</h3>
+                                    </AccordionHeader>
+                                    <hr 
+                                        style= {{
+                                            height: 5, 
+                                            width: "100%", 
+                                            color: "black",                              
+                                        }}
+                                    />
+                                    <AccordionBody>
+                                        <ViewAppointments/>     
+                                    </AccordionBody>                   
+                                </div>
+                            </Row>
+                        </Accordion.Item>
+                    </Accordion>
+                    <br />
+                    <Accordion>
+                        <Accordion.Item eventKey="0">
+                            <Row style={{justifyContent: 'center', }}>
+                                <div className="border p-3" style={{ background: "#FFFFFF"}}>
+                                    <AccordionHeader>
+                                        <h3 className="sectionAccTitle">Service History:</h3>
+                                    </AccordionHeader>
+                                    <hr 
+                                        style= {{
+                                            height: 5, 
+                                            width: "100%", 
+                                            color: "black",                              
+                                        }}
+                                    />
+                                    <AccordionBody> 
+                                        <CustomerHistory/>   
+                                    </AccordionBody>                     
+                                </div>
+                            </Row>
+                        </Accordion.Item>
+                    </Accordion>
                 </div>
-
-                <div className='col-lg-7 col-xs-5 mx-4'>
-                    {/* User's Vehicles Section */}
-                    <div className="border p-3">
-                        <CustomerVehicles
-                            userId = {userId}
-                            userVehicles = {userVehicles}
-                        />
-                    </div>
-                </div>
-            </Row>
-            <Row style={{justifyContent: 'center', padding: '50px'}}>
-                <div className="border p-3">
-                    <h3 className="sectionAccTitle">Upcoming Appointments:</h3>
-                    <hr 
-                        style= {{
-                            height: 5, 
-                            width: "100%", 
-                            color: "black",                              
-                        }}
-                    />
-                    
-                    <ViewAppointments/>                        
-                </div>
-            </Row>
+            </div>
         </>
      );
 

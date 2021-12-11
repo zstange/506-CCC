@@ -1,11 +1,10 @@
 import React, {useEffect,useState} from "react"; 
-import Axios from 'axios';
 import { useSelector } from "react-redux";
 import '../css/CustomerHistory.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MakeHistoryCards from "./MakeHistoryCards";
 import MakeAdminHistory from "./MakeAdminHistory";
-import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "react-bootstrap";
+import { Row} from "react-bootstrap";
 
 
 function CustomerHistory() {
@@ -27,7 +26,6 @@ function CustomerHistory() {
         return (
             <>
             <Row style={{padding: '1%'}}>
-                <label className="AllAppHeader">Service History</label>
                 <div className="List">     
                     <MakeHistoryCards uid = {uid} aid = {null} role = {"user"}/>
                 </div>     
