@@ -7,6 +7,7 @@ import { removeRole } from "../roleSlice";
 import { Button } from 'react-bootstrap';
 import { removeUserId } from '../userIdSlice';
 import "../css/Header.css";
+import { removeToken } from '../tokenSlice';
 
 function Header() {
   const loggedIn = useSelector((state) => state.loggedIn.value);
@@ -43,6 +44,7 @@ function Header() {
     dispatch(logUserOut());
     dispatch(removeRole());
     dispatch(removeUserId());
+    dispatch(removeToken());
   }
 
   return(
@@ -79,10 +81,10 @@ function Header() {
                   <Link to="/ServiceExteriorAD">
                       <Nav.Link>Exterior Cleaning</Nav.Link>
                   </Link>
-                  <Link to="/ServiceOdorRemoval">
-                      <Nav.Link>Odor Removal</Nav.Link>
-                  </Link>
                   <NavDropdown title="Other Services" id="basic-nav-dropdown">
+                    <Link to="/ServiceOdorRemoval">
+                        <NavDropdown.Item>Odor Removal</NavDropdown.Item>
+                    </Link>
                     <Link to="/ServiceRustProof">
                       <NavDropdown.Item>Rust Proofing</NavDropdown.Item>
                     </Link>  

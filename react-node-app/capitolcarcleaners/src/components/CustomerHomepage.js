@@ -10,8 +10,10 @@ import CustomerVehicles from "./CustomerVehicles";
 import CustomerHistory from "./CustomerHistory";
 import AccordionHeader from "react-bootstrap/esm/AccordionHeader";
 import AccordionBody from "react-bootstrap/esm/AccordionBody";
+import { Redirect } from "react-router-dom";
 
 function CustomerHomepage(props) {
+    const loggedIn = useSelector((state) => state.loggedIn.value);
     const userId = useSelector((state) => state.userId.value);
     const token = useSelector((state) => state.token.value);
 
@@ -55,7 +57,8 @@ function CustomerHomepage(props) {
     }, [userId]);
 
     return (
-        <>                
+        <>     
+            {loggedIn ? null : <Redirect to="/Login"/>}    
             <div style={{marginBottom: '10px', marginTop: '5px', }} className="welcomeText">
                 <Row >
                     <h1 >Welcome, {userData.firstName}</h1>                                         
@@ -141,7 +144,7 @@ function CustomerHomepage(props) {
                 </div>
             </div>
         </>
-     );
+    );
 
 
 

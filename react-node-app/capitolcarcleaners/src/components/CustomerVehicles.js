@@ -139,7 +139,7 @@ function CustomerVehicles(props) {
                             <Col sm="8" >
                                 <Form.Control  
                                 required
-                                type="text"
+                                type="number"
                                 placeholder="Year"
                                 />
                             </Col>                    
