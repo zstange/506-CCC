@@ -20,6 +20,7 @@ app.get("/getPromotions", combinedUserController.getPromotions)
 //customer api calls
 app.post("/createAccount", customerController.createAcc)
 app.post("/forgotPassword", customerController.forgotPassword)
+app.post("/resetPassword", customerController.resetPassword)
 app.post("/checkEmail", customerController.checkEmail)
 app.post("/getVehicles", verifyJWT, customerController.getVehicles)
 app.post("/addVehicle", verifyJWT, customerController.addVehicle)
