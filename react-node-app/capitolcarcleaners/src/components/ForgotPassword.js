@@ -95,6 +95,7 @@ function CheckEmail() {
                 <div>
                     <h1 className="createAccountHeaders" style ={{fontSize: "30px"}}>Reset Password</h1>
                 </div>
+                <br></br>
                 <h4 className="createAccountLabels mb-3">Enter Account Email:</h4>
                 <div >            
                     <Form noValidate validated={validated} onSubmit={handleSubmit}>
@@ -130,6 +131,7 @@ function CheckEmail() {
                 <div>
                     <h1 className="createAccountHeaders" style ={{fontSize: "30px"}}>A reset code has been sent to your email</h1>
                 </div>
+                <br></br>
                 <h4 className="createAccountLabels mb-3">Enter code:</h4>
                 <div >            
                     <Form noValidate validated={validated} onSubmit={handleSubmit}>
@@ -212,13 +214,11 @@ function PasswordReset(props) {
 
     return (
         <>
-            <Row>
-            <div>
-                <h1 className="createAccountHeaders">Reset Password</h1>
-            </div>
-            </Row>
-            
             <Row style={{padding: '5%'}}>
+            <div>
+                <h1 className="createAccountHeaders" style ={{fontSize: "30px"}}>New Password</h1>
+            </div>
+            <br></br>
             <h4 className="createAccountLabels mb-3">Enter New Password:</h4>
             <div >            
                 <Form noValidate validated={validated} onSubmit={handleSubmit}>

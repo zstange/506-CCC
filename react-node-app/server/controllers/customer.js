@@ -169,6 +169,29 @@ resetPassword(req, res){
 
 },
 
+verifyAcc(req, res){
+  const email = req.body.email
+  code = "";
+  for (let i = 0; i < 8; i++) {
+    code += Math.floor(Math.random() * 10);
+  }
+  let mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: 'Capitol Car Cleaners - Account Code!',
+    text: "Code for verifying email: " + code
+  };
+  transporter.sendMail(mailOptions, function(error, info){
+  if (error) {
+    return res.send(error);
+  } else {
+    return res.json({code: code});
+  }
+  });
+  
+
+},
+
 checkEmail(req, res){
   const email = req.body.email 
   const sqlInsert = 
