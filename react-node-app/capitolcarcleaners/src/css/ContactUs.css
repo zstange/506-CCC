@@ -1,0 +1,28 @@
+@import url("https://use.typekit.net/tce1zir.css");
+
+.headerTitle {
+  text-align: center;
+  vertical-align: middle;
+  margin-bottom: 1px;
+  color: black;
+  font-family: factoria,serif;
+}
+
+.addressInfo {
+  text-align: center;
+  vertical-align: middle;
+  margin-bottom: 1px;
+  color: black;
+  font-family: factoria,serif;
+  font-size: 20px;
+}
+
+.locationTitles {
+  text-align: center;
+  vertical-align: middle;
+  color: black;
+  font-family: factoria,serif;
+  font-size: 25px;
+  font-weight: bold;
+  margin-top: 20px;
+}

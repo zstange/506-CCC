@@ -1,0 +1,19 @@
+@import url("https://use.typekit.net/tce1zir.css");
+
+
+.loginHeader {
+  text-align: center;
+  vertical-align: middle;
+  margin-bottom: 1px;
+  color: black;
+  font-family: factoria,serif;
+}
+
+.loginLabels {
+  text-align: left;
+  vertical-align: middle;
+  color: black;
+  font-family: factoria,serif;
+  font-weight: 100;
+  font-style: normal;
+}

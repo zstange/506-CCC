@@ -22,6 +22,7 @@ import ServiceCeramicCoat from './components/ServiceCeramicCoat';
 import ServiceMotorcycle from './components/ServiceMotorcycle';
 import ServiceBoat from './components/ServiceBoat';
 import ServiceBlinds from './components/ServiceBlinds';
+import ContactUs from './components/ContactUs';
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -55,6 +56,7 @@ ReactDOM.render(
             <Route path="/ServiceMotorcycle" component={ServiceMotorcycle} />
             <Route path="/ServiceBoat" component={ServiceBoat} />
             <Route path="/ServiceBlinds" component={ServiceBlinds} />
+            <Route path="/ContactUs" component={ContactUs} />
           </Switch>
         </PersistGate>
       </Provider>

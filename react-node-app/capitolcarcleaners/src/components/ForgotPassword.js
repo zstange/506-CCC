@@ -193,7 +193,7 @@ class ForgotPassword extends React.Component {
     return (
         <>
           <Row>
-          <div className="App">
+          <div className="App" style={{minHeight: "75vh"}}>
               <CheckEmail/>
           </div> 
           </Row>  
