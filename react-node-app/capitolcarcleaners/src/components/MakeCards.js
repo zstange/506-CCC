@@ -512,10 +512,10 @@ function MakeCards(props) {
                                 else if (response.data.message === "appointment doesn't exist in the table.") {
                                     console.log(response.data.message)
                                 } 
-                                else {     
-                                    if (contents.status === "Ready") 
-                                        alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
+                                else {       
                                     if (props.role === "admin") {
+                                        if (contents.status === "Ready") 
+                                            alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
                                         setTimeout(() => {setValidated(false); showModifyModal(false);
                                             Axios.get("http://localhost:3001/getAppointmentsAdmin", {
                                                 headers: {
