@@ -130,3 +130,9 @@ Content-Type: application/json
 {
     "vid" : "135"
 }
+
+###
+POST http://localhost:3001/sendPromotion
+
+###
+GET http://localhost:3001/getUsers
