@@ -40,11 +40,11 @@ function LoginPage(props) {
             alert(response.data.message);
           } 
           else {
-            setRedirect(true);
             dispatch(logUserIn());
             dispatch(setUserId(response.data.userInfo.userID));
             dispatch(setRole(response.data.userInfo.role));
             dispatch(setToken(response.data.token));
+            setRedirect(true);
           }
         });
       
