@@ -156,9 +156,7 @@ sendPromotion(req, res){
               };
               transporter.sendMail(mailOptions, function(error, info){
               if (error) {
-                console.log(error);
-              } else {
-                console.log('Email sent: ' + info.response);
+                return res.send(error);
               }
               });
           return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});   
@@ -231,9 +229,9 @@ sendVehicle(req, res){
   };
   transporter.sendMail(mailOptions, function(error, info){
   if (error) {
-    console.log(error);
+    return res.send(error);
   } else {
-    console.log('Email sent: ' + info.response);
+    return res.send('Email sent: ' + info.response);
   }
   });
   
