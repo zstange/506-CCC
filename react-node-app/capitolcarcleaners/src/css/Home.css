@@ -1,0 +1,42 @@
+@import url("https://use.typekit.net/tce1zir.css");
+
+.testimonial-panel {
+  background-color: rgb(74, 141, 182);
+}
+
+blockquote p {
+  font-size: 16px;
+}
+
+.body {
+  font-family: factoria,serif;
+}
+
+::-webkit-scrollbar {
+  width: 0;  /* Remove scrollbar space */
+  height: 0;
+  background: transparent;  /* Optional: just make scrollbar invisible */
+}
+
+.text-title {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.subtext {
+  text-align: center;
+}
+
+.info-column {
+  text-align: center;
+}
+
+.info-col-title {
+  font-weight: bold;
+}
+
+.info-col-text {
+  text-align: left;
+}
