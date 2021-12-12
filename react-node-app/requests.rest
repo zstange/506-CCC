@@ -136,3 +136,11 @@ POST http://localhost:3001/sendPromotion
 
 ###
 GET http://localhost:3001/getUsers
+
+###
+POST http://localhost:3001/resetPassword
+Content-Type: application/json
+
+{
+    "email" : "ejpark@wisc.edu"
+}

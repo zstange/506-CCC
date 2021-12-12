@@ -1,4 +1,5 @@
 const { bcrypt, saltRounds} = require('../hash.js')
+const { nodemailer, transporter, cron, env } = require('../email.js')
 
 const customerController ={
 createAcc(req, res) {
@@ -112,6 +113,29 @@ forgotPassword(req, res){
       }
 
       });
+},
+
+resetPassword(req, res){
+  const email = req.body.email
+  code = "";
+  for (let i = 0; i < 8; i++) {
+    code += Math.floor(Math.random() * 10);
+  }
+  let mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: 'Capitol Car Cleaners - Password Reset!',
+    text: "Code for resetting password: " + code
+  };
+  transporter.sendMail(mailOptions, function(error, info){
+  if (error) {
+    return res.send(error);
+  } else {
+    return res.json({code: code});
+  }
+  });
+  
+
 },
 
 checkEmail(req, res){
