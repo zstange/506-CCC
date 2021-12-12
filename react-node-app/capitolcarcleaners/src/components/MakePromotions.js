@@ -17,11 +17,16 @@ function MakePromotions(props) {
     const [modifyTitle, setModifyTitle] = useState("")
     const [showAdminInfo, setAdminInfo] = useState(false)
     const [allowSubmit,disableSubmit] = useState(false)
+    const [optModal, showOptModal] = useState(false)
+    const [promoStatus, setPromoStatus] = useState(false)
+    const [promoStatusTemp, setPromoStatusTemp] = useState(false)
+    const [promoModalText, setPromoModalText] = useState("")
     const [ready, setReady] = useState(false)
 
     useEffect(() => { 
         // useEffect lets us fetch tables once the page is finished loading
         let promotions = []
+        let promo = 0
         async function fetchTables() {
             // pull promotions table from the database
             await Axios.get("http://localhost:3001/getPromotions",{
@@ -40,12 +45,30 @@ function MakePromotions(props) {
             
             if (props.role === "admin")
                 setAdminInfo(true)
-            
+            if (props.uid) {
+                Axios.post("http://localhost:3001/getUserPromoStatus",{
+                uid: props.uid,
+                    }, {
+                        headers: {
+                            authorization: token
+                        },
+                    }).then((response) => {
+                        if(response.data.err) {
+                            console.log(response.data.err)
+                        }
+                        else if (response.data.message) {
+                            console.log(response.data.message)
+                        } 
+                        else   
+                            promo = Array(response.data.data)[0][0].recievePromotions 
+                            setPromoStatus(promo)
+                });
+            }
             setPromotions(promotions)
             setReady(true)
         }
         fetchTables()
-    }, [props.role]);
+    }, [props.role, props.uid, token]);
     
     async function SetPromotionsTable() {
         let promotions = []
@@ -67,6 +90,43 @@ function MakePromotions(props) {
 
     const handleChange = (event) => {
         setContents({...contents, [event.target.id]: event.target.value})
+    }
+
+    // handle opting in or out of promos
+    const handleOpt = (event) => {
+        showOptModal(true)
+        setPromoStatusTemp(event.target.checked)
+        disableSubmit(false)
+        if (event.target.checked)
+            setPromoModalText("Are you sure you want to opt into promotions?")
+        else
+            setPromoModalText("Are you sure you want to opt out of promotions?")
+    }
+
+    const handleOptModal = (event) => {
+        disableSubmit(true)
+        if (event.target.id === "opt_confirm") {
+            Axios.post("http://localhost:3001/setUserPromoStatus",{
+                uid: props.uid,
+                promo: (promoStatusTemp)
+            }, {
+                headers: {
+                    authorization: token
+                },
+            }).then((response) => {
+                if(response.data.err) {
+                    console.log(response.data.err)
+                }
+                else if (response.data.message) {
+                    console.log(response.data.message)
+                } 
+                else
+                    setTimeout(() => {showOptModal(false); setPromoStatus(promoStatusTemp); disableSubmit(false);}, 1000); //finished, give short time delay for feedback
+            });
+        }
+        else {
+            showOptModal(false)
+        }
     }
 
     // handle card buttons
@@ -162,9 +222,31 @@ function MakePromotions(props) {
                                     console.log(response.data.message)
                                 } 
                                 else {     
-                                    // TO DO - SEND EMAIL TO ALL THOSE OPTED IN
-                                    alert("INSERT SENDING PROMOTIONS EMAIL HERE")
-                                    setTimeout(() => {setValidated(false); showModifyModal(false); SetPromotionsTable();}, 1000);
+                                    // send emails
+                                    Axios.post("http://localhost:3001/sendPromotion",{
+                                        subject: "Capitol Car Cleaners - "+contents.promotionName,
+                                        emailBody: "OFFER DETAILS:\n"
+                                            +contents.promotionName+"\n--------------------------"
+                                            +"\nTo redeem, simply let an employee know you saw the promotion on our" 
+                                            +"\nwebsite or show them this email when you come in!"
+                                            +"\nContact Us:\nWest Towne Location - "
+                                            +"6802 Watts Rd. Madison, WI 53719\nPhone: 608-271-4419"
+                                            +"\nEast Towne Location - 4102 Lien Rd. Madison, WI 53704\nPhone: 608-630-8327"
+                                    }, {
+                                        headers: {
+                                            authorization: token
+                                        },
+                                    }).then((response) => {
+                                        if(response.data.err) {
+                                            console.log(response.data.err)
+                                        }
+                                        else if (response.data.message) {
+                                            console.log(response.data.message)
+                                        } 
+                                        else {                            
+                                            setTimeout(() => {setValidated(false); showModifyModal(false); SetPromotionsTable()}, 1000);
+                                        } 
+                                    });
                                 }
                             });
                         }
@@ -265,11 +347,29 @@ function MakePromotions(props) {
                 </div>
         </Modal.Body>                   
         </Modal>
+
+        <Modal show={optModal} centered id = "optModal">
+        <Modal.Header >
+        </Modal.Header>
+        <Modal.Body>
+            <p style={{textAlign: 'center'}} >{promoModalText}</p>
+                <div style={{textAlign: 'center'}}>
+                    <Button id="opt_confirm" disabled = {allowSubmit} variant="primary" size='sm' style={{margin: '5px'}} onClick={handleOptModal}>Yes</Button>
+                    <Button id="opt_cancel" variant="secondary" size='sm' style={{margin: '5px'}} onClick={handleOptModal}>No</Button>
+                </div>
+        </Modal.Body>                   
+        </Modal>
+
         <div >
             <GenerateAppsList promotions = {promotions}/>
         </div>
         <br></br>
         <Button className="btn" id = "Create" style={{ display: (showAdminInfo ? 'block': 'none'), margin:"auto"}} onClick={handleCardClick}>Create New Promotion</Button>
+        <br></br>
+        <div style ={{display: ((!showAdminInfo && props.uid) ? 'inline-block': 'none'), textAlign: "center"}}>
+            <input checked = {promoStatus} type="checkbox" id = "opt" style={{marginRight:"15px"}} 
+                onClick={handleOpt} />I would like to receieve promotions 
+        </div>
         </div>
         </>
     );
@@ -284,12 +384,12 @@ function MakePromotions(props) {
                 <Card.Body>
                     <ListGroup className="list-group-flush" style = {{textAlign: "center"}}>
                         <Card.Title style = {{fontSize: "20px", fontWeight: "bold"}}>{promotion.promotionName}</Card.Title>
-                        <ListGroupItem style = {{marginTop: "-10px"}}></ListGroupItem>
+                        <ListGroupItem style = {{marginTop: "-5px"}}></ListGroupItem>
                         <ListGroupItem style = {{fontSize: "22px", fontWeight: "600"}}>{promotion.message}</ListGroupItem>
                     </ListGroup> 
                     
                 </Card.Body>
-                <div style = {{display: (showAdminInfo ? 'block': 'none'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
+                <div style = {{display: (showAdminInfo ? 'block': 'none'), textAlign: 'center', marginTop: '-5px', marginBottom: '15px'}}>
                     <Button id = {"Modify-"+promotion.pid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify</Button>   
                     <Button id = {"delete-"+promotion.pid} style = {{marginLeft: '5px'}} variant="danger" onClick={handleCardClick}>Delete</Button>
                 </div>

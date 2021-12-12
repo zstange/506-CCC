@@ -150,11 +150,12 @@ function CreateAccountForm() {
                         <Col sm="9">
                             <Form.Control 
                             required
+                            pattern = "^.{5,}$"
                             type= "password" 
-                            placeholder="Enter password" 
+                            placeholder="Enter password (at least 5 characters)" 
                             />
-                        </Col>
-                        <Form.Control.Feedback type="invalid">Please enter a password.</Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">Password must be 5 characters or more.</Form.Control.Feedback>
+                        </Col>   
                     </Form.Group>
 
                     <Form.Group as={Row} className="mb-3" value = {contents.phoneNumber} controlId="phoneNumber" onChange = {handleChange}>

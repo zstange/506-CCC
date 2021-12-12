@@ -257,10 +257,42 @@ function MakeCards(props) {
                                 console.log(response.data.message)
                             } 
                             else { 
-                                if (contents.status === "Ready") 
-                                    alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
-                                setTimeout(() => {setValidated(false); showStatusModal(false); 
-                                    Axios.get("http://localhost:3001/getAppointmentsAdmin", {
+                                if (contents.status === "Ready") {
+                                    let j = 0; // search for the vehicle that the user chose
+                                    let car
+                                    for (j; j < userVehicles.length; j++) {
+                                        if (Number(contents.vid) === userVehicles[j].vid) {
+                                            car = userVehicles[j].color+" "+userVehicles[j].year+" "+userVehicles[j].make
+                                                    +" "+userVehicles[j].model
+                                            break;
+                                        }
+                                    }
+                                    let date = contents.dateTime.substring(5,7)+"/"+contents.dateTime.substring(8,10)
+                                        +"/"+contents.dateTime.substring(0,4)
+                                    Axios.post("http://localhost:3001/sendVehicle",{
+                                        email: userInfo.email,
+                                        message: "This is a courtesy email to let you know your vehicle dropped off on "+date+" is now ready for pickup.\n"
+                                            +"\nVehicle: "+car+"\nLicense Plate: "+userVehicles[j].licensePlate+"\nService: "+contents.service+"\n\nContact Us:\nWest Towne Location - "
+                                            +"6802 Watts Rd. Madison, WI 53719\nPhone: 608-271-4419"
+                                            +"\nEast Towne Location - 4102 Lien Rd. Madison, WI 53704\nPhone: 608-630-8327"
+                                    }, {
+                                        headers: {
+                                            authorization: token
+                                        },
+                                    }).then((response) => {
+                                        if(response.data.err) {
+                                            console.log(response.data.err)
+                                            alert("Pick up email not sent")
+                                        }
+                                        else if (response.data.message) {
+                                            console.log(response.data.message)
+                                            alert("Pick up email not sent")
+                                        } 
+                                        else
+                                            alert("Pick up email sent")
+                                    });
+                                }   
+                                Axios.get("http://localhost:3001/getAppointmentsAdmin", {
                                         headers: {
                                             authorization: token
                                         },
@@ -273,10 +305,9 @@ function MakeCards(props) {
                                         } 
                                         else {     
                                             // populate temporary array
-                                            props.setApps(Array(response.data.data)[0])
+                                            setTimeout(() => {props.setApps(Array(response.data.data)[0]); setValidated(false); showStatusModal(false); }, 1000);  
                                         }
-                                    });
-                                }, 1000);  
+                                });
                             }
                     });
                 }
@@ -514,9 +545,41 @@ function MakeCards(props) {
                                 } 
                                 else {       
                                     if (props.role === "admin") {
-                                        if (contents.status === "Ready") 
-                                            alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
-                                        setTimeout(() => {setValidated(false); showModifyModal(false);
+                                        if (contents.status === "Ready") {
+                                            let j = 0; // search for the vehicle that the user chose
+                                            let car
+                                            for (j; j < userVehicles.length; j++) {
+                                                if (Number(contents.vid) === userVehicles[j].vid) {
+                                                    car = userVehicles[j].color+" "+userVehicles[j].year+" "+userVehicles[j].make
+                                                            +" "+userVehicles[j].model
+                                                    break;
+                                                }
+                                            }
+                                            let date = contents.dateTime.substring(5,7)+"/"+contents.dateTime.substring(8,10)
+                                                +"/"+contents.dateTime.substring(0,4)
+                                            Axios.post("http://localhost:3001/sendVehicle",{
+                                                email: userInfo.email,
+                                                message: "This is a courtesy email to let you know your vehicle dropped off on "+date+" is now ready for pickup.\n"
+                                                    +"\nVehicle: "+car+"\nLicense Plate: "+userVehicles[j].licensePlate+"\nService: "+contents.service+"\n\nContact Us:\nWest Towne Location - "
+                                                    +"6802 Watts Rd. Madison, WI 53719\nPhone: 608-271-4419"
+                                                    +"\nEast Towne Location - 4102 Lien Rd. Madison, WI 53704\nPhone: 608-630-8327"
+                                            }, {
+                                                headers: {
+                                                    authorization: token
+                                                },
+                                            }).then((response) => {
+                                                if(response.data.err) {
+                                                    console.log(response.data.err)
+                                                    alert("Pick up email not sent")
+                                                }
+                                                else if (response.data.message) {
+                                                    console.log(response.data.message)
+                                                    alert("Pick up email not sent")
+                                                } 
+                                                else
+                                                    alert("Pick up email sent")
+                                            });
+                                        }   
                                             Axios.get("http://localhost:3001/getAppointmentsAdmin", {
                                                 headers: {
                                                     authorization: token
@@ -532,8 +595,7 @@ function MakeCards(props) {
                                                     // populate temporary array
                                                     props.setApps(Array(response.data.data)[0])
                                                 }
-                                            });
-                                        }, 1000);   
+                                            });   
                                     }
                                     // set user appointments table
                                     let newUserApps = appointments // set new appointment info
@@ -788,11 +850,11 @@ function MakeCards(props) {
                     <ListGroupItem>{"Additional Info: "+appointment.additionalInfo}</ListGroupItem>
                 </ListGroup> 
             </Card.Body>
-            <div style = {{display: (showStatus ? 'none': 'block'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
+            <div style = {{display: (showStatus ? 'none': 'block'), textAlign: 'center', marginTop: '-5px', marginBottom: '15px'}}>
                 <Button id = {"modify-"+appointment.aid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify</Button>   
                 <Button id = {"delete-"+appointment.aid} style = {{marginLeft: '5px'}} variant="danger" onClick={handleCardClick}>Delete</Button>
             </div>
-            <div style = {{display: (showStatus ? 'block': 'none'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
+            <div style = {{display: (showStatus ? 'block': 'none'), textAlign: 'center', marginTop: '-5px', marginBottom: '15px'}}>
                 <Button id = {"status-"+appointment.aid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify Status</Button>   
             </div>
             </Card>

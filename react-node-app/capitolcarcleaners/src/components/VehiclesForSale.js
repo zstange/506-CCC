@@ -28,10 +28,6 @@ function VehiclesForSale() {
             <Row style={{padding: '1%'}}>
                 <div className = "List">     
                     <label className="AllAppHeader">Cars For Sale</label>
-                    <br></br>
-                    <label style={{fontSize: "18px", fontWeight: "500"}}>Call: XXX-XXX-XXXX or Email: steve@capcars.com</label>
-                    <label style={{fontSize: "18px", fontWeight: "500"}}>For Purchase Details!</label>
-                    <br></br>
                     <MakeVehiclesForSale role = {"user"}/>
                 </div>     
             </Row> 

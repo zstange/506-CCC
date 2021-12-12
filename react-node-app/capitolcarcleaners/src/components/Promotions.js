@@ -9,7 +9,7 @@ import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal, Image, C
 
 function Promotions() { 
     const role = useSelector((state) => state.role.value);
-
+    const uid = useSelector((state) => state.userId.value);
     if (role === "admin") { // role check
         return (
             <>
@@ -32,7 +32,7 @@ function Promotions() {
                     <label style={{fontSize: "18px", fontWeight: "500"}}>To redeem, simply let an employee know</label>
                     <label style={{fontSize: "18px", fontWeight: "500"}}>you saw the promotion on our website when you come in!</label>
                     <br></br>
-                    <MakePromotions role = {"user"}/>
+                    <MakePromotions role = {role} uid = {uid}/>
                 </div>     
             </Row> 
             </>

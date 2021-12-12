@@ -8,7 +8,6 @@ import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal, Image, C
 function MakeAdminVehiclesForSale() {
 
     const [promotionsTable, setPromotionsTable] = useState([])
-    const [ready,setReady] = useState(false)
 
     return (
         <div>

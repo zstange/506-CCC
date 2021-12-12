@@ -123,6 +123,8 @@ deletePromotion(req, res){
 },
 
 sendPromotion(req, res){
+  const emailBody = req.body.emailBody
+  const subject = req.body.subject
   const sqlInsert = 
   "SELECT promotionName, message FROM promotiontable"
   db.query(sqlInsert, (err, result) => {
@@ -130,11 +132,6 @@ sendPromotion(req, res){
       return res.send({err: err});
     }
     else if (result != ""){
-      emailBody = "Check out our new promotions \n";
-      for (let i = 0; i < result.length; i++) {
-        emailBody += JSON.parse(JSON.stringify(result[i]['promotionName'])) + ":";
-        emailBody += JSON.parse(JSON.stringify(result[i]['message'])) + "\n";
-      }
       const sqlInsert = "SELECT email, recievePromotions FROM usertable"
         db.query(sqlInsert, (err, result) => {
           if(err){
@@ -151,7 +148,7 @@ sendPromotion(req, res){
               let mailOptions = {
                 from: process.env.EMAIL,
                 to: emails,
-                subject: 'Capitol Car Cleaners promotions are here!',
+                subject: subject,
                 text: emailBody
               };
               transporter.sendMail(mailOptions, function(error, info){

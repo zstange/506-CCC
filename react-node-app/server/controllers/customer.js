@@ -57,6 +57,37 @@ getUserAppointments(req, res){
       });
 },
 
+getUserPromoStatus(req, res){
+  const uid = req.body.uid
+  const sqlInsert = 
+  "SELECT recievePromotions FROM usertable WHERE uid = ?"
+  db.query(sqlInsert, [uid]
+      , (err, result) => {
+            if (result != ""){
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+            }
+            else{
+              res.send({message: "cannot get user promo status"})
+            }
+      });
+},
+
+setUserPromoStatus(req, res){
+  const uid = req.body.uid
+  const recievePromotions = req.body.promo
+  const sqlInsert = 
+  "UPDATE userTable SET recievePromotions = ? WHERE uid = ?;"
+  db.query(sqlInsert, [recievePromotions, uid]
+      , (err, result) => {
+            if (result != ""){
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+            }
+            else{
+              res.send({message: "cannot update promo status"})
+            }
+      });
+},
+
 getAppointmentsByDate(req, res){
   const dateTime = req.body.dateTime
   const sqlInsert = 
