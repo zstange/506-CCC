@@ -154,14 +154,12 @@ sendPromotion(req, res){
                 subject: 'Capitol Car Cleaners promotions are here!',
                 text: emailBody
               };
-              cron.schedule('00 12 1 * *', () => {
               transporter.sendMail(mailOptions, function(error, info){
               if (error) {
                 console.log(error);
               } else {
                 console.log('Email sent: ' + info.response);
               }
-              });
               });
           return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});   
           }  
@@ -221,6 +219,25 @@ addImage(req, res){
     }    
   });
   
+},
+sendVehicle(req, res){
+  const email = req.body.email
+  const message = req.body.message
+  let mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: 'Capitol Car Cleaners - Your Vehicle Is Ready!',
+    text: message
+  };
+  transporter.sendMail(mailOptions, function(error, info){
+  if (error) {
+    console.log(error);
+  } else {
+    console.log('Email sent: ' + info.response);
+  }
+  });
+  
+
 },
 };
 module.exports = adminController;
