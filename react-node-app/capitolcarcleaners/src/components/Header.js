@@ -102,8 +102,8 @@ function Header() {
                   <Link to="/VehiclesForSale">
                       <Nav.Link>Cars for Sale!</Nav.Link>
                   </Link>
-                  <Link to="/">
-                      <Nav.Link disabled>Contact Us</Nav.Link>
+                  <Link to="/ContactUs">
+                      <Nav.Link>Contact Us</Nav.Link>
                   </Link>
                   <Link to="/">
                       <Nav.Link disabled>Gallery</Nav.Link>
