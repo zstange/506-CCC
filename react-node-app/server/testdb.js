@@ -1,5 +1,6 @@
 const mysql = require('mysql')
 
+
 db = mysql.createPool({
 	host: 'us-cdbr-east-04.cleardb.com',
 	user: 'b0e7f90e82e83f',

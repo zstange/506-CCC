@@ -3,3 +3,14 @@
 .cardImage {
     width: 50%;
 }
+
+.sectionVehicleTitle{
+    text-align: left;
+    vertical-align: middle;
+    margin-bottom: 1px;
+    color: black;
+    font-family: factoria,serif;
+    font-weight: 100;
+    font-style: normal;
+    font-size: 27px;
+}

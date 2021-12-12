@@ -13,10 +13,7 @@ login(req, res){
     const sqlInsert = 
     "SELECT * FROM usertable WHERE email = ?"
     db.query(sqlInsert, [email], (err, result) => {
-      if(err){
-        return res.json({err: err});
-      }
-      else if (result != ""){
+      if (result != ""){
         bcrypt.compare(password, result[0].password, (error, response) => {
           if(response){  
             var user = JSON.parse(JSON.stringify(result));
@@ -25,8 +22,6 @@ login(req, res){
             var userInfo = { userID: user[0].uid, role: user[0].role};
             return res.json({auth: true, token: token, userInfo: userInfo});
           } else{
-            console.log("password:" + password);
-            console.log("checking with:" + result[0].password);
             return res.send({message: "Wrong username/password combination!"})
           }
         }) 
@@ -65,11 +60,7 @@ editAppointment(req, res){
   const sqlInsert = 
 "UPDATE appointmenttable SET vid = ?, dateTime = ?, service = ?, additionalInfo = ?, status = ? WHERE aid = ?;"
 db.query(sqlInsert, [vid, dateTime, service, additionalInfo, status, aid], (err, result) => {
-
-  if(err){
-    res.send({err: err});
-  }
-  else if (result["affectedRows"] != 0){
+  if (result["affectedRows"] != 0){
     return res.send({message: "Appointment edited successfully"});
   }
   else{
@@ -84,11 +75,7 @@ deleteAppointment(req, res){
   const sqlInsert = 
 "DELETE FROM appointmenttable WHERE aid = ?;"
 db.query(sqlInsert, [aid], (err, result) => {
-
-  if(err){
-    res.send({err: err});
-  }
-  else if (result["affectedRows"] != 0){
+if (result["affectedRows"] != 0){
     return res.send({message: "Appointment deleted successfully"});
   }
   else{
@@ -124,10 +111,7 @@ getImages(req, res){
   "SELECT * FROM imagetable"
   db.query(sqlInsert, [iid]
       , (err, result) => {
-          if(err){
-              res.send({err: err});
-            }
-            else if (result != ""){
+            if (result != ""){
               return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
             }
             else{
@@ -141,10 +125,7 @@ getInventory(req, res){
   "SELECT * FROM inventorytable"
   db.query(sqlInsert
       , (err, result) => {
-          if(err){
-              res.send({err: err});
-            }
-            else if (result != ""){
+          if (result != ""){
               return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
             }
             else{
@@ -158,10 +139,7 @@ getPromotions(req, res){
   "SELECT * FROM promotiontable"
   db.query(sqlInsert
       , (err, result) => {
-          if(err){
-              res.send({err: err});
-            }
-            else if (result != ""){
+            if (result != ""){
               return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
             }
             else{

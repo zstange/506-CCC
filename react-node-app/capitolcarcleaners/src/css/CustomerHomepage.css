@@ -21,6 +21,24 @@
 
 .sectionAccTitle{
     text-align: left;
+    vertical-align: middle;
+    margin-bottom: 1px;
+    color: black;
+    font-family: factoria,serif;
+    font-weight: 100;
+    font-style: normal;
+    font-size: 27px;
+}
+
+.accodionHeader{
+    text-align: left;
+    vertical-align: middle;
+    margin-bottom: 1px;
+    color: black;
+    font-family: factoria,serif;
+    font-weight: 100;
+    font-style: normal;
+    font-size: 40px;
 }
 
 .sectionAcctBody {
@@ -40,4 +58,15 @@
     text-align:center;
     justify-content:center;
     font-family: factoria,serif;
+}
+
+.headerTextStyle {
+    text-align: center;
+    vertical-align: middle;
+    margin-bottom: 1px;
+    color: black;
+    font-family: factoria,serif;
+    font-weight: 100;
+    font-style: normal;
+    font-size: 27px;
 }

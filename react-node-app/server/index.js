@@ -42,6 +42,7 @@ app.post("/addImage", verifyJWT, adminController.addImage)
 app.post("/addPromotion", verifyJWT, adminController.addPromotion)
 app.post("/deletePromotion", verifyJWT, adminController.deletePromotion)
 app.post("/editPromotion", verifyJWT, adminController.editPromotion)
+app.post("/sendPromotion", adminController.sendPromotion)
 
 exports.app = app;
 exports.db = db;

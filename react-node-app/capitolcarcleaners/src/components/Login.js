@@ -52,47 +52,50 @@ function LoginPage(props) {
     }   
 
   return (
-      <>          
-          <Row style={{padding: '2%'}}>
-          <div >            
-              <Form noValidate validated={validated} onSubmit={handleSubmit}>
-                  <Form.Group as={Row} className="mb-3" controlId="validationEmail">
-                      <Form.Label column sm="3" className="createAccountLabels">Email</Form.Label>
-                      <Col sm="9" >
-                          <Form.Control 
-                          required
-                          type="email"
-                          name="email"
-                          placeholder="Email address"
-                          />
-                      </Col>                    
-                  </Form.Group>
-
-                  <Form.Group as={Row} className="mb-1" controlId="validationPassword">
-                      <Form.Label column sm="3" className="createAccountLabels">Password</Form.Label>
-                      <Col sm="9">
-                          <Form.Control
-                          required
-                          type="password"
-                          name="password"
-                          placeholder="Password"
-                          />
-                      </Col>                    
-                  </Form.Group>
-
-                  { redirect ? (<Redirect to={{ pathname: '/CustomerHomepage'}}/>) : null }
-                  <Button className="m-4" type="submit" style={{display: 'inline-block'}}>Submit</Button>  
-                      
-              </Form>  
-              <div>
-                <Link to="/ForgotPassword">
-                <Button className="m-4 btn-sm" type="button" >Forgot Password</Button>
-                </Link>
-              </div>   
-                 
+      <>   
+        <Row>
+          <div>
+              <h1 className="loginHeader">Login</h1>
           </div>
-     
-          </Row> 
+        </Row>       
+        <Row style={{padding: '2%'}}>
+          <div >            
+            <Form noValidate validated={validated} onSubmit={handleSubmit}>
+              <Form.Group as={Row} className="mb-3" controlId="validationEmail">
+                <Form.Label column sm="3" className="loginLabels">Email</Form.Label>
+                <Col sm="9" >
+                  <Form.Control 
+                  required
+                  type="email"
+                  name="email"
+                  placeholder="Email address"
+                  />
+                </Col>                    
+              </Form.Group>
+
+              <Form.Group as={Row} className="mb-1" controlId="validationPassword">
+                <Form.Label column sm="3" className="loginLabels">Password</Form.Label>
+                <Col sm="9">
+                  <Form.Control
+                  required
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  />
+                </Col>                    
+              </Form.Group>
+
+              { redirect ? (<Redirect to={{ pathname: '/CustomerHomepage'}}/>) : null }
+              <Button className="m-4" type="submit" style={{display: 'inline-block'}}>Submit</Button>  
+       
+            </Form>  
+            <div>
+              <Link to="/ForgotPassword">
+              <Button className="m-4 btn-sm" type="button" >Forgot Password</Button>
+              </Link>
+            </div>        
+          </div>
+        </Row> 
       </>
   );
 }
@@ -107,15 +110,17 @@ class Login extends React.Component {
   render() {
     return (
       <>
+      <div class="App" style={{minHeight: '75vh'}}>
         <LoginPage/>
-        <div> 
+        <div > 
           <div>
-                <p className="loginText">Don't have an account yet?</p>
+            <p className="loginText">Don't have an account yet?</p>
           </div> 
           <Link to="/CreateAccount">
             <Button variant="info">Create Account</Button>
           </Link>        
-		    </div>   
+		    </div> 
+      </div>  
       </>
     );
   }

@@ -2,8 +2,9 @@ import React, {useEffect,useState} from "react";
 import Axios from 'axios';
 import { useSelector } from "react-redux";
 import '../css/CustomerHistory.css';
+import '../css/MakeHistoryCard.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Card, ListGroup, ListGroupItem, Form, Button, Row, Col, Modal} from "react-bootstrap";
+import { Card, ListGroup, ListGroupItem} from "react-bootstrap";
 
 function MakeHistoryCards(props) {
     const token = useSelector((state) => state.token.value);
@@ -111,37 +112,42 @@ function MakeHistoryCards(props) {
         <br></br>
         </div>
         <div >
-            <GenerateAppsList appointments = {appointments} />
+            {GenerateAppsList(appointments)}
+            {/* <GenerateAppsList appointments = {appointments} /> */}
         </div>
         <br></br>
         </>
         
     );
 
-    function GenerateAppsList(props) {
-        let appointments = props.appointments
-        appointments.sort(function(a,b) { // sort appointments by date
-            return Number(new Date(a.dateTime) - new Date(b.dateTime))
-        });
-        const GenerateList = ((appointment, index) =>
-            <>
-            <Card id = {"card_"+appointment.aid} style = {{width: window.innerWidth/4, margin:"15px"}} className = "box">
-            <Card.Header> {appointment.dateTime.substring(5,7)+"/"+appointment.dateTime.substring(8,10)
-                +"/"+appointment.dateTime.substring(0,4)+" - 9 AM Drop Off"}
-            </Card.Header>
-            <Card.Body >
-                <Card.Title>{"S"+appointment.service.substring(1,appointment.service.length)}</Card.Title>
-                <ListGroup className="list-group-flush">
-                    <ListGroupItem>{"Vehicle: "+appointment.year+" "+appointment.make+"-"+appointment.model}</ListGroupItem>
-                    <ListGroupItem>{"License Plate: "+appointment.licensePlate}</ListGroupItem>
-                    <ListGroupItem>{"Color: "+appointment.color}</ListGroupItem>
-                    <ListGroupItem>{"Additional Info: "+appointment.additionalInfo}</ListGroupItem>
-                </ListGroup> 
-            </Card.Body>
-            </Card>
-            </>
-        );
-        return <div className = "List" >{appointments.map(GenerateList)}</div>
+    function GenerateAppsList(appointments) {
+        if(appointments.lenth === 0){
+            appointments.sort(function(a,b) { // sort appointments by date
+                return Number(new Date(a.dateTime) - new Date(b.dateTime))
+            });
+            const GenerateList = ((appointment, index) =>
+                <>
+                <Card id = {"card_"+appointment.aid} style = {{width: window.innerWidth/4, margin:"15px"}} className = "box">
+                <Card.Header> {appointment.dateTime.substring(5,7)+"/"+appointment.dateTime.substring(8,10)
+                    +"/"+appointment.dateTime.substring(0,4)+" - 9 AM Drop Off"}
+                </Card.Header>
+                <Card.Body >
+                    <Card.Title>{"S"+appointment.service.substring(1,appointment.service.length)}</Card.Title>
+                    <ListGroup className="list-group-flush">
+                        <ListGroupItem>{"Vehicle: "+appointment.year+" "+appointment.make+"-"+appointment.model}</ListGroupItem>
+                        <ListGroupItem>{"License Plate: "+appointment.licensePlate}</ListGroupItem>
+                        <ListGroupItem>{"Color: "+appointment.color}</ListGroupItem>
+                        <ListGroupItem>{"Additional Info: "+appointment.additionalInfo}</ListGroupItem>
+                    </ListGroup> 
+                </Card.Body>
+                </Card>
+                </>
+            );
+            return <div className = "List" >{appointments.map(GenerateList)}</div>
+        }
+        else {
+            return <h1 className="noAppointmentsHeader">You have not had any previous service appointments.</h1>
+        }
     }
 }
 
