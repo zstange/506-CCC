@@ -1,3 +1,4 @@
+const { nodemailer, transporter, cron, env } = require('../email.js')
 const adminController ={
 getAppointments(req, res){
     const sqlInsert = 
@@ -148,6 +149,57 @@ deletePromotion(req, res){
     }
     else{
       res.send({message: "Vehicle is not found in Inventory!"})
+    }             
+  });
+},
+
+sendPromotion(req, res){
+  const sqlInsert = 
+  "SELECT promotionName, message FROM promotiontable"
+  db.query(sqlInsert, (err, result) => {
+    if(err){
+      return res.send({err: err});
+    }
+    else if (result != ""){
+      emailBody = "Check out our new promotions \n";
+      for (let i = 0; i < result.length; i++) {
+        emailBody += JSON.parse(JSON.stringify(result[i]['promotionName'])) + ":";
+        emailBody += JSON.parse(JSON.stringify(result[i]['message'])) + "\n";
+      }
+      const sqlInsert = "SELECT email, recievePromotions FROM usertable"
+        db.query(sqlInsert, (err, result) => {
+          if(err){
+            return res.send({err: err});
+          }
+          else if (result != ""){
+            emails = "";
+            for (let i = 0; i < result.length; i++) {
+              if(JSON.parse(JSON.stringify(result[i]['recievePromotions'])) == 1){
+                emails += JSON.parse(JSON.stringify(result[i]['email'])) + ", ";  
+              }
+            }
+            
+              let mailOptions = {
+                from: process.env.EMAIL,
+                to: emails,
+                subject: 'Capitol Car Cleaners promotions are here!',
+                text: emailBody
+              };
+              cron.schedule('00 12 1 * *', () => {
+              transporter.sendMail(mailOptions, function(error, info){
+              if (error) {
+                console.log(error);
+              } else {
+                console.log('Email sent: ' + info.response);
+              }
+              });
+              });
+          return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});   
+          }  
+        });
+    }
+    else{
+      return res.send({message: "Promotion is not found in Inventory!"})
     }             
   });
 },
