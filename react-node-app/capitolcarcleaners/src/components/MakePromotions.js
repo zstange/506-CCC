@@ -18,7 +18,7 @@ function MakePromotions(props) {
     const [showAdminInfo, setAdminInfo] = useState(false)
     const [allowSubmit,disableSubmit] = useState(false)
     const [optModal, showOptModal] = useState(false)
-    const [promoStatus, setPromoStatus] = useState(false)
+    const [promoStatus, setPromoStatus] = useState(-1)
     const [promoStatusTemp, setPromoStatusTemp] = useState(false)
     const [promoModalText, setPromoModalText] = useState("")
     const [ready, setReady] = useState(false)
@@ -46,7 +46,7 @@ function MakePromotions(props) {
             if (props.role === "admin")
                 setAdminInfo(true)
             if (props.uid) {
-                Axios.post("http://localhost:3001/getUserPromoStatus",{
+                Axios.post("http://localhost:3001/getUser",{
                 uid: props.uid,
                     }, {
                         headers: {
@@ -60,7 +60,7 @@ function MakePromotions(props) {
                             console.log(response.data.message)
                         } 
                         else   
-                            promo = Array(response.data.data)[0][0].recievePromotions 
+                            promo = response.data.data[0].recievePromotions 
                             setPromoStatus(promo)
                 });
             }
@@ -366,8 +366,8 @@ function MakePromotions(props) {
         <br></br>
         <Button className="btn" id = "Create" style={{ display: (showAdminInfo ? 'block': 'none'), margin:"auto"}} onClick={handleCardClick}>Create New Promotion</Button>
         <br></br>
-        <div style ={{display: ((!showAdminInfo && props.uid) ? 'inline-block': 'none'), textAlign: "center"}}>
-            <input checked = {promoStatus} type="checkbox" id = "opt" style={{marginRight:"15px"}} 
+        <div style ={{display: ((!showAdminInfo && props.uid) ? 'block': 'none'), textAlign: "center"}}>
+            <input checked = {promoStatus ? true: false} type="checkbox" id = "opt" style={{marginRight:"15px"}} 
                 onClick={handleOpt} />I would like to receieve promotions 
         </div>
         </div>
