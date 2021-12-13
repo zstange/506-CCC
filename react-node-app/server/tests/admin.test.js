@@ -21,6 +21,7 @@ const adminController = require('../controllers/admin.js');
 var request = supertest(app);
 jest.setTimeout(30000);
 
+
 function createTable(sql){
   return new Promise( ( resolve, reject ) => {
   module.db.query(sql, (err, result) => {
