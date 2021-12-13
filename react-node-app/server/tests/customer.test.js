@@ -341,3 +341,21 @@ test('post /createAccount with correct info', async () =>{
     expect(response.status).toBe(200);
     expect(response.body.length).toStrictEqual(expected);
   });
+
+test('post /resetPassword with incorrect info for query', async() => {
+  const expected = "Error sending email!";
+  const response = await request.post('/resetPassword');
+  expect(response.status).toBe(200);
+  expect(response.text).toStrictEqual(expected);
+});
+
+test('post /resetPassword with correct info for query', async() => {
+  const user = [195,"P","M",'theangryone666@gmail.com','pwd','000-000-0000','user','false'];
+  await hashPwd(user);
+  const response = await request.post('/resetPassword').send({
+    email: 'theangryone666@gmail.com'
+    });
+  const expected = "Email sent to: theangryone666@gmail.com";
+  expect(response.status).toBe(200);
+  expect(response.body).toStrictEqual(expected);
+});
