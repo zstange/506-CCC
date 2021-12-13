@@ -234,9 +234,7 @@ function MakeCards(props) {
             setValidatedStatus(true)
 
             if (event.currentTarget.checkValidity() === true) {
-                let changed = (appointments[0].vid !== contents.vid || appointments[0].datetime || contents.dateTime
-                    || appointments[0].service !== contents.service || appointments[0].additionalInfo !== contents.additionalInfo
-                    || appointments[0].status !== contents.status)
+                let changed = (appointments[0].status !== contents.status)
                 if (changed) {
                     Axios.post("http://localhost:3001/editAppointment",{
                             aid: contents.aid,
