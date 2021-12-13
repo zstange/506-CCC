@@ -126,10 +126,7 @@ sendPromotion(req, res){
   const sqlInsert = 
   "SELECT promotionName, message FROM promotiontable"
   db.query(sqlInsert, (err, result) => {
-    if(err){
-      return res.send({err: err});
-    }
-    else if (result != ""){
+  if (result != ""){
       emailBody = "Check out our new promotions \n";
       for (let i = 0; i < result.length; i++) {
         emailBody += JSON.parse(JSON.stringify(result[i]['promotionName'])) + ":";
@@ -137,10 +134,7 @@ sendPromotion(req, res){
       }
       const sqlInsert = "SELECT email, recievePromotions FROM usertable"
         db.query(sqlInsert, (err, result) => {
-          if(err){
-            return res.send({err: err});
-          }
-          else if (result != ""){
+       if (result != ""){
             emails = "";
             for (let i = 0; i < result.length; i++) {
               if(JSON.parse(JSON.stringify(result[i]['recievePromotions'])) == 1){
@@ -152,14 +146,11 @@ sendPromotion(req, res){
                 from: process.env.EMAIL,
                 to: emails,
                 subject: 'Capitol Car Cleaners promotions are here!',
+                
                 text: emailBody
               };
-              transporter.sendMail(mailOptions, function(error, info){
-              if (error) {
-                return res.send(error);
-              }
-              });
-          return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});   
+              transporter.sendMail(mailOptions, function(error, info){});
+          return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length, emails: emails});   
           }  
         });
     }
@@ -207,13 +198,11 @@ sendVehicle(req, res){
   };
   transporter.sendMail(mailOptions, function(error, info){
   if (error) {
-    return res.send(error);
+    return res.send("Error sending email!");
   } else {
-    return res.send('Email sent: ' + info.response);
+    return res.send('Email sent to: ' + info.accepted);
   }
   });
-  
-
 },
 };
 module.exports = adminController;

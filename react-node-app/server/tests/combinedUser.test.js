@@ -181,7 +181,6 @@ test('get /', async() => {
       expect(response.body).toStrictEqual(expected);
 });
 
-
 test('post /login with no info', async () => {
   const response = await request.post('/login');
   const expected = {message: "User doesn't exist!"};
