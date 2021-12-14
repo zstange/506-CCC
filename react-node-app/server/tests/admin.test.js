@@ -1,6 +1,7 @@
 var supertest = require('supertest');
 var module = require('../index.js');
 const { bcrypt, saltRounds} = require('../hash.js');
+const { nodemailer, transporter, cron, env } = require('../email.js')
 const app = module.app;
 module.db.end();
 module.db = require('../testdb.js');
@@ -19,6 +20,7 @@ const { server } = require('../server.js');
 const adminController = require('../controllers/admin.js');
 var request = supertest(app);
 jest.setTimeout(30000);
+
 
 function createTable(sql){
   return new Promise( ( resolve, reject ) => {
@@ -333,4 +335,41 @@ test('post /deleteImages with correct info', async() => {
   const expected = {message: "Successful deletion!"} 
   expect(response.status).toBe(200);
   expect(response.body).toStrictEqual(expected);
+});
+
+test('post /sendVehicle with incorrect info', async() => {
+  const response = await request.post('/sendVehicle');
+  const expected = "Error sending email!"
+  expect(response.status).toBe(200);
+  expect(response.text).toStrictEqual(expected);
+});
+
+test('post /sendVehicle with correct info', async() => {
+  const user = [195,"P","M",'theangryone666@gmail.com','pwd','000-000-0000','user','false'];
+  await hashPwd(user);
+  const response = await request.post('/sendVehicle').send({
+    email: 'theangryone666@gmail.com',
+    message: "lol"
+  });
+  const expected = "Email sent to: theangryone666@gmail.com"
+  expect(response.status).toBe(200);
+  expect(response.text).toStrictEqual(expected);
+});
+
+test('post /sendPromotion with incorrect info', async() => {
+  const response = await request.post('/sendPromotion');
+  const expected = {message: "Promotion is not found in Inventory!"};
+  expect(response.status).toBe(200);
+  expect(response.body).toStrictEqual(expected);
+});
+
+test('post /sendPromotion with correct info', async() => {
+  const user = [195,"P","M",'theangryone666@gmail.com','pwd','000-000-0000','user','true'];
+  await hashPwd(user);
+  const promo = [999,"FakeLOL","This promotion is fake."];
+  await promotionInsert(promo);
+  const response = await request.post('/sendPromotion');
+  const expected = 1;
+  expect(response.status).toBe(200);
+  expect(response.body.length).toStrictEqual(expected);
 });

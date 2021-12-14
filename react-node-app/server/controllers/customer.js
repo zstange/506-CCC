@@ -145,9 +145,9 @@ resetPassword(req, res){
   };
   transporter.sendMail(mailOptions, function(error, info){
   if (error) {
-    return res.send(error);
+    return res.send("Error sending email!");
   } else {
-    return res.json({code: code});
+    return res.json('Email sent to: ' + info.accepted);
   }
   });
   

@@ -20,6 +20,7 @@ const combinedUserController = require('../controllers/combinedUser.js');
 var request = supertest(app);
 jest.setTimeout(30000);
 
+
 function createTable(sql){
   return new Promise( ( resolve, reject ) => {
   module.db.query(sql, (err, result) => {
@@ -180,7 +181,6 @@ test('get /', async() => {
       expect(response.status).toBe(200);
       expect(response.body).toStrictEqual(expected);
 });
-
 
 test('post /login with no info', async () => {
   const response = await request.post('/login');
