@@ -107,6 +107,9 @@ function Header() {
                   <Link to="/ContactUs">
                       <Nav.Link>Contact Us</Nav.Link>
                   </Link>
+                  <Link to="/Promotions">
+                      <Nav.Link>Promotions</Nav.Link>
+                  </Link>
                   <Link to="/">
                       <Nav.Link disabled>Gallery</Nav.Link>
                   </Link>

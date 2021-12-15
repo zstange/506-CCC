@@ -18,8 +18,8 @@ function MakePromotions(props) {
     const [showAdminInfo, setAdminInfo] = useState(false)
     const [allowSubmit,disableSubmit] = useState(false)
     const [optModal, showOptModal] = useState(false)
-    const [promoStatus, setPromoStatus] = useState(-1)
-    const [promoStatusTemp, setPromoStatusTemp] = useState(false)
+    const [promoStatus, setPromoStatus] = useState(0)
+    const [promoStatusTemp, setPromoStatusTemp] = useState(0)
     const [promoModalText, setPromoModalText] = useState("")
     const [ready, setReady] = useState(false)
 
