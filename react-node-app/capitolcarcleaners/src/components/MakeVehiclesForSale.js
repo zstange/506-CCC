@@ -16,6 +16,7 @@ function MakeVehiclesForSale(props) {
     const [imageRegex, setImageRegex] = useState("")
     const [modifyModal, showModifyModal] = useState(false)
     const [deleteModal, showDeleteModal] = useState(false)
+    const [steveModal, showSteve] = useState(false)
     const [modifyTitle, setModifyTitle] = useState("")
     const [showAdminInfo, setAdminInfo] = useState(false)
     const [allowSubmit,disableSubmit] = useState(false)
@@ -96,6 +97,9 @@ function MakeVehiclesForSale(props) {
         setVehicles(vehicles)
             setImages(images)
     }
+
+    const handleSteve = (event) => { showSteve(true)}
+    const closeSteve = (event) => { showSteve(false)}
 
     const handleAddImage = (event) => {
         if (contents.image !== "") {
@@ -526,9 +530,27 @@ function MakeVehiclesForSale(props) {
                 </div>
         </Modal.Body>                   
         </Modal>
+
+        <Modal show={steveModal} centered id = "steve">
+        <Modal.Header >
+        </Modal.Header>
+        <Modal.Body>
+            <p style={{textAlign: 'center'}}>
+                For purchase details, please call Steve at (505) 555-1258<br/>or email him at steve@capcars.com</p>
+            <div style={{textAlign: 'center'}}>
+                <Button id="steeeeve" variant="primary" size='sm' style={{margin: '5px'}} onClick={closeSteve}>Close</Button>
+            </div>
+        </Modal.Body>                   
+        </Modal>
+
         <div >
             <GenerateAppsList vehicles = {vehicles} images = {images}/>
         </div>
+        <br></br>
+        <div style = {{textAlign:"center"}}>
+            <Button className="btn" id = "Create" onClick={handleSteve}>Purchase Details</Button>
+        </div>
+        <br></br>
         <br></br>
         <Button className="btn" id = "Create" style={{ display: (showAdminInfo ? 'block': 'none'), margin:"auto"}} onClick={handleCardClick}>Create Vehicle Listing</Button>
         </div>
@@ -546,7 +568,7 @@ function MakeVehiclesForSale(props) {
                 <Card.Body>
                     <ListGroup className="list-group-flush" style = {{textAlign: "center"}}>
                         <Card.Title style = {{fontSize: "20px", fontWeight: "bold"}}>{vehicle.color+" "+vehicle.year+" "+vehicle.make+" "+vehicle.model}</Card.Title>
-                        <ListGroupItem style = {{marginTop: "-10px"}}></ListGroupItem>
+                        <ListGroupItem style = {{marginTop: "-5px"}}></ListGroupItem>
                         <ListGroupItem style = {{fontSize: "22px", fontWeight: "600"}}>{"$"+vehicle.price.toFixed(2)}</ListGroupItem>
                         <Carousel style={{margin: '20px'}}>
                             {vehImages.map((image) => {
@@ -564,7 +586,7 @@ function MakeVehiclesForSale(props) {
                     </ListGroup> 
                     
                 </Card.Body>
-                <div style = {{display: (showAdminInfo ? 'block': 'none'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
+                <div style = {{display: (showAdminInfo ? 'block': 'none'), textAlign: 'center', marginTop: '-5px', marginBottom: '15px'}}>
                     <Button id = {"Modify-"+vehicle.iid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify</Button>   
                     <Button id = {"delete-"+vehicle.iid} style = {{marginLeft: '5px'}} variant="danger" onClick={handleCardClick}>Delete</Button>
                 </div>

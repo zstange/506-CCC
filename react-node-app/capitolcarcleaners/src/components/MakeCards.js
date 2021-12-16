@@ -24,6 +24,7 @@ function MakeCards(props) {
     const [allowSubmit,disableSubmit] = useState(false)
     const [modifyTitle, setModifyTitle] = useState("")
     const [dateError, setDateError] = useState("")
+    const [existsError, setExistsError] = useState("")
     const [ready, setReady] = useState(false)
     const [statusModal, showStatusModal] = useState(false)
 
@@ -128,19 +129,19 @@ function MakeCards(props) {
             setReady(true)
         }
         fetchTables()
-    }, [id, props.aid,props.firstName, props.lastName, props.email, props.phoneNumber, props.Apps, props.role]);
+    }, [id, props.aid,props.firstName, props.lastName, props.email, props.phoneNumber, props.Apps, props.role, token]);
     
     const handleChange = (event) => {
-        if (event.target.id === "vid")
-            setContents({...contents, [event.target.id]: event.target.value})
-        else
-            setContents({...contents, [event.target.id]: event.target.value});
+        if (existsError === "This appointment already exists")
+            setExistsError("")
+        setContents({...contents, [event.target.id]: event.target.value});
     }
 
     // handle card buttons
     const handleCardClick = (event) => {
         disableSubmit(false)
         setDateRegex("\\S*")   
+        setExistsError("")
         let mode = event.target.id.substring(0, 6) // get mode from button id
         let aid = event.target.id.substring(7, event.target.id.length) // get aid from the last portion of button id
 
@@ -149,7 +150,7 @@ function MakeCards(props) {
             for (appIndex; appIndex < appointments.length; appIndex++) {
                 if (appointments[appIndex].aid === Number(aid)) {
                     let temp = contents
-                    temp.service = "s"+appointments[appIndex].service.substring(1,appointments[appIndex].service.length)
+                    temp.service = appointments[appIndex].service
                     temp.dateTime = appointments[appIndex].dateTime.substring(0,10)
                     temp.vid = Number(appointments[appIndex].vid)
                     temp.additionalInfo = appointments[appIndex].additionalInfo
@@ -233,9 +234,7 @@ function MakeCards(props) {
             setValidatedStatus(true)
 
             if (event.currentTarget.checkValidity() === true) {
-                let changed = (appointments[0].vid !== contents.vid || appointments[0].datetime || contents.dateTime
-                    || appointments[0].service !== contents.service || appointments[0].additionalInfo !== contents.additionalInfo
-                    || appointments[0].status !== contents.status)
+                let changed = (appointments[0].status !== contents.status)
                 if (changed) {
                     Axios.post("http://localhost:3001/editAppointment",{
                             aid: contents.aid,
@@ -256,10 +255,42 @@ function MakeCards(props) {
                                 console.log(response.data.message)
                             } 
                             else { 
-                                if (contents.status === "Picked Up") 
-                                    alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
-                                setTimeout(() => {setValidated(false); showStatusModal(false); 
-                                    Axios.get("http://localhost:3001/getAppointmentsAdmin", {
+                                if (contents.status === "Ready") {
+                                    let j = 0; // search for the vehicle that the user chose
+                                    let car
+                                    for (j; j < userVehicles.length; j++) {
+                                        if (Number(contents.vid) === userVehicles[j].vid) {
+                                            car = userVehicles[j].color+" "+userVehicles[j].year+" "+userVehicles[j].make
+                                                    +" "+userVehicles[j].model
+                                            break;
+                                        }
+                                    }
+                                    let date = contents.dateTime.substring(5,7)+"/"+contents.dateTime.substring(8,10)
+                                        +"/"+contents.dateTime.substring(0,4)
+                                    Axios.post("http://localhost:3001/sendVehicle",{
+                                        email: userInfo.email,
+                                        message: "This is a courtesy email to let you know your vehicle dropped off on "+date+" is now ready for pickup.\n"
+                                            +"\nVehicle: "+car+"\nLicense Plate: "+userVehicles[j].licensePlate+"\nService: "+contents.service+"\n\nContact Us:\nWest Towne Location - "
+                                            +"6802 Watts Rd. Madison, WI 53719\nPhone: 608-271-4419"
+                                            +"\nEast Towne Location - 4102 Lien Rd. Madison, WI 53704\nPhone: 608-630-8327"
+                                    }, {
+                                        headers: {
+                                            authorization: token
+                                        },
+                                    }).then((response) => {
+                                        if(response.data.err) {
+                                            console.log(response.data.err)
+                                            alert("Pick up email not sent")
+                                        }
+                                        else if (response.data.message) {
+                                            console.log(response.data.message)
+                                            alert("Pick up email not sent")
+                                        } 
+                                        else
+                                            alert("Pick up email sent")
+                                    });
+                                }   
+                                Axios.get("http://localhost:3001/getAppointmentsAdmin", {
                                         headers: {
                                             authorization: token
                                         },
@@ -272,10 +303,9 @@ function MakeCards(props) {
                                         } 
                                         else {     
                                             // populate temporary array
-                                            props.setApps(Array(response.data.data)[0])
+                                            setTimeout(() => {props.setApps(Array(response.data.data)[0]); setValidated(false); showStatusModal(false); }, 1000);  
                                         }
-                                    });
-                                }, 1000);  
+                                });
                             }
                     });
                 }
@@ -311,7 +341,9 @@ function MakeCards(props) {
             setValidated(true);
 
             // check if form is valid
+
             if (form.checkValidity() === true) {
+                
                 // check if we have 4 or fewer appointments for the user's chosen day
                 let appNum = 0
                 await Axios.post("http://localhost:3001/getAppointmentsByDate",{
@@ -348,110 +380,12 @@ function MakeCards(props) {
                 else
                     tempStatus = "Not Ready"
 
-                if (aid === -1 && appNum < 4) {                 
-                    await Axios.post("http://localhost:3001/addAppointment",{
-                        uid: id,
-                        vid: contents.vid,
-                        dateTime: contents.dateTime+" 09:00:00",
-                        service: contents.service,
-                        additionalInfo: contents.additionalInfo,
-                        status: tempStatus
-                    }, {
-                        headers: {
-                            authorization: token
-                        },
-                    }).then((response) => {
-                        if(response.data.err) {
-                            console.log(response.data.err)
-                        }
-                        else {
-                            if (props.role === "admin") {
-                                setTimeout(() => {setValidated(false); showModifyModal(false);
-                                    Axios.get("http://localhost:3001/getAppointmentsAdmin", {
-                                        headers: {
-                                            authorization: token
-                                        },
-                                    }).then((response) => {
-                                        if(response.data.err) {
-                                            console.log(response.data.err)
-                                        }
-                                        else if (response.data.message) {
-                                            console.log(response.data.err)
-                                        } 
-                                        else {     
-                                            // populate temporary array
-                                            props.setApps(Array(response.data.data)[0])
-                                        }
-                                    });
-                                },1000);                       
-                            }
-                        }
-                    });  
-
-                    // populate appointments table
-                    let newApps = []
-                    await Axios.post("http://localhost:3001/getUserAppointments",{ // get aid of latest appointment
-                        uid: id
-                    }, {
-                        headers: {
-                            authorization: token
-                        },
-                        }).then((response) => {
-                        if(response.data.err) {
-                            console.log(response.data.err)
-                        }
-                        else if (response.data.message) {
-                            console.log(response.data.err)
-                        } 
-                        else {     
-                            // populate temporary array
-                            newApps = Array(response.data.data)[0]
-                        }    
-                    });
-                    let newAppsTable = appointments
-                    let newApp = {
-                        aid: newApps[newApps.length-1].aid,
-                        vid: contents.vid,
-                        dateTime: contents.dateTime+" 09:00:00",
-                        service: contents.service,
-                        additionalInfo: contents.additionalInfo,
-                        status: contents.status,
-                        make: null,
-                        model: null,
-                        year: null,
-                        color: null,
-                        licensePlate: null
-                    }
-                    
-                    let j = 0; // search for the vehicle that the user chose
-                    for (j; j < userVehicles.length; j++) {
-                        if (Number(contents.vid) === userVehicles[j].vid) {
-                            newApp.make = userVehicles[j].make
-                            newApp.model = userVehicles[j].model
-                            newApp.year = userVehicles[j].year
-                            newApp.color = userVehicles[j].color
-                            newApp.licensePlate = userVehicles[j].licensePlate
-                            break;
-                        }
-                    }
-                    newAppsTable.push(newApp) // add new appointment to user apps table
-                    setAppointments(newAppsTable) // set state
-                    
-                    setTimeout(() => {setValidated(false); showModifyModal(false);},1000); //finished, give short time delay for feedback
-                }
-                else if (aid !== -1 && appNum < 4) { // modifying appointment case
-                    // edit appointment
-                    let changed = (appointments[index].vid !== contents.vid || appointments[index].datetime !== contents.dateTime
-                        || appointments[index].service !== contents.service || appointments[index].additionalInfo !== contents.additionalInfo
-                        || appointments[index].status !== contents.status)
-                    if (changed) {
-                        Axios.post("http://localhost:3001/editAppointment",{
-                            aid: contents.aid,
+                if (aid === -1 && appNum < 4) { // add appointment case
+                    let exists = false;
+                    await Axios.post("http://localhost:3001/getAppointmentsByInfo",{
                             vid: contents.vid,
                             dateTime: contents.dateTime+" 09:00:00",
-                            service: contents.service,
-                            additionalInfo: contents.additionalInfo,
-                            status: contents.status
+                            service: contents.service
                         }, {
                             headers: {
                                 authorization: token
@@ -460,57 +394,238 @@ function MakeCards(props) {
                             if(response.data.err) {
                                 console.log(response.data.err)
                             }
-                            else if (response.data.message === "appointment doesn't exist in the table.") {
-                                console.log(response.data.message)
-                            } 
                             else {     
-                                if (contents.status === "Picked Up") 
-                                    alert("insert email notif to customer here") // TODO - ADD EMAIL NOTIFS
+                                exists = Array(response.data.data)[0]
+                            }
+                    });   
+                    if (!exists) {
+                        await Axios.post("http://localhost:3001/addAppointment",{
+                        uid: id,
+                        vid: contents.vid,
+                        dateTime: contents.dateTime+" 09:00:00",
+                        service: contents.service,
+                        additionalInfo: contents.additionalInfo,
+                        status: tempStatus
+                        }, {
+                            headers: {
+                                authorization: token
+                            },
+                        }).then((response) => {
+                            if(response.data.err) {
+                                console.log(response.data.err)
+                            }
+                            else {
                                 if (props.role === "admin") {
                                     setTimeout(() => {setValidated(false); showModifyModal(false);
                                         Axios.get("http://localhost:3001/getAppointmentsAdmin", {
                                             headers: {
                                                 authorization: token
                                             },
-                                            }).then((response) => {
+                                        }).then((response) => {
                                             if(response.data.err) {
                                                 console.log(response.data.err)
                                             }
                                             else if (response.data.message) {
-                                                console.log(response.data.message)
+                                                console.log(response.data.err)
                                             } 
                                             else {     
                                                 // populate temporary array
                                                 props.setApps(Array(response.data.data)[0])
                                             }
                                         });
-                                    }, 1000);   
+                                    },1000);                       
                                 }
-                                // set user appointments table
-                                let newUserApps = appointments // set new appointment info
-                                newUserApps[index].aid = aid
-                                newUserApps[index].vid = contents.vid
-                                newUserApps[index].dateTime = contents.dateTime+" 09:00:00"
-                                newUserApps[index].service = contents.service
-                                newUserApps[index].additionalInfo = contents.additionalInfo
-
-                                let j = 0; // search for the vehicle that the user chose
-                                for (j; j < userVehicles.length; j++) {
-                                    if (Number(contents.vid) === userVehicles[j].vid) {
-                                        newUserApps[index].make = userVehicles[j].make
-                                        newUserApps[index].model = userVehicles[j].model
-                                        newUserApps[index].year = userVehicles[j].year
-                                        newUserApps[index].color = userVehicles[j].color
-                                        newUserApps[index].licensePlate = userVehicles[j].licensePlate
-                                        break;
-                                    }
-                                }
-
-                                setAppointments(newUserApps) // set apps table
-                                
-                                setTimeout(() => {setValidated(false); showModifyModal(false);}, 1000);
                             }
                         });  
+
+                        // populate appointments table
+                        let newApps = []
+                        await Axios.post("http://localhost:3001/getUserAppointments",{ // get aid of latest appointment
+                            uid: id
+                        }, {
+                            headers: {
+                                authorization: token
+                            },
+                            }).then((response) => {
+                            if(response.data.err) {
+                                console.log(response.data.err)
+                            }
+                            else if (response.data.message) {
+                                console.log(response.data.err)
+                            } 
+                            else {     
+                                // populate temporary array
+                                newApps = Array(response.data.data)[0]
+                            }    
+                        });
+                        let newAppsTable = appointments
+                        let newApp = {
+                            aid: newApps[newApps.length-1].aid,
+                            vid: contents.vid,
+                            dateTime: contents.dateTime+" 09:00:00",
+                            service: contents.service,
+                            additionalInfo: contents.additionalInfo,
+                            status: contents.status,
+                            make: null,
+                            model: null,
+                            year: null,
+                            color: null,
+                            licensePlate: null
+                        }
+                        
+                        let j = 0; // search for the vehicle that the user chose
+                        for (j; j < userVehicles.length; j++) {
+                            if (Number(contents.vid) === userVehicles[j].vid) {
+                                newApp.make = userVehicles[j].make
+                                newApp.model = userVehicles[j].model
+                                newApp.year = userVehicles[j].year
+                                newApp.color = userVehicles[j].color
+                                newApp.licensePlate = userVehicles[j].licensePlate
+                                break;
+                            }
+                        }
+                        newAppsTable.push(newApp) // add new appointment to user apps table
+                        setAppointments(newAppsTable) // set state
+                        
+                        setTimeout(() => {setValidated(false); showModifyModal(false);},1000); //finished, give short time delay for feedback   
+                    } 
+                    else {
+                        setValidated(false)
+                        disableSubmit(false)
+                        setExistsError("This appointment already exists")
+                    }      
+                    
+                }
+                else if (aid !== -1 && appNum < 4) { // modifying appointment case
+                    // edit appointment
+                    let changed = (Number(appointments[index].vid) !== Number(contents.vid) || new Date(appointments[index].dateTime).getTime() !== new Date(contents.dateTime + " 09:00:00").getTime()
+                        || appointments[index].service !== contents.service || appointments[index].additionalInfo !== contents.additionalInfo
+                        || appointments[index].status !== contents.status)
+                    if (changed) {
+                        let exists = false;
+                        await Axios.post("http://localhost:3001/getAppointmentsByInfo",{
+                                vid: contents.vid,
+                                dateTime: contents.dateTime+" 09:00:00",
+                                service: contents.service
+                            }, {
+                                headers: {
+                                    authorization: token
+                                },
+                            }).then((response) => {
+                                if(response.data.err) {
+                                    console.log(response.data.err)
+                                }
+                                else {     
+                                    exists = Array(response.data.data)[0]
+                                }
+                        });   
+                        let newInfoOrStatus = (Number(appointments[index].vid) === Number(contents.vid) && new Date(appointments[index].dateTime).getTime() === new Date(contents.dateTime + " 09:00:00").getTime()
+                        && appointments[index].service === contents.service && (appointments[index].additionalInfo !== contents.additionalInfo
+                        || appointments[index].status !== contents.status))
+                        if (!exists || newInfoOrStatus) {
+                            Axios.post("http://localhost:3001/editAppointment",{
+                            aid: contents.aid,
+                            vid: contents.vid,
+                            dateTime: contents.dateTime+" 09:00:00",
+                            service: contents.service,
+                            additionalInfo: contents.additionalInfo,
+                            status: contents.status
+                            }, {
+                                headers: {
+                                    authorization: token
+                                },
+                            }).then((response) => {
+                                if(response.data.err) {
+                                    console.log(response.data.err)
+                                }
+                                else if (response.data.message === "appointment doesn't exist in the table.") {
+                                    console.log(response.data.message)
+                                } 
+                                else {       
+                                    if (props.role === "admin") {
+                                        if (contents.status === "Ready") {
+                                            let j = 0; // search for the vehicle that the user chose
+                                            let car
+                                            for (j; j < userVehicles.length; j++) {
+                                                if (Number(contents.vid) === userVehicles[j].vid) {
+                                                    car = userVehicles[j].color+" "+userVehicles[j].year+" "+userVehicles[j].make
+                                                            +" "+userVehicles[j].model
+                                                    break;
+                                                }
+                                            }
+                                            let date = contents.dateTime.substring(5,7)+"/"+contents.dateTime.substring(8,10)
+                                                +"/"+contents.dateTime.substring(0,4)
+                                            Axios.post("http://localhost:3001/sendVehicle",{
+                                                email: userInfo.email,
+                                                message: "This is a courtesy email to let you know your vehicle dropped off on "+date+" is now ready for pickup.\n"
+                                                    +"\nVehicle: "+car+"\nLicense Plate: "+userVehicles[j].licensePlate+"\nService: "+contents.service+"\n\nContact Us:\nWest Towne Location - "
+                                                    +"6802 Watts Rd. Madison, WI 53719\nPhone: 608-271-4419"
+                                                    +"\nEast Towne Location - 4102 Lien Rd. Madison, WI 53704\nPhone: 608-630-8327"
+                                            }, {
+                                                headers: {
+                                                    authorization: token
+                                                },
+                                            }).then((response) => {
+                                                if(response.data.err) {
+                                                    console.log(response.data.err)
+                                                    alert("Pick up email not sent")
+                                                }
+                                                else if (response.data.message) {
+                                                    console.log(response.data.message)
+                                                    alert("Pick up email not sent")
+                                                } 
+                                                else
+                                                    alert("Pick up email sent")
+                                            });
+                                        }   
+                                            Axios.get("http://localhost:3001/getAppointmentsAdmin", {
+                                                headers: {
+                                                    authorization: token
+                                                },
+                                                }).then((response) => {
+                                                if(response.data.err) {
+                                                    console.log(response.data.err)
+                                                }
+                                                else if (response.data.message) {
+                                                    console.log(response.data.message)
+                                                } 
+                                                else {     
+                                                    // populate temporary array
+                                                    props.setApps(Array(response.data.data)[0])
+                                                }
+                                            });   
+                                    }
+                                    // set user appointments table
+                                    let newUserApps = appointments // set new appointment info
+                                    newUserApps[index].aid = aid
+                                    newUserApps[index].vid = contents.vid
+                                    newUserApps[index].dateTime = contents.dateTime+" 09:00:00"
+                                    newUserApps[index].service = contents.service
+                                    newUserApps[index].additionalInfo = contents.additionalInfo
+
+                                    let j = 0; // search for the vehicle that the user chose
+                                    for (j; j < userVehicles.length; j++) {
+                                        if (Number(contents.vid) === userVehicles[j].vid) {
+                                            newUserApps[index].make = userVehicles[j].make
+                                            newUserApps[index].model = userVehicles[j].model
+                                            newUserApps[index].year = userVehicles[j].year
+                                            newUserApps[index].color = userVehicles[j].color
+                                            newUserApps[index].licensePlate = userVehicles[j].licensePlate
+                                            break;
+                                        }
+                                    }
+
+                                    setAppointments(newUserApps) // set apps table
+                                    
+                                    setTimeout(() => {setValidated(false); showModifyModal(false);}, 1000);
+                                }
+                            });
+                        }
+                        else {
+                            setValidated(false)
+                            disableSubmit(false)
+                            setExistsError("This appointment already exists")
+                        }
                     }
                     else
                         setTimeout(() => {setValidated(false); showModifyModal(false);}, 1000);
@@ -565,9 +680,13 @@ function MakeCards(props) {
                     <Col sm="7" >
                         <Form.Select value = {contents.service} className="mb-3" required onChange={handleChange}>
                             <option value="">Select Service</option>
-                            <option value="service 1">Service 1</option>
-                            <option value="service 2">Service 2</option>
-                            <option value="service 3">Service 3</option>
+                            <option value="Complete Auto Detailing">Complete Auto Detailing</option>
+                            <option value="Interior Cleaning">Interior Cleaning</option>
+                            <option value="Exterior Cleaning">Exterior Cleaning</option>
+                            <option value="Odor Removal">Odor Removal</option>
+                            <option value="Rust Proofing">Rust Proofing</option>
+                            <option value="Ceramic Coating">Ceramic Coating</option>
+                            <option value="Ceramic Coating">Motorcycle Detailing</option>
                         </Form.Select>
                         <Form.Control.Feedback type="invalid"></Form.Control.Feedback>
                     </Col>                           
@@ -626,14 +745,17 @@ function MakeCards(props) {
                             <option value="Picked Up">Picked up</option>
                         </Form.Select>
                         <Form.Control.Feedback type="invalid"></Form.Control.Feedback>
-                    </Col>                           
-                </Form.Group>
+                    </Col>                        
+                </Form.Group>              
+                </div>
+                <div>
+                    <Form.Label style = {{color: "red", display: 'block', marginTop:"-25px",textAlign: 'center'}}>{existsError}</Form.Label>  
                 </div>
                 <div style={{textAlign: 'center'}}>
+                    
                     <Button type = "submit" disabled = {allowSubmit} variant="primary" size='sm' style={{margin: '5px'}}>Confirm</Button>
                     <Button id="modify_cancel" variant="secondary" size='sm' style={{margin: '5px'}} onClick={handleModifyModal}>Cancel</Button>  
                 </div>             
-                                     
             </Form>    
         </Modal.Body>                   
         </Modal>
@@ -712,7 +834,7 @@ function MakeCards(props) {
             <Card.Header> {"Status: "+appointment.status}
             </Card.Header>
             <Card.Body >
-                <Card.Title>{"S"+appointment.service.substring(1,appointment.service.length)}</Card.Title>
+                <Card.Title>{appointment.service}</Card.Title>
                 <ListGroup className="list-group-flush" style={{display: (showStatus ? 'block':'none'), margin:"auto", justifyContent:"center"}}>
                     <ListGroupItem>{"Name: "+userInfo.firstName+" "+userInfo.lastName}</ListGroupItem>
                     <ListGroupItem>{"Email: "+userInfo.email}</ListGroupItem>
@@ -726,11 +848,11 @@ function MakeCards(props) {
                     <ListGroupItem>{"Additional Info: "+appointment.additionalInfo}</ListGroupItem>
                 </ListGroup> 
             </Card.Body>
-            <div style = {{display: (showStatus ? 'none': 'block'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
+            <div style = {{display: (showStatus ? 'none': 'block'), textAlign: 'center', marginTop: '-5px', marginBottom: '15px'}}>
                 <Button id = {"modify-"+appointment.aid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify</Button>   
                 <Button id = {"delete-"+appointment.aid} style = {{marginLeft: '5px'}} variant="danger" onClick={handleCardClick}>Delete</Button>
             </div>
-            <div style = {{display: (showStatus ? 'block': 'none'), textAlign: 'center', marginTop: '-10px', marginBottom: '15px'}}>
+            <div style = {{display: (showStatus ? 'block': 'none'), textAlign: 'center', marginTop: '-5px', marginBottom: '15px'}}>
                 <Button id = {"status-"+appointment.aid} style = {{marginLeft: '-5px'}} onClick={handleCardClick}>Modify Status</Button>   
             </div>
             </Card>

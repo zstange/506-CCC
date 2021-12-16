@@ -123,15 +123,15 @@ deletePromotion(req, res){
 },
 
 sendPromotion(req, res){
+  const emailBody = req.body.emailBody
+  const subject = req.body.subject
   const sqlInsert = 
   "SELECT promotionName, message FROM promotiontable"
   db.query(sqlInsert, (err, result) => {
-  if (result != ""){
-      emailBody = "Check out our new promotions \n";
-      for (let i = 0; i < result.length; i++) {
-        emailBody += JSON.parse(JSON.stringify(result[i]['promotionName'])) + ":";
-        emailBody += JSON.parse(JSON.stringify(result[i]['message'])) + "\n";
-      }
+    if(err){
+      return res.send({err: err});
+    }
+    else if (result != ""){
       const sqlInsert = "SELECT email, recievePromotions FROM usertable"
         db.query(sqlInsert, (err, result) => {
        if (result != ""){
@@ -145,8 +145,7 @@ sendPromotion(req, res){
               let mailOptions = {
                 from: process.env.EMAIL,
                 to: emails,
-                subject: 'Capitol Car Cleaners promotions are here!',
-                
+                subject: subject,
                 text: emailBody
               };
               transporter.sendMail(mailOptions, function(error, info){});
@@ -158,6 +157,28 @@ sendPromotion(req, res){
       return res.send({message: "Promotion is not found in Inventory!"})
     }             
   });
+},
+
+editPromotion(req, res){
+  const pid = req.body.pid
+  const promotionName = req.body.promotionName
+  const message = req.body.message
+    const sqlInsert = 
+  "UPDATE promotionTable SET promotionName = ?, message = ? WHERE pid = ?;"
+  db.query(sqlInsert, [promotionName, message, pid], (err, result) => {
+  
+    if(err){
+      res.send({err: err});
+    }
+    else if (result["affectedRows"] != 0){
+      return res.send({message: "edited promotion successfully"});
+    }
+    else{
+      res.send({message: "promotion does not exist in inventory!"})
+    }
+  
+  });
+  
 },
 
 deleteImages(req, res){

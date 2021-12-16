@@ -57,6 +57,22 @@ getUserAppointments(req, res){
       });
 },
 
+setUserPromoStatus(req, res){
+  const uid = req.body.uid
+  const recievePromotions = req.body.promo
+  const sqlInsert = 
+  "UPDATE userTable SET recievePromotions = ? WHERE uid = ?;"
+  db.query(sqlInsert, [recievePromotions, uid]
+      , (err, result) => {
+            if (result != ""){
+              return res.json({data: JSON.parse(JSON.stringify(result)), length: result.length});
+            }
+            else{
+              res.send({message: "cannot update promo status"})
+            }
+      });
+},
+
 getAppointmentsByDate(req, res){
   const dateTime = req.body.dateTime
   const sqlInsert = 
@@ -132,6 +148,29 @@ resetPassword(req, res){
     return res.send("Error sending email!");
   } else {
     return res.json('Email sent to: ' + info.accepted);
+  }
+  });
+  
+
+},
+
+verifyAcc(req, res){
+  const email = req.body.email
+  code = "";
+  for (let i = 0; i < 8; i++) {
+    code += Math.floor(Math.random() * 10);
+  }
+  let mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: 'Capitol Car Cleaners - Account Code!',
+    text: "Code for verifying email: " + code
+  };
+  transporter.sendMail(mailOptions, function(error, info){
+  if (error) {
+    return res.send(error);
+  } else {
+    return res.json({code: code});
   }
   });
   
