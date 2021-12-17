@@ -217,7 +217,10 @@ deleteVehicle(req, res){
   const sqlInsert = 
 "DELETE FROM vehicletable WHERE vid = ?;"
 db.query(sqlInsert, [vid], (err, result) => {
-if (result["affectedRows"] != 0){
+  if(err){
+    res.send({err: err});
+  }
+  else if (result["affectedRows"] != 0){
     return res.send({message: "Vehicle deleted successfully"});
   }
   else{
