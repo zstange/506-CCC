@@ -110,8 +110,8 @@ function Header() {
                   <Link to="/Promotions">
                       <Nav.Link>Promotions</Nav.Link>
                   </Link>
-                  <Link to="/">
-                      <Nav.Link disabled>Gallery</Nav.Link>
+                  <Link to="/Gallery">
+                      <Nav.Link>Gallery</Nav.Link>
                   </Link>
                   {loginLogoutButton()}
                 </Nav>
